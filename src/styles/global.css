@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+	themes:
+		pastel --default,
+		dracula --prefersdark;
+	exclude: rootscrollgutter;
+	logs: true;
+}
