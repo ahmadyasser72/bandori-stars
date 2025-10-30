@@ -26,11 +26,12 @@ const card = defineCollection({
 					} = card;
 
 					return {
-						id: characterId.toString(),
-						name: parse.regionTuple(prefix),
+						id,
+						characterId: characterId.toString(),
 						rarity,
-						attribute,
+						name: parse.regionTuple(prefix),
 						type,
+						attribute,
 						releasedAt: parse.timestamp(releasedAt),
 						gacha: parse.card.gacha(source),
 					};
@@ -40,20 +41,14 @@ const card = defineCollection({
 		return results.filter(({ name }) => name.jp !== null);
 	},
 	schema: z.strictObject({
-		id: z.string().nonempty(),
-		name: schema.multiRegion(z.string().nonempty()),
+		id: schema.id,
+		characterId: schema.id,
 		rarity: z.number().min(2).max(5),
+		name: schema.createMultiRegion(z.string().nonempty()),
+		type: schema.types.card,
 		attribute: z.enum(constants.attributes),
-		type: z.enum(constants.cardTypes),
-		releasedAt: schema.multiRegion(z.date()),
-		gacha: schema.multiRegion(
-			z.array(
-				z.strictObject({
-					gachaId: z.string().nonempty(),
-					rate: z.number().nonnegative(),
-				}),
-			),
-		),
+		releasedAt: schema.createMultiRegion(z.date()),
+		gacha: schema.createMultiRegion(z.array(schema.id)),
 	}),
 });
 
@@ -99,14 +94,14 @@ const event = defineCollection({
 		return results.filter(({ name }) => name.jp !== null);
 	},
 	schema: z.strictObject({
-		id: z.string().nonempty(),
-		type: z.enum(constants.eventTypes),
-		name: schema.multiRegion(z.string().nonempty()),
+		id: schema.id,
+		name: schema.createMultiRegion(z.string().nonempty()),
+		type: schema.types.event,
 		attribute: z.enum(constants.attributes),
 		characters: z.array(z.number().nonnegative()),
-		startAt: schema.multiRegion(z.date()),
-		endAt: schema.multiRegion(z.date()),
-		pointRewards: schema.multiRegion(
+		startAt: schema.createMultiRegion(z.date()),
+		endAt: schema.createMultiRegion(z.date()),
+		pointRewards: schema.createMultiRegion(
 			z.array(
 				z.strictObject({
 					point: z.number().nonnegative(),
@@ -114,7 +109,7 @@ const event = defineCollection({
 				}),
 			),
 		),
-		rankingRewards: schema.multiRegion(
+		rankingRewards: schema.createMultiRegion(
 			z.array(
 				z.strictObject({
 					rank: z.number().nonnegative(),
@@ -154,15 +149,15 @@ const gacha = defineCollection({
 		return results.filter(({ name }) => name.jp !== null);
 	},
 	schema: z.strictObject({
-		id: z.string().nonempty(),
-		name: schema.multiRegion(z.string().nonempty()),
-		type: z.enum(constants.gachaTypes),
-		startAt: schema.multiRegion(z.date()),
-		endAt: schema.multiRegion(z.date()),
-		rateUp: schema.multiRegion(
+		id: schema.id,
+		name: schema.createMultiRegion(z.string().nonempty()),
+		type: schema.types.gacha,
+		startAt: schema.createMultiRegion(z.date()),
+		endAt: schema.createMultiRegion(z.date()),
+		rateUp: schema.createMultiRegion(
 			z.array(
 				z.strictObject({
-					cardId: z.string().nonempty(),
+					cardId: schema.id,
 					rarity: z.number().nonnegative(),
 					rate: z.number().nonnegative(),
 				}),

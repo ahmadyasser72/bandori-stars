@@ -60,12 +60,8 @@ export const parse = {
 				sources
 					.map(emptyObjectIsNull)
 					.map((source) =>
-						source
-							? Object.entries(source.gacha).map(
-									([gachaId, { probability: rate }]) => ({ gachaId, rate }),
-								)
-							: null,
-					) as RegionTuple<{ gachaId: string; rate: number }[]>,
+						source ? Object.keys(source.gacha) : null,
+					) as RegionTuple<string[]>,
 			),
 	},
 
@@ -128,6 +124,13 @@ export const parse = {
 };
 
 export const schema = {
-	multiRegion: <T extends ZodTypeAny>(schema: T) =>
+	id: z.string().nonempty(),
+	types: {
+		card: z.enum(constants.cardTypes),
+		gacha: z.enum(constants.gachaTypes),
+		event: z.enum(constants.eventTypes),
+	},
+
+	createMultiRegion: <T extends ZodTypeAny>(schema: T) =>
 		z.object({ jp: schema, en: schema.nullable() }),
 };
