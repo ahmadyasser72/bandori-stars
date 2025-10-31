@@ -2,7 +2,6 @@ import { z, type ZodTypeAny } from "astro:schema";
 
 import constants from "./constants";
 
-export const id = z.string().nonempty();
 export const types = {
 	attribute: z.enum(constants.attributes),
 	card: z.enum(constants.cardTypes),
@@ -13,12 +12,18 @@ export const types = {
 export const createMultiRegion = <T extends ZodTypeAny>(schema: T) =>
 	z.object({ jp: schema, en: schema.nullable() });
 
+export const id = z.string().nonempty();
+export const name = createMultiRegion(z.string().nonempty());
+
 export const loader = {
+	band: z.strictObject({ id, name }),
+	character: z.strictObject({ id, name, bandId: id }),
+
 	card: z.strictObject({
 		id,
+		name,
 		characterId: id,
 		rarity: z.number().min(2).max(5),
-		name: createMultiRegion(z.string().nonempty()),
 		type: types.card,
 		attribute: types.attribute,
 		releasedAt: createMultiRegion(z.date()),
@@ -27,7 +32,7 @@ export const loader = {
 
 	event: z.strictObject({
 		id,
-		name: createMultiRegion(z.string().nonempty()),
+		name,
 		type: types.event,
 		attribute: types.attribute,
 		characters: z.array(z.number().nonnegative()),
@@ -54,7 +59,7 @@ export const loader = {
 
 	gacha: z.strictObject({
 		id,
-		name: createMultiRegion(z.string().nonempty()),
+		name,
 		type: types.gacha,
 		startAt: createMultiRegion(z.date()),
 		endAt: createMultiRegion(z.date()),

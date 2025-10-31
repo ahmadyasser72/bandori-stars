@@ -2,6 +2,31 @@ import { bestdori } from "~/lib/bestdori";
 import * as Bandori from "~/lib/schema";
 import { parser } from ".";
 
+export const band = async () => {
+	const bands = await bestdori<Bandori.Bands>("api/bands/main.1.json");
+
+	return Promise.all(
+		Object.entries(bands).map(([id, { bandName }]) => ({
+			id,
+			name: parser.regionTuple(bandName),
+		})),
+	);
+};
+
+export const character = async () => {
+	const characters = await bestdori<Bandori.Characters>(
+		"api/characters/main.3.json",
+	);
+
+	return Promise.all(
+		Object.entries(characters).map(([id, { characterName, bandId }]) => ({
+			id,
+			bandId: bandId.toString(),
+			name: parser.regionTuple(characterName),
+		})),
+	);
+};
+
 export const card = async () => {
 	const cardList = await bestdori<Bandori.CardList>("api/cards/all.5.json");
 

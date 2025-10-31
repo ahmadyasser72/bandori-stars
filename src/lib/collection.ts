@@ -3,16 +3,24 @@ import { getCollection } from "astro:content";
 import type { loader } from "./content";
 
 export type CollectionId = keyof typeof loader;
-export const collections: CollectionId[] = ["card", "event", "gacha"];
+export const collections: CollectionId[] = [
+	"band",
+	"character",
+	"card",
+	"event",
+	"gacha",
+];
 
 export const collectionList = (collection: CollectionId) =>
-	getCollection(collection).then((values) => values.map(({ id }) => id));
+	getCollection(collection).then((values) => ({
+		keys: values.map(({ id }) => id),
+	}));
 
 const cachedEntries = new Map<CollectionId, Set<string>>();
 export const createCollectionIsDefined = async (collection: CollectionId) => {
 	const entries =
 		cachedEntries.get(collection) ??
-		(await collectionList(collection).then((entries) => new Set(entries)))!;
+		(await collectionList(collection).then((data) => new Set(data.keys)))!;
 
 	if (!cachedEntries.has(collection)) cachedEntries.set(collection, entries);
 
