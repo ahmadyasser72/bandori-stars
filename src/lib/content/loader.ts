@@ -8,7 +8,9 @@ export const card = async () => {
 	const gacha = ["permanent", "limited", "dreamfes", "birthday", "kirafes"];
 	const results = await Promise.all(
 		Object.entries(cardList)
-			.filter(([, { type }]) => gacha.includes(type))
+			.filter(
+				([, { rarity, type }]) => Number(rarity) >= 4 && gacha.includes(type),
+			)
 			.map(async ([id]) => {
 				const card = await bestdori<Bandori.Card>(`api/cards/${id}.json`);
 
