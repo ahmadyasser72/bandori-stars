@@ -1,10 +1,10 @@
-import { getCollection } from "~/lib/content";
+import { getCollectionConfig } from "~/lib/content";
 
 export const collections = {
-	band: getCollection("band"),
-	character: getCollection("character"),
+	band: getCollectionConfig("band"),
+	character: getCollectionConfig("character"),
 
-	card: getCollection("card"),
-	event: getCollection("event"),
-	gacha: getCollection("gacha"),
+	card: getCollectionConfig("card"),
+	event: getCollectionConfig("event"),
+	gacha: getCollectionConfig("gacha"),
 };
