@@ -7,6 +7,6 @@
 		"paths": { "~/*": ["./src/*"] },
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"types": ["@types/node", "./worker-configuration.d.ts"]
+		"types": ["@types/node"]
 	}
 }

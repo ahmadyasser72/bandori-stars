@@ -5,13 +5,12 @@
 	"scripts": {
 		"dev": "astro dev",
 		"build": "astro build",
-		"deploy": "wrangler deploy",
+		"deploy": "netlify deploy --prod",
 		"astro": "astro",
-		"cf:typegen": "wrangler types",
 		"format": "prettier . --write"
 	},
 	"dependencies": {
-		"@astrojs/cloudflare": "^12.6.10",
+		"@astrojs/netlify": "^6.6.0",
 		"@tailwindcss/vite": "^4.1.16",
 		"astro": "^5.15.2",
 		"daisyui": "^5.3.10",
@@ -23,9 +22,9 @@
 	"devDependencies": {
 		"@ianvs/prettier-plugin-sort-imports": "^4.7.0",
 		"@types/node": "^24.9.2",
+		"netlify-cli": "^23.9.5",
 		"prettier": "^3.6.2",
 		"prettier-plugin-astro": "^0.14.1",
-		"prettier-plugin-tailwindcss": "^0.7.1",
-		"wrangler": "^4.45.2"
+		"prettier-plugin-tailwindcss": "^0.7.1"
 	}
 }

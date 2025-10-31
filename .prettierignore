@@ -1,3 +1,2 @@
-worker-configuration.d.ts
 src/lib/schema/*.json
 bestdori/
