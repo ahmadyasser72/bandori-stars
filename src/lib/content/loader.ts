@@ -43,6 +43,7 @@ export const card = async () => {
 					characterId,
 					rarity,
 					attribute,
+					resourceSetName,
 					type,
 					prefix,
 					releasedAt,
@@ -51,6 +52,7 @@ export const card = async () => {
 
 				return {
 					id,
+					resourceId: resourceSetName,
 					character: characterId.toString(),
 					rarity,
 					name: parser.regionTuple(prefix),

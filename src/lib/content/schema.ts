@@ -22,6 +22,7 @@ export const loader = {
 
 	card: z.strictObject({
 		id,
+		resourceId: id,
 		name,
 		character: reference("character"),
 		rarity: z.number().min(2).max(5),

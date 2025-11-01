@@ -9,7 +9,6 @@ import { randomInt, regionValue } from "~/lib/utilities";
 
 export const partial = true;
 
-const query = Astro.url.searchParams.get("query")?.toLowerCase();
 const entries = await getCollection("card")
 	.then((entries) =>
 		Promise.all(
@@ -47,6 +46,9 @@ const searchWithFuse = (query: string) => {
 	return fuse.search(query).map(({ item }) => item);
 };
 
+const query = Astro.url.searchParams.get("query")?.toLowerCase();
+const showTrained = Astro.url.searchParams.get("showTrained") === "true";
+
 const filtered = query ? searchWithFuse(query) : entries;
 
 const pageSize = 25;
@@ -66,19 +68,33 @@ const items = filtered.slice(offset, offset + pageSize);
 ---
 
 <main class="flex flex-col items-center gap-y-4">
-	<form up-target="#card-list, #next-page">
-		<label class="input">
+	<form
+		up-target="#card-list, #next-page"
+		up-autosubmit
+		up-watch-delay="500"
+		up-watch-disable
+		up-watch-placeholder="#card-list-placeholder"
+		class="flex w-full gap-4 px-4 pt-2 max-sm:flex-col"
+	>
+		<label class="input sm:flex-1">
 			<Icon name="lucide:search" />
 			<input
 				type="search"
 				name="query"
-				placeholder="Search..."
+				placeholder="Search cards..."
 				autofocus
-				up-autosubmit
-				up-watch-delay="500"
-				up-watch-disable
-				up-watch-placeholder="#card-list-placeholder"
 			/>
+		</label>
+
+		<label class="label">
+			<input
+				up-watch-delay="0"
+				type="checkbox"
+				class="checkbox checkbox-sm"
+				name="showTrained"
+				value="true"
+			/>
+			Show trained
 		</label>
 	</form>
 
@@ -86,21 +102,25 @@ const items = filtered.slice(offset, offset + pageSize);
 		<ul class="list w-full">
 			{
 				Array.from({ length: 10 }, () => (
-					<li class="list-row my-0.5 flex flex-col gap-2">
-						<div
-							class="skeleton h-4"
-							style={`width: ${randomInt(120, 196)}px;`}
-						/>
+					<li class="list-row my-0.5 flex gap-2">
+						<div class="skeleton size-12" />
 
-						<div class="flex gap-2">
+						<div class="flex flex-col gap-2">
 							<div
 								class="skeleton h-4"
-								style={`width: ${randomInt(96, 128)}px;`}
+								style={`width: ${randomInt(120, 196)}px;`}
 							/>
-							<div
-								class="skeleton h-4"
-								style={`width: ${randomInt(64, 96)}px;`}
-							/>
+
+							<div class="flex gap-2">
+								<div
+									class="skeleton h-4"
+									style={`width: ${randomInt(96, 128)}px;`}
+								/>
+								<div
+									class="skeleton h-4"
+									style={`width: ${randomInt(64, 96)}px;`}
+								/>
+							</div>
 						</div>
 					</li>
 				))
@@ -121,24 +141,40 @@ const items = filtered.slice(offset, offset + pageSize);
 						data-band-id={band.id}
 						class="group list-row hover:color-band select-none"
 					>
-						<div class="list-col-grow">
-							<div>
-								<button
-									up-accept={`{ id: "${id}" }`}
-									class="cursor-pointer text-sm font-semibold group-hover:font-medium group-hover:underline"
-								>
-									{regionValue.unwrap(name)}
-								</button>
+						<div>
+							<a
+								href={`/partials/view-card-image/${id}?trained=${showTrained}`}
+								up-layer="new popup"
+								up-size="grow"
+							>
+								<img
+									class="rounded-box size-12"
+									src={
+										showTrained
+											? `/static/assets/card/${id}/icon-trained.png`
+											: `/static/assets/card/${id}/icon.png`
+									}
+									loading="lazy"
+								/>
+							</a>
+						</div>
 
-								<div>
-									<span class="badge badge-sm color-band group-hover:color-band-alt border border-current font-medium">
-										{band.name} &bullet; {character.name}
-									</span>
+						<div class="flex flex-col items-start gap-1">
+							<button
+								up-accept={`{ id: "${id}" }`}
+								class="cursor-pointer text-sm font-semibold group-hover:font-medium group-hover:underline"
+							>
+								{regionValue.unwrap(name)}
+							</button>
 
-									<span class="badge badge-sm color-attribute group-hover:color-attribute-alt border border-white font-medium">
-										{attribute.toUpperCase()} &starf;{rarity}
-									</span>
-								</div>
+							<div class="inline-flex flex-wrap gap-1">
+								<span class="badge badge-sm color-band group-hover:color-band-alt line-clamp-1 border border-current font-medium">
+									{band.name} &bullet; {character.name}
+								</span>
+
+								<span class="badge badge-sm color-attribute group-hover:color-attribute-alt border border-white font-medium">
+									{attribute.toUpperCase()} &starf;{rarity}
+								</span>
 							</div>
 						</div>
 					</li>

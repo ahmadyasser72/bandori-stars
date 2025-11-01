@@ -25,5 +25,10 @@ up-popup,
 up-cover-box,
 up-drawer-box,
 up-modal-box {
-	@apply bg-base-100 rounded-box;
+	@apply bg-base-100 text-base-content;
+}
+
+up-popup,
+up-modal-box {
+	@apply rounded-box;
 }

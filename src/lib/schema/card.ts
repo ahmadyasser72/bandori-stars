@@ -7,6 +7,7 @@ export interface Card {
 	characterId: CharacterId;
 	rarity: CardRarity;
 	attribute: Attribute;
+	resourceSetName: string;
 	prefix: RegionTuple<string>;
 	releasedAt: RegionTuple<string>;
 	source: RegionTuple<CardSource, {}>;

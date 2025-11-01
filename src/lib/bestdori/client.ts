@@ -3,16 +3,13 @@ import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
 import ky from "ky";
-import { limitFunction } from "p-limit";
-
-export const bestdori = limitFunction(
-	<T>(pathname: string) => client.get<T>(pathname).json(),
-	{ concurrency: 4 },
-);
+import pLimit from "p-limit";
 
 const BESTDORI_CACHE_DIR = "./bestdori";
 
-const client = ky.create({
+export const limit = pLimit(4);
+
+export const client = ky.create({
 	prefixUrl: "https://bestdori.com",
 	retry: {
 		limit: Number.POSITIVE_INFINITY,

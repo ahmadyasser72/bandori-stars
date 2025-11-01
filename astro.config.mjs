@@ -9,11 +9,11 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
 	output: "server",
 	adapter: netlify(),
+	integrations: [icon()],
 
 	vite: {
 		plugins: [tailwindcss()],
 		server: { hmr: false },
 	},
-
-	integrations: [icon()],
+	devToolbar: { enabled: false },
 });
