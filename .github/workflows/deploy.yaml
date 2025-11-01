@@ -53,6 +53,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: netlify-site
+          include-hidden-files: true
           path: |
             .netlify/
             dist/
@@ -77,7 +78,7 @@ jobs:
       - name: Deploy to Netlify
         id: netlify_deployment
         run: |
-          url=$(bunx netlify deploy --dir dist --prod --no-build --json | jq -r .url)
+          url=$(bun run deploy --json | jq -r .url)
           echo "url=$url" >> $GITHUB_OUTPUT
         env:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
