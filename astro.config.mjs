@@ -1,4 +1,5 @@
 // @ts-check
+import icon from "astro-icon";
 import { defineConfig } from "astro/config";
 
 import netlify from "@astrojs/netlify";
@@ -11,5 +12,8 @@ export default defineConfig({
 
 	vite: {
 		plugins: [tailwindcss()],
+		server: { hmr: false },
 	},
+
+	integrations: [icon()],
 });

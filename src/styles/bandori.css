@@ -1,0 +1,203 @@
+@theme static {
+	/* card attributes */
+	--color-cool: hsl(232 77% 57%);
+	--color-cool-alt: light-dark(hsl(232 77% 45%), hsl(232 77% 52%));
+	--color-cool-content: hsl(0 0% 100%);
+
+	--color-happy: hsl(24 100% 50%);
+	--color-happy-alt: light-dark(hsl(24 100% 38%), hsl(24 100% 46%));
+	--color-happy-content: hsl(0 0% 100%);
+
+	--color-powerful: hsl(349 100% 60%);
+	--color-powerful-alt: light-dark(hsl(349 100% 46%), hsl(349 100% 54%));
+	--color-powerful-content: hsl(0 0% 100%);
+
+	--color-pure: hsl(110 66% 46%);
+	--color-pure-alt: light-dark(hsl(110 66% 36%), hsl(110 66% 42%));
+	--color-pure-content: hsl(0 0% 100%);
+
+	/* bands */
+	--color-poppin-party: hsl(338 100% 60%);
+	--color-poppin-party-alt: light-dark(hsl(338 100% 46%), hsl(338 100% 54%));
+	--color-poppin-party-content: hsl(0 0% 100%);
+
+	--color-afterglow: hsl(355 84% 56%);
+	--color-afterglow-alt: light-dark(hsl(355 84% 42%), hsl(355 84% 50%));
+	--color-afterglow-content: hsl(0 0% 100%);
+
+	--color-hello-happy-world: hsl(52 100% 50%);
+	--color-hello-happy-world-alt: light-dark(hsl(52 100% 62%), hsl(52 100% 56%));
+	--color-hello-happy-world-content: hsl(0 0% 0%);
+
+	--color-pastel-palettes: hsl(162 70% 53%);
+	--color-pastel-palettes-alt: light-dark(hsl(162 70% 40%), hsl(162 70% 48%));
+	--color-pastel-palettes-content: hsl(0 0% 100%);
+
+	--color-roselia: hsl(234 54% 43%);
+	--color-roselia-alt: light-dark(hsl(234 54% 30%), hsl(234 54% 38%));
+	--color-roselia-content: hsl(0 0% 100%);
+
+	--color-raise-a-suilen: hsl(180 72% 47%);
+	--color-raise-a-suilen-alt: light-dark(hsl(180 72% 34%), hsl(180 72% 42%));
+	--color-raise-a-suilen-content: hsl(0 0% 100%);
+
+	--color-morfonica: hsl(204 100% 60%);
+	--color-morfonica-alt: light-dark(hsl(204 100% 46%), hsl(204 100% 54%));
+	--color-morfonica-content: hsl(0 0% 100%);
+
+	--color-mygo: hsl(205 59% 46%);
+	--color-mygo-alt: light-dark(hsl(205 59% 34%), hsl(205 59% 42%));
+	--color-mygo-content: hsl(0 0% 100%);
+}
+
+@utility color-attribute {
+	/* Cool */
+	&[data-attribute="cool"],
+	[data-attribute="cool"] & {
+		@apply bg-cool text-cool-content;
+	}
+
+	/* Happy */
+	&[data-attribute="happy"],
+	[data-attribute="happy"] & {
+		@apply bg-happy text-happy-content;
+	}
+
+	/* Powerful */
+	&[data-attribute="powerful"],
+	[data-attribute="powerful"] & {
+		@apply bg-powerful text-powerful-content;
+	}
+
+	/* Pure */
+	&[data-attribute="pure"],
+	[data-attribute="pure"] & {
+		@apply bg-pure text-pure-content;
+	}
+}
+
+@utility color-attribute-alt {
+	/* Cool */
+	&[data-attribute="cool"],
+	[data-attribute="cool"] & {
+		@apply bg-cool-alt text-cool-content;
+	}
+
+	/* Happy */
+	&[data-attribute="happy"],
+	[data-attribute="happy"] & {
+		@apply bg-happy-alt text-happy-content;
+	}
+
+	/* Powerful */
+	&[data-attribute="powerful"],
+	[data-attribute="powerful"] & {
+		@apply bg-powerful-alt text-powerful-content;
+	}
+
+	/* Pure */
+	&[data-attribute="pure"],
+	[data-attribute="pure"] & {
+		@apply bg-pure-alt text-pure-content;
+	}
+}
+
+@utility color-band {
+	/* Poppin' Party */
+	&[data-band-id="1"],
+	[data-band-id="1"] & {
+		@apply bg-poppin-party text-poppin-party-content;
+	}
+
+	/* Afterglow */
+	&[data-band-id="2"],
+	[data-band-id="2"] & {
+		@apply bg-afterglow text-afterglow-content;
+	}
+
+	/* Hello, Happy World! */
+	&[data-band-id="3"],
+	[data-band-id="3"] & {
+		@apply bg-hello-happy-world text-hello-happy-world-content;
+	}
+
+	/* Pastel*Palettes */
+	&[data-band-id="4"],
+	[data-band-id="4"] & {
+		@apply bg-pastel-palettes text-pastel-palettes-content;
+	}
+
+	/* Roselia */
+	&[data-band-id="5"],
+	[data-band-id="5"] & {
+		@apply bg-roselia text-roselia-content;
+	}
+
+	/* RAISE A SUILEN */
+	&[data-band-id="18"],
+	[data-band-id="18"] & {
+		@apply bg-raise-a-suilen text-raise-a-suilen-content;
+	}
+
+	/* Morfonica */
+	&[data-band-id="21"],
+	[data-band-id="21"] & {
+		@apply bg-morfonica text-morfonica-content;
+	}
+
+	/* MyGO!!!!! */
+	&[data-band-id="45"],
+	[data-band-id="45"] & {
+		@apply bg-mygo text-mygo-content;
+	}
+}
+
+@utility color-band-alt {
+	/* Poppin' Party */
+	&[data-band-id="1"],
+	[data-band-id="1"] & {
+		@apply bg-poppin-party-alt text-poppin-party-content;
+	}
+
+	/* Afterglow */
+	&[data-band-id="2"],
+	[data-band-id="2"] & {
+		@apply bg-afterglow-alt text-afterglow-content;
+	}
+
+	/* Hello, Happy World! */
+	&[data-band-id="3"],
+	[data-band-id="3"] & {
+		@apply bg-hello-happy-world-alt text-hello-happy-world-content;
+	}
+
+	/* Pastel*Palettes */
+	&[data-band-id="4"],
+	[data-band-id="4"] & {
+		@apply bg-pastel-palettes-alt text-pastel-palettes-content;
+	}
+
+	/* Roselia */
+	&[data-band-id="5"],
+	[data-band-id="5"] & {
+		@apply bg-roselia-alt text-roselia-content;
+	}
+
+	/* RAISE A SUILEN */
+	&[data-band-id="18"],
+	[data-band-id="18"] & {
+		@apply bg-raise-a-suilen-alt text-raise-a-suilen-content;
+	}
+
+	/* Morfonica */
+	&[data-band-id="21"],
+	[data-band-id="21"] & {
+		@apply bg-morfonica-alt text-morfonica-content;
+	}
+
+	/* MyGO!!!!! */
+	&[data-band-id="45"],
+	[data-band-id="45"] & {
+		@apply bg-mygo-alt text-mygo-content;
+	}
+}

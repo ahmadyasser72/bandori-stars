@@ -3,5 +3,15 @@ import BaseLayout from "~/layouts/base-layout.astro";
 ---
 
 <BaseLayout>
-	<div>Hello world!</div>
+	<div class="self-center">
+		<a
+			href="/partials/select-card"
+			up-layer="new"
+			up-history="false"
+			up-on-accepted={'alert("You choose " + value.id)'}
+			class="btn btn-accent"
+		>
+			Choose
+		</a>
+	</div>
 </BaseLayout>

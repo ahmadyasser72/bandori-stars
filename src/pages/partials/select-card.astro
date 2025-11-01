@@ -1,0 +1,161 @@
+---
+import { Icon } from "astro-icon/components";
+import { getCollection, getEntry } from "astro:content";
+
+import Fuse from "fuse.js";
+
+import type { BandId } from "~/lib/schema/band";
+import { randomInt, regionValue } from "~/lib/utilities";
+
+export const partial = true;
+
+const query = Astro.url.searchParams.get("query")?.toLowerCase();
+const entries = await getCollection("card")
+	.then((entries) =>
+		Promise.all(
+			entries.map(async ({ data: { character: characterId, ...entry } }) => {
+				const character = (await getEntry(characterId)).data;
+				const band = (await getEntry(character.band)).data;
+
+				return {
+					band: { id: band.id as BandId, name: regionValue.unwrap(band.name) },
+					character: {
+						id: character.id,
+						name: regionValue.unwrap(character.name),
+					},
+					...entry,
+				};
+			}),
+		),
+	)
+	.then((entries) => entries.reverse());
+
+const fuse = new Fuse(entries, {
+	threshold: 0.1,
+	shouldSort: false,
+	keys: [
+		{ name: "character.name", weight: 2 },
+		{ name: "band.name", weight: 1.5 },
+		"name.en",
+		"name.jp",
+		"type",
+		"attribute",
+	],
+});
+
+const filtered = query ? fuse.search(query).map(({ item }) => item) : entries;
+
+const pageSize = 25;
+const maxPage = Math.ceil(filtered.length / pageSize);
+
+const pageQuery = Number(Astro.url.searchParams.get("page") ?? NaN);
+const currentPage = Math.max(
+	1,
+	Math.min(maxPage, Number.isNaN(pageQuery) ? 1 : pageQuery),
+);
+
+const nextPage = new URL(Astro.url);
+nextPage.searchParams.set("page", `${currentPage + 1}`);
+
+const offset = pageSize * (currentPage - 1);
+const items = filtered.slice(offset, offset + pageSize);
+---
+
+<main class="flex flex-col items-center gap-y-4">
+	<form up-target="#card-list, #next-page">
+		<label class="input">
+			<Icon name="lucide:search" />
+			<input
+				type="search"
+				name="query"
+				placeholder="Search..."
+				autofocus
+				up-autosubmit
+				up-watch-delay="500"
+				up-watch-disable
+				up-watch-placeholder="#card-list-placeholder"
+			/>
+		</label>
+	</form>
+
+	<template id="card-list-placeholder">
+		<ul class="list w-full">
+			{
+				Array.from({ length: 10 }, () => (
+					<li class="list-row my-0.5 flex flex-col gap-2">
+						<div
+							class="skeleton h-4"
+							style={`width: ${randomInt(120, 196)}px;`}
+						/>
+
+						<div class="flex gap-2">
+							<div
+								class="skeleton h-4"
+								style={`width: ${randomInt(96, 128)}px;`}
+							/>
+							<div
+								class="skeleton h-4"
+								style={`width: ${randomInt(64, 96)}px;`}
+							/>
+						</div>
+					</li>
+				))
+			}
+		</ul>
+	</template>
+
+	<ul id="card-list" class="list w-full">
+		{
+			items.length === 0 ? (
+				<li class="list-row">
+					<p class="list-col-grow text-center">No cards found.</p>
+				</li>
+			) : (
+				items.map(({ id, name, character, band, attribute, rarity }) => (
+					<li
+						data-attribute={attribute}
+						data-band-id={band.id}
+						class="group list-row hover:color-band select-none"
+					>
+						<div class="list-col-grow">
+							<div>
+								<button
+									up-accept={`{ id: "${id}" }`}
+									class="cursor-pointer text-sm font-semibold group-hover:font-medium group-hover:underline"
+								>
+									{regionValue.unwrap(name)}
+								</button>
+
+								<div>
+									<span class="badge badge-sm color-band group-hover:color-band-alt border border-current font-medium">
+										{band.name} &bullet; {character.name}
+									</span>
+
+									<span class="badge badge-sm color-attribute group-hover:color-attribute-alt border border-white font-medium">
+										{attribute.toUpperCase()} &starf;{rarity}
+									</span>
+								</div>
+							</div>
+						</div>
+					</li>
+				))
+			)
+		}
+	</ul>
+
+	{
+		currentPage < maxPage ? (
+			<a
+				id="next-page"
+				href={nextPage.href}
+				up-defer="reveal"
+				up-target="#next-page, #card-list:after"
+				class="btn btn-wide"
+			>
+				Next page
+			</a>
+		) : (
+			<div id="next-page" />
+		)
+	}
+</main>

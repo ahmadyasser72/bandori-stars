@@ -1,3 +1,4 @@
+import { reference } from "astro:content";
 import { z, type ZodTypeAny } from "astro:schema";
 
 import constants from "./constants";
@@ -17,12 +18,12 @@ export const name = createMultiRegion(z.string().nonempty());
 
 export const loader = {
 	band: z.strictObject({ id, name }),
-	character: z.strictObject({ id, name, bandId: id }),
+	character: z.strictObject({ id, name, band: reference("band") }),
 
 	card: z.strictObject({
 		id,
 		name,
-		characterId: id,
+		character: reference("character"),
 		rarity: z.number().min(2).max(5),
 		type: types.card,
 		attribute: types.attribute,
@@ -35,7 +36,7 @@ export const loader = {
 		name,
 		type: types.event,
 		attribute: types.attribute,
-		characters: z.array(z.number().nonnegative()),
+		characters: z.array(reference("character")),
 		startAt: createMultiRegion(z.date()),
 		endAt: createMultiRegion(z.date()),
 		pointRewards: createMultiRegion(

@@ -21,7 +21,7 @@ export const character = async () => {
 	return Promise.all(
 		Object.entries(characters).map(([id, { characterName, bandId }]) => ({
 			id,
-			bandId: bandId.toString(),
+			band: bandId.toString(),
 			name: parser.regionTuple(characterName),
 		})),
 	);
@@ -51,7 +51,7 @@ export const card = async () => {
 
 				return {
 					id,
-					characterId: characterId.toString(),
+					character: characterId.toString(),
 					rarity,
 					name: parser.regionTuple(prefix),
 					type,
@@ -93,7 +93,9 @@ export const event = async () => {
 					name: parser.regionTuple(eventName),
 					type: eventType,
 					attribute: attributes[0].attribute,
-					characters: characters.map(({ characterId }) => Number(characterId)),
+					characters: characters.map(({ characterId }) =>
+						characterId.toString(),
+					),
 					startAt: parser.timestamp(startAt),
 					endAt: parser.timestamp(endAt),
 					pointRewards: parser.event.pointRewards(pointRewards),

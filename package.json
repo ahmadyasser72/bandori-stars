@@ -14,7 +14,9 @@
 		"@astrojs/netlify": "^6.6.0",
 		"@tailwindcss/vite": "^4.1.16",
 		"astro": "^5.15.2",
+		"astro-icon": "^1.1.5",
 		"daisyui": "^5.3.10",
+		"fuse.js": "^7.1.0",
 		"ky": "^1.13.0",
 		"p-limit": "^7.2.0",
 		"tailwindcss": "^4.1.16",
@@ -23,6 +25,7 @@
 	"devDependencies": {
 		"@astrojs/check": "^0.9.5",
 		"@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+		"@iconify-json/lucide": "^1.2.71",
 		"@types/node": "^24.9.2",
 		"netlify-cli": "^23.9.5",
 		"prettier": "^3.6.2",
