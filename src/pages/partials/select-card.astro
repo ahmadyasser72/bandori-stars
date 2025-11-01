@@ -30,20 +30,24 @@ const entries = await getCollection("card")
 	)
 	.then((entries) => entries.reverse());
 
-const fuse = new Fuse(entries, {
-	threshold: 0.1,
-	shouldSort: false,
-	keys: [
-		{ name: "character.name", weight: 2 },
-		{ name: "band.name", weight: 1.5 },
-		"name.en",
-		"name.jp",
-		"type",
-		"attribute",
-	],
-});
+const searchWithFuse = (query: string) => {
+	const fuse = new Fuse(entries, {
+		threshold: 0.1,
+		shouldSort: false,
+		keys: [
+			{ name: "character.name", weight: 2 },
+			{ name: "band.name", weight: 1.5 },
+			"name.en",
+			"name.jp",
+			"type",
+			"attribute",
+		],
+	});
 
-const filtered = query ? fuse.search(query).map(({ item }) => item) : entries;
+	return fuse.search(query).map(({ item }) => item);
+};
+
+const filtered = query ? searchWithFuse(query) : entries;
 
 const pageSize = 25;
 const maxPage = Math.ceil(filtered.length / pageSize);
