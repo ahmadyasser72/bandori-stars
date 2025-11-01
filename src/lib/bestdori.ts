@@ -39,7 +39,7 @@ const client = ky.create({
 				await mkdir(BESTDORI_CACHE_DIR).catch(() => {});
 
 				const file = getCachePath(request);
-				if (existsSync(file)) {
+				if (existsSync(file) && !file.includes("all")) {
 					const data = readFileSync(file);
 					return new Response(data);
 				}
