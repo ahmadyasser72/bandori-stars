@@ -69,7 +69,7 @@ const items = filtered.slice(offset, offset + pageSize);
 
 <main class="flex flex-col items-center gap-y-4">
 	<form
-		up-target="#card-list, #next-page"
+		up-target="#card-list, #next-page, #view-full-card"
 		up-autosubmit
 		up-watch-delay="500"
 		up-watch-disable
@@ -98,36 +98,6 @@ const items = filtered.slice(offset, offset + pageSize);
 		</label>
 	</form>
 
-	<template id="card-list-placeholder">
-		<ul class="list w-full">
-			{
-				Array.from({ length: 10 }, () => (
-					<li class="list-row my-0.5 flex gap-2">
-						<div class="skeleton size-12" />
-
-						<div class="flex flex-col gap-2">
-							<div
-								class="skeleton h-4"
-								style={`width: ${randomInt(120, 196)}px;`}
-							/>
-
-							<div class="flex gap-2">
-								<div
-									class="skeleton h-4"
-									style={`width: ${randomInt(96, 128)}px;`}
-								/>
-								<div
-									class="skeleton h-4"
-									style={`width: ${randomInt(64, 96)}px;`}
-								/>
-							</div>
-						</div>
-					</li>
-				))
-			}
-		</ul>
-	</template>
-
 	<ul id="card-list" class="list w-full">
 		{
 			items.length === 0 ? (
@@ -143,9 +113,13 @@ const items = filtered.slice(offset, offset + pageSize);
 					>
 						<div>
 							<a
-								href={`/partials/view-card-image/${id}?trained=${showTrained}`}
 								up-layer="new popup"
 								up-size="grow"
+								up-fragment="#view-full-card"
+								up-use-data={JSON.stringify({
+									id,
+									name: `${character.name} - ${regionValue.unwrap(name)}`,
+								})}
 							>
 								<img
 									class="rounded-box size-12"
@@ -199,4 +173,51 @@ const items = filtered.slice(offset, offset + pageSize);
 			<div id="next-page" />
 		)
 	}
+
+	<template id="card-list-placeholder">
+		<ul class="list w-full">
+			{
+				Array.from({ length: 10 }, () => (
+					<li class="list-row my-0.5 flex gap-2">
+						<div class="skeleton size-12" />
+
+						<div class="flex flex-col gap-2">
+							<div
+								class="skeleton h-4"
+								style={`width: ${randomInt(120, 196)}px;`}
+							/>
+
+							<div class="flex gap-2">
+								<div
+									class="skeleton h-4"
+									style={`width: ${randomInt(96, 128)}px;`}
+								/>
+								<div
+									class="skeleton h-4"
+									style={`width: ${randomInt(64, 96)}px;`}
+								/>
+							</div>
+						</div>
+					</li>
+				))
+			}
+		</ul>
+	</template>
+
+	<template id="view-full-card" type="text/minimustache">
+		<figure class="hover-gallery rounded-box aspect-4/3 w-64 sm:w-lg">
+			{
+				(showTrained ? [true, false] : [false, true]).map((trained) => (
+					<img
+						src={
+							trained
+								? "/static/assets/card/{{id}}/image-trained.webp"
+								: "/static/assets/card/{{id}}/image.webp"
+						}
+						alt={trained ? "Trained " : "" + "{{name}}"}
+					/>
+				))
+			}
+		</figure>
+	</template>
 </main>
