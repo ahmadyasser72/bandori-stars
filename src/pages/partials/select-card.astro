@@ -125,8 +125,8 @@ const items = filtered.slice(offset, offset + pageSize);
 									class="rounded-box size-12"
 									src={
 										showTrained
-											? `/static/assets/card/${id}/icon-trained.webp`
-											: `/static/assets/card/${id}/icon.webp`
+											? `/static/assets/card/${id}_icon-trained.webp`
+											: `/static/assets/card/${id}_icon.webp`
 									}
 									loading="lazy"
 								/>
@@ -211,8 +211,8 @@ const items = filtered.slice(offset, offset + pageSize);
 					<img
 						src={
 							trained
-								? "/static/assets/card/{{id}}/image-trained.webp"
-								: "/static/assets/card/{{id}}/image.webp"
+								? "/static/assets/card/{{id}}_trained.webp"
+								: "/static/assets/card/{{id}}.webp"
 						}
 						alt={trained ? "Trained " : "" + "{{name}}"}
 					/>
