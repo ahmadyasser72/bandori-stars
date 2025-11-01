@@ -8,7 +8,7 @@ const hasNoPreTrained = (type: string) =>
 export const card = async (
 	kind: "icon" | "image",
 	trained: boolean,
-	{ id, data }: CollectionEntry<"card">,
+	{ id, ...data }: CollectionEntry<"card">["data"],
 ) => {
 	const type =
 		trained || hasNoPreTrained(data.type) ? "after_training" : "normal";

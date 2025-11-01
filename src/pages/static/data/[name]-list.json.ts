@@ -1,16 +1,25 @@
-import type { APIRoute, GetStaticPaths } from "astro";
+import type {
+	APIRoute,
+	GetStaticPaths,
+	InferGetStaticParamsType,
+	InferGetStaticPropsType,
+} from "astro";
+import { getCollection } from "astro:content";
 
-import {
-	collectionList,
-	collections,
-	toJsonResponse,
-	type CollectionId,
-} from "~/lib/collection";
+import { collections, toJsonResponse } from "~/lib/collection";
 
 export const prerender = true;
 
-export const GET: APIRoute = ({ params }) =>
-	collectionList(params.name as CollectionId).then(toJsonResponse);
+export const GET: APIRoute<Props, Params> = ({ props }) =>
+	toJsonResponse({ keys: props.keys });
 
-export const getStaticPaths: GetStaticPaths = () =>
-	collections.map((name) => ({ params: { name } }));
+export const getStaticPaths = (() =>
+	Promise.all(
+		collections.map(async (name) => ({
+			params: { name },
+			props: { keys: (await getCollection(name)).map(({ id }) => id) },
+		})),
+	)) satisfies GetStaticPaths;
+
+type Params = InferGetStaticParamsType<typeof getStaticPaths>;
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;

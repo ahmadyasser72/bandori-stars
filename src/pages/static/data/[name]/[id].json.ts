@@ -1,24 +1,23 @@
-import type { APIRoute, GetStaticPaths } from "astro";
-import { getCollection, getEntry } from "astro:content";
+import type {
+	APIRoute,
+	GetStaticPaths,
+	InferGetStaticParamsType,
+	InferGetStaticPropsType,
+} from "astro";
+import { getCollection, getEntry, type CollectionEntry } from "astro:content";
 
 import {
 	collections,
 	createCollectionIsDefined,
 	toJsonResponse,
-	type CollectionId,
 } from "~/lib/collection";
 
 export const prerender = true;
 
-export const GET: APIRoute = async ({ params }) => {
-	if (params.name !== "card") {
-		const entry = await getEntry(params.name as CollectionId, params.id!)!;
-		return toJsonResponse(entry.data);
-	}
+export const GET: APIRoute<Props, Params> = async ({ params, props }) => {
+	if (params.name !== "card") return toJsonResponse(props.data);
 
-	const {
-		data: { gacha, ...card },
-	} = await getEntry(params.name, params.id!)!;
+	const { gacha, ...card } = props.data as CollectionEntry<"card">["data"];
 
 	const isGachaDefined = await createCollectionIsDefined("gacha");
 	const resolveCardRateUp = (region: keyof typeof gacha) =>
@@ -52,11 +51,20 @@ export const GET: APIRoute = async ({ params }) => {
 	});
 };
 
-export const getStaticPaths: GetStaticPaths = () =>
-	Promise.all(
+export const getStaticPaths = (async () => {
+	const collectionEntries = await Promise.all(
 		collections.map((name) =>
-			getCollection(name).then((values) =>
-				values.map(({ data }) => ({ params: { name: name, id: data.id } })),
+			getCollection(name).then((entries) =>
+				entries.map(({ id, data }) => ({
+					params: { name, id },
+					props: { data },
+				})),
 			),
 		),
-	).then((it) => it.flat());
+	);
+
+	return collectionEntries.flat();
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+type Params = InferGetStaticParamsType<typeof getStaticPaths>;

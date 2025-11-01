@@ -1,19 +1,10 @@
-import type { APIRoute, GetStaticPaths } from "astro";
-import { getEntry } from "astro:content";
-
 import { bestdoriAsset } from "~/lib/bestdori";
-import { collectionList } from "~/lib/collection";
+import type { APIRoute } from "./_shared";
 
 export const prerender = true;
+export { getStaticPaths } from "./_shared";
 
-export const GET: APIRoute = async ({ params }) => {
-	const entry = await getEntry("card", params.id!)!;
-
-	const image = await bestdoriAsset.card("image", false, entry);
-	return new Response(image);
-};
-
-export const getStaticPaths: GetStaticPaths = async () =>
-	collectionList("card").then(({ keys }) =>
-		keys.map((id) => ({ params: { id } })),
-	);
+export const GET: APIRoute = ({ props }) =>
+	bestdoriAsset
+		.card("image", false, props.data)
+		.then((data) => new Response(data));
