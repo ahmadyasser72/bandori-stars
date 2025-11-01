@@ -11,6 +11,7 @@ const CACHED_IMAGE_FORMAT = ".webp";
 const MAX_IMAGE_HEIGHT = 600;
 
 export const limit = pLimit(4);
+const cachedResponses = new Set<string>();
 
 export const client = ky.create({
 	prefixUrl: "https://bestdori.com",
@@ -22,7 +23,7 @@ export const client = ky.create({
 	hooks: {
 		afterResponse: [
 			async (request, _options, response) => {
-				if (response.ok) {
+				if (!cachedResponses.has(request.url) && response.ok) {
 					await mkdir(BESTDORI_CACHE_DIR).catch(() => {});
 
 					const file = getCachePath(request);
@@ -66,8 +67,10 @@ export const client = ky.create({
 				const file = getCachePath(request);
 				const fileImage = file + CACHED_IMAGE_FORMAT;
 				if (existsSync(file) && !file.includes("all")) {
+					cachedResponses.add(request.url);
 					return new Response(readFileSync(file));
 				} else if (existsSync(fileImage)) {
+					cachedResponses.add(request.url);
 					return new Response(readFileSync(fileImage));
 				}
 			},
