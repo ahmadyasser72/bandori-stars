@@ -26,11 +26,12 @@ export const client = ky.create({
 					await mkdir(BESTDORI_CACHE_DIR).catch(() => {});
 
 					const file = getCachePath(request);
-					if (existsSync(file)) {
-						const fileSize = statSync(file).size.toString();
-						const responseSize = response.headers.get("content-length");
-						if (fileSize === responseSize) return;
-					}
+					const fileImage = file + CACHED_IMAGE_FORMAT;
+					if (
+						!shouldPutCache(file, response) ||
+						!shouldPutCache(fileImage, response)
+					)
+						return;
 
 					const data = await response.arrayBuffer();
 					const contentType = response.headers.get("content-type");
@@ -43,7 +44,7 @@ export const client = ky.create({
 
 						await image
 							.webp({ quality: 50, preset: "drawing", effort: 6 })
-							.toFile(file + CACHED_IMAGE_FORMAT);
+							.toFile(fileImage);
 					} else {
 						writeFileSync(file, Buffer.from(data));
 					}
@@ -71,4 +72,12 @@ const getCachePath = (request: Request) => {
 	const filename = url.pathname.slice(1).replaceAll("/", "-");
 
 	return path.join(BESTDORI_CACHE_DIR, filename);
+};
+
+const shouldPutCache = (file: string, response: Response) => {
+	if (!existsSync(file)) return true;
+
+	const fileSize = statSync(file).size.toString();
+	const responseSize = response.headers.get("content-length");
+	return fileSize !== responseSize;
 };
