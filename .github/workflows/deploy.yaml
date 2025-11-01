@@ -38,8 +38,16 @@ jobs:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
 
-      - name: Upload bestdori response cache
+      - name: Upload bestdori API responses
         uses: actions/upload-artifact@v4
         with:
-          name: bestdori-${{ github.run_id }}
-          path: bestdori/
+          name: bestdori-${{ github.run_id }}-api
+          path: bestdori/*.json
+
+      - name: Upload bestdori assets responses
+        uses: actions/upload-artifact@v4
+        with:
+          name: bestdori-${{ github.run_id }}-assets
+          path: |
+            bestdori/
+            !bestdori/*.json
