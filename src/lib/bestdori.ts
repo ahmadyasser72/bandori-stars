@@ -26,9 +26,11 @@ const client = ky.create({
 					await mkdir(BESTDORI_CACHE_DIR).catch(() => {});
 
 					const file = getCachePath(request);
-					const data = await response.arrayBuffer();
+					if (!existsSync(file)) {
+						const data = await response.arrayBuffer();
 
-					writeFileSync(file, Buffer.from(data));
+						writeFileSync(file, Buffer.from(data));
+					}
 				}
 			},
 		],
