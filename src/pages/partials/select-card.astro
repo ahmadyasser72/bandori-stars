@@ -135,7 +135,7 @@ const items = filtered.slice(offset, offset + pageSize);
 					<p class="list-col-grow text-center">No cards found.</p>
 				</li>
 			) : (
-				items.map(({ id, name, character, band, attribute, rarity }) => (
+				items.map(({ id, name, character, band, attribute, rarity, type }) => (
 					<li
 						data-attribute={attribute}
 						data-band-id={band.id}
@@ -173,7 +173,8 @@ const items = filtered.slice(offset, offset + pageSize);
 								</span>
 
 								<span class="badge badge-sm color-attribute group-hover:color-attribute-alt border border-white font-medium">
-									{attribute.toUpperCase()} &starf;{rarity}
+									{type.toUpperCase()} &bullet; {attribute.toUpperCase()}{" "}
+									&starf;{rarity}
 								</span>
 							</div>
 						</div>
