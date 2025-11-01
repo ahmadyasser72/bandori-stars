@@ -6,7 +6,7 @@
 		"check": "astro check",
 		"dev": "astro dev",
 		"build": "astro build",
-		"deploy": "netlify deploy --prod",
+		"deploy": "netlify deploy --dir dist --prod --no-build",
 		"astro": "astro",
 		"format": "prettier . --write"
 	},
