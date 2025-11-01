@@ -33,20 +33,28 @@ export const client = ky.create({
 					)
 						return;
 
-					const data = await response.arrayBuffer();
+					const buffer = await response.arrayBuffer();
 					const contentType = response.headers.get("content-type");
 
-					if (contentType?.startsWith("image/")) {
-						const image = sharp(data);
+					if (contentType && contentType.startsWith("image/")) {
+						const image = sharp(buffer);
 						const metadata = await image.metadata();
 						if (metadata.height > MAX_IMAGE_HEIGHT)
 							image.resize({ height: MAX_IMAGE_HEIGHT });
 
-						await image
+						const compressedImage = await image
 							.webp({ quality: 50, preset: "drawing", effort: 6 })
-							.toFile(fileImage);
+							.toBuffer();
+						writeFileSync(fileImage, compressedImage);
+
+						return new Response(compressedImage, {
+							headers: {
+								"content-type": "image/webp",
+								"content-length": compressedImage.byteLength.toString(),
+							},
+						});
 					} else {
-						writeFileSync(file, Buffer.from(data));
+						writeFileSync(file, Buffer.from(buffer));
 					}
 				}
 			},
