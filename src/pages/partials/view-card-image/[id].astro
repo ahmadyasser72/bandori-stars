@@ -17,11 +17,11 @@ const character = regionValue.unwrap(
 const trained = Astro.url.searchParams.get("trained") === "true";
 const images = [
 	{
-		src: `/static/assets/card/${id}/image.png`,
+		src: `/static/assets/card/${id}/image.webp`,
 		alt: `${character} - ${name}`,
 	},
 	{
-		src: `/static/assets/card/${id}/image-trained.png`,
+		src: `/static/assets/card/${id}/image-trained.webp`,
 		alt: `Trained ${character} - ${name}`,
 	},
 ];

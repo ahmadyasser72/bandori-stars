@@ -26,9 +26,9 @@ jobs:
         with:
           path: |
             bestdori
-          key: bestdori-${{ github.run_id }}-${{ github.run_attempt }}
+          key: bestdori-${{ hashFiles('src/lib/bestdori/client.ts') }}-${{ github.run_id }}
           restore-keys: |
-            bestdori-
+            bestdori-${{ hashFiles('src/lib/bestdori/client.ts') }}-
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
