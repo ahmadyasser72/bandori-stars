@@ -1,10 +1,14 @@
 {
 	"extends": "astro/tsconfigs/strict",
-	"include": [".astro/types.d.ts", "**/*"],
+	"include": [".astro/types.d.ts", ".contents/data.ts", "**/*"],
 	"exclude": ["dist"],
 	"compilerOptions": {
 		"baseUrl": ".",
-		"paths": { "~/*": ["./src/*"] },
+		"paths": {
+			"~/*": ["./src/*"],
+			"@/scripts/*": ["./scripts/*"],
+			"@/contents/*": ["./.contents/*"]
+		},
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"types": ["@types/node"]

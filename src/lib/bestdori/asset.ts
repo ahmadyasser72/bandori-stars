@@ -1,4 +1,4 @@
-import type { CollectionEntry } from "astro:content";
+import type { Entry } from "@/contents/data";
 
 import { client, limit } from "./client";
 
@@ -8,7 +8,7 @@ const hasNoPreTrained = (type: string) =>
 export const card = async (
 	kind: "icon" | "image",
 	trained: boolean,
-	{ id, ...data }: CollectionEntry<"card">["data"],
+	{ id, ...data }: Entry<"card_list">,
 ) => {
 	const type =
 		trained || hasNoPreTrained(data.type) ? "after_training" : "normal";

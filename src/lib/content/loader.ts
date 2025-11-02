@@ -1,16 +1,18 @@
 import { bestdori } from "~/lib/bestdori";
 import * as Bandori from "~/lib/schema";
-import { parser } from ".";
+import { parser, schema } from ".";
 
 export const band = async () => {
 	const bands = await bestdori<Bandori.Bands>("api/bands/main.1.json");
 
-	return Promise.all(
+	const entries = await Promise.all(
 		Object.entries(bands).map(([id, { bandName }]) => ({
 			id,
 			name: parser.regionTuple(bandName),
 		})),
 	);
+
+	return entries.map((entry) => schema.band.parse(entry));
 };
 
 export const character = async () => {
@@ -18,20 +20,22 @@ export const character = async () => {
 		"api/characters/main.3.json",
 	);
 
-	return Promise.all(
+	const entries = await Promise.all(
 		Object.entries(characters).map(([id, { characterName, bandId }]) => ({
 			id,
 			band: bandId.toString(),
 			name: parser.regionTuple(characterName),
 		})),
 	);
+
+	return entries.map((entry) => schema.character.parse(entry));
 };
 
 export const card = async () => {
 	const cardList = await bestdori<Bandori.CardList>("api/cards/all.5.json");
 
 	const gacha = ["permanent", "limited", "dreamfes", "birthday", "kirafes"];
-	const results = await Promise.all(
+	const entries = await Promise.all(
 		Object.entries(cardList)
 			.filter(
 				([, { rarity, type }]) => Number(rarity) >= 4 && gacha.includes(type),
@@ -64,13 +68,15 @@ export const card = async () => {
 			}),
 	);
 
-	return results.filter(({ name }) => name.jp !== null);
+	return entries
+		.filter(({ name }) => name.jp !== null)
+		.map((entry) => schema.card.parse(entry));
 };
 
 export const event = async () => {
 	const eventList = await bestdori<Bandori.EventList>("api/events/all.5.json");
 
-	const results = await Promise.all(
+	const entries = await Promise.all(
 		Object.entries(eventList)
 			.filter(([, { startAt }]) => isUpcomingOnEn(startAt))
 			.map(async ([id]) => {
@@ -107,14 +113,16 @@ export const event = async () => {
 			}),
 	);
 
-	return results.filter(({ name }) => name.jp !== null);
+	return entries
+		.filter(({ name }) => name.jp !== null)
+		.map((entry) => schema.event.parse(entry));
 };
 
 export const gacha = async () => {
 	const gachaList = await bestdori<Bandori.GachaList>("api/gacha/all.5.json");
 
 	const f2p = ["permanent", "limited", "dreamfes", "birthday", "kirafes"];
-	const results = await Promise.all(
+	const entries = await Promise.all(
 		Object.entries(gachaList)
 			.filter(
 				([_, { type, publishedAt }]) =>
@@ -137,7 +145,9 @@ export const gacha = async () => {
 			}),
 	);
 
-	return results.filter(({ name }) => name.jp !== null);
+	return entries
+		.filter(({ name }) => name.jp !== null)
+		.map((entry) => schema.gacha.parse(entry));
 };
 
 const isUpcomingOnEn = ([jp, en]: Bandori.RegionTuple<string>) =>

@@ -4,13 +4,14 @@ import type {
 	InferGetStaticParamsType,
 	InferGetStaticPropsType,
 } from "astro";
-import { getCollection } from "astro:content";
 
-export const getStaticPaths = (async () => {
-	const entries = await getCollection("card");
+import { card_list } from "@/contents/data";
 
-	return entries.map(({ id, data }) => ({ params: { id }, props: { data } }));
-}) satisfies GetStaticPaths;
+export const getStaticPaths = (() =>
+	card_list
+		.values()
+		.map((data) => ({ params: { id: data.id }, props: { data } }))
+		.toArray()) satisfies GetStaticPaths;
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 type Params = InferGetStaticParamsType<typeof getStaticPaths>;

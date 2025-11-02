@@ -14,7 +14,16 @@ const config = {
 		"@ianvs/prettier-plugin-sort-imports",
 	],
 	overrides: [{ files: "*.astro", options: { parser: "astro" } }],
-	importOrder: ["^astro", "", "<THIRD_PARTY_MODULES>", "", "^~/(.*)$", "^[./]"],
+	importOrder: [
+		"^astro",
+		"",
+		"<THIRD_PARTY_MODULES>",
+		"",
+		"^@/(contents|scripts)/",
+		"",
+		"^~/(.*)$",
+		"^[./]",
+	],
 };
 
 export default config;

@@ -1,33 +1,15 @@
 ---
 import { Icon } from "astro-icon/components";
-import { getCollection, getEntry } from "astro:content";
 
 import Fuse from "fuse.js";
 
-import type { BandId } from "~/lib/schema/band";
+import { card_list } from "@/contents/data";
+
 import { randomInt, regionValue } from "~/lib/utilities";
 
 export const partial = true;
 
-const entries = await getCollection("card")
-	.then((entries) =>
-		Promise.all(
-			entries.map(async ({ data: { character: characterId, ...entry } }) => {
-				const character = (await getEntry(characterId)).data;
-				const band = (await getEntry(character.band)).data;
-
-				return {
-					band: { id: band.id as BandId, name: regionValue.unwrap(band.name) },
-					character: {
-						id: character.id,
-						name: regionValue.unwrap(character.name),
-					},
-					...entry,
-				};
-			}),
-		),
-	)
-	.then((entries) => entries.reverse());
+const entries = card_list.values().toArray().reverse();
 
 const searchWithFuse = (query: string) => {
 	const fuse = new Fuse(entries, {

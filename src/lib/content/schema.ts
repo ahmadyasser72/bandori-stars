@@ -1,5 +1,4 @@
-import { reference } from "astro:content";
-import { z, type ZodTypeAny } from "astro:schema";
+import { z, ZodType } from "zod";
 
 import constants from "./constants";
 
@@ -10,21 +9,21 @@ export const types = {
 	event: z.enum(constants.eventTypes),
 };
 
-export const createMultiRegion = <T extends ZodTypeAny>(schema: T) =>
+export const createMultiRegion = <T extends ZodType>(schema: T) =>
 	z.object({ jp: schema, en: schema.nullable() });
 
 export const id = z.string().nonempty();
 export const name = createMultiRegion(z.string().nonempty());
 
-export const loader = {
+export const schema = {
 	band: z.strictObject({ id, name }),
-	character: z.strictObject({ id, name, band: reference("band") }),
+	character: z.strictObject({ id, name, band: id }),
 
 	card: z.strictObject({
 		id,
 		resourceId: id,
 		name,
-		character: reference("character"),
+		character: id,
 		rarity: z.number().min(2).max(5),
 		type: types.card,
 		attribute: types.attribute,
@@ -37,7 +36,7 @@ export const loader = {
 		name,
 		type: types.event,
 		attribute: types.attribute,
-		characters: z.array(reference("character")),
+		characters: z.array(id),
 		startAt: createMultiRegion(z.date()),
 		endAt: createMultiRegion(z.date()),
 		pointRewards: createMultiRegion(
@@ -68,7 +67,7 @@ export const loader = {
 		rateUp: createMultiRegion(
 			z.array(
 				z.strictObject({
-					cardId: id,
+					card: id,
 					rarity: z.number().nonnegative(),
 					rate: z.number().nonnegative(),
 				}),
@@ -76,3 +75,5 @@ export const loader = {
 		),
 	}),
 };
+
+export type Schema<K extends keyof typeof schema> = z.infer<(typeof schema)[K]>;

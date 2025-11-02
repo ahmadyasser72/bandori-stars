@@ -5,7 +5,7 @@
 	"scripts": {
 		"check": "astro check",
 		"dev": "astro dev",
-		"build": "astro build",
+		"build": "bun scripts/generate-content.ts && astro build",
 		"deploy": "netlify deploy --dir dist --prod --no-build",
 		"astro": "astro",
 		"format": "prettier . --write"
@@ -28,10 +28,12 @@
 		"@ianvs/prettier-plugin-sort-imports": "^4.7.0",
 		"@iconify-json/lucide": "^1.2.71",
 		"@types/node": "^24.9.2",
+		"devalue": "^5.4.2",
 		"netlify-cli": "^23.9.5",
 		"prettier": "^3.6.2",
 		"prettier-plugin-astro": "^0.14.1",
 		"prettier-plugin-tailwindcss": "^0.7.1",
-		"typescript": "^5.9.3"
+		"typescript": "^5.9.3",
+		"zod": "^4.1.12"
 	}
 }

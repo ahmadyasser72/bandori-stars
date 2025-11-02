@@ -67,15 +67,15 @@ export const gacha = {
 				details
 					? Object.entries(details)
 							.filter(([, { pickup }]) => pickup)
-							.map(([cardId, { rarityIndex: rarity, weight }]) => {
+							.map(([card, { rarityIndex: rarity, weight }]) => {
 								const { rate, weightTotal } = ratesTuple[tupleId]![rarity];
 								return {
-									cardId,
+									card,
 									rarity,
 									rate: (weight / weightTotal) * rate,
 								};
 							})
 					: null,
-			) as RegionTuple<{ cardId: string; rarity: number; rate: number }>,
+			) as RegionTuple<{ card: string; rarity: number; rate: number }>,
 		),
 };
