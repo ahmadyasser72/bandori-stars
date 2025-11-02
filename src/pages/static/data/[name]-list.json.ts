@@ -15,7 +15,7 @@ export const GET: APIRoute<Props, Params> = ({ props }) =>
 	toJsonResponse({ keys: props.keys });
 
 export const getStaticPaths = (() =>
-	Object.entries(data).flatMap(([key, data]) => ({
+	Object.entries(data).map(([key, data]) => ({
 		params: { name: key.split("_")[0] },
 		props: { keys: [...data.keys()] },
 	}))) satisfies GetStaticPaths;

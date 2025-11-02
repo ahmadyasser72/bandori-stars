@@ -15,10 +15,12 @@ export const GET: APIRoute<Props, Params> = async ({ props }) =>
 	toJsonResponse(props.data);
 
 export const getStaticPaths = (() =>
-	Object.entries(data).flatMap(([key, data]) => ({
-		params: { id: key.split("_")[0] },
-		props: { data },
-	}))) satisfies GetStaticPaths;
+	Object.entries(data).flatMap(([key, data]) =>
+		[...data.keys()].map((id) => ({
+			params: { name: key.split("_")[0], id },
+			props: { data },
+		})),
+	)) satisfies GetStaticPaths;
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 type Params = InferGetStaticParamsType<typeof getStaticPaths>;
