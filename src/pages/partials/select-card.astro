@@ -1,52 +1,36 @@
 ---
 import { Icon } from "astro-icon/components";
 
-import Fuse from "fuse.js";
-
 import { card_list } from "@/contents/data";
 
 import { randomInt, regionValue } from "~/lib/utilities";
 
 export const partial = true;
 
-const entries = [...card_list.values()].reverse();
+const pageSize = 25;
+const pageQuery = Number(Astro.url.searchParams.get("page") ?? NaN);
+const currentPage = Math.max(1, Number.isNaN(pageQuery) ? 1 : pageQuery);
+const offset = pageSize * (currentPage - 1);
 
-const searchWithFuse = (query: string) => {
-	const fuse = new Fuse(entries, {
-		threshold: 0.1,
-		shouldSort: false,
-		keys: [
-			{ name: "character.name", weight: 2 },
-			{ name: "band.name", weight: 1.5 },
-			"name.en",
-			"name.jp",
-			"type",
-			"attribute",
-		],
-	});
+const nextPage = new URL(Astro.url);
+nextPage.searchParams.set("page", `${currentPage + 1}`);
 
-	return fuse.search(query).map(({ item }) => item);
+const search = async (query: string) => {
+	const { index } = await import("~/lib/search/card");
+
+	return index
+		.search({ query, limit: pageSize, offset, merge: true, suggest: true })
+		.map(({ id }) => id.toString());
 };
 
 const query = Astro.url.searchParams.get("query")?.toLowerCase();
 const showTrained = Astro.url.searchParams.get("showTrained") === "true";
 
-const filtered = query ? searchWithFuse(query) : entries;
-
-const pageSize = 25;
-const maxPage = Math.ceil(filtered.length / pageSize);
-
-const pageQuery = Number(Astro.url.searchParams.get("page") ?? NaN);
-const currentPage = Math.max(
-	1,
-	Math.min(maxPage, Number.isNaN(pageQuery) ? 1 : pageQuery),
-);
-
-const nextPage = new URL(Astro.url);
-nextPage.searchParams.set("page", `${currentPage + 1}`);
-
-const offset = pageSize * (currentPage - 1);
-const items = filtered.slice(offset, offset + pageSize);
+const items = (
+	query
+		? await search(query)
+		: [...card_list.keys()].reverse().slice(offset, offset + pageSize)
+).map((id) => card_list.get(id)!);
 ---
 
 <main class="flex flex-col items-center gap-y-4">
@@ -82,66 +66,60 @@ const items = filtered.slice(offset, offset + pageSize);
 
 	<ul id="card-list" class="list w-full">
 		{
-			items.length === 0 ? (
-				<li class="list-row">
-					<p class="list-col-grow text-center">No cards found.</p>
+			items.map(({ id, name, character, band, attribute, rarity, type }) => (
+				<li
+					data-attribute={attribute}
+					data-band-id={band.id}
+					class="group list-row hover:color-band select-none"
+				>
+					<div>
+						<a
+							up-layer="new popup"
+							up-size="grow"
+							up-fragment="#view-full-card"
+							up-use-data={JSON.stringify({
+								id,
+								name: `${character.name} - ${regionValue.unwrap(name)}`,
+							})}
+						>
+							<img
+								class="rounded-box size-12"
+								src={
+									showTrained
+										? `/static/assets/card/${id}_icon-trained.webp`
+										: `/static/assets/card/${id}_icon.webp`
+								}
+								loading="lazy"
+							/>
+						</a>
+					</div>
+
+					<div class="flex flex-col items-start gap-1">
+						<button
+							up-accept={`{ id: "${id}" }`}
+							class="cursor-pointer text-sm font-semibold group-hover:font-medium group-hover:underline"
+						>
+							{regionValue.unwrap(name)}
+						</button>
+
+						<div class="inline-flex flex-wrap gap-1">
+							<span class="badge badge-sm color-band group-hover:color-band-alt line-clamp-1 border border-current font-medium">
+								{band.name} &bullet; {character.name}
+							</span>
+
+							<span class="badge badge-sm color-attribute group-hover:color-attribute-alt border border-white font-medium">
+								{type.toUpperCase()} &bullet; {attribute.toUpperCase()} &starf;
+								{rarity}
+							</span>
+						</div>
+					</div>
 				</li>
-			) : (
-				items.map(({ id, name, character, band, attribute, rarity, type }) => (
-					<li
-						data-attribute={attribute}
-						data-band-id={band.id}
-						class="group list-row hover:color-band select-none"
-					>
-						<div>
-							<a
-								up-layer="new popup"
-								up-size="grow"
-								up-fragment="#view-full-card"
-								up-use-data={JSON.stringify({
-									id,
-									name: `${character.name} - ${regionValue.unwrap(name)}`,
-								})}
-							>
-								<img
-									class="rounded-box size-12"
-									src={
-										showTrained
-											? `/static/assets/card/${id}_icon-trained.webp`
-											: `/static/assets/card/${id}_icon.webp`
-									}
-									loading="lazy"
-								/>
-							</a>
-						</div>
-
-						<div class="flex flex-col items-start gap-1">
-							<button
-								up-accept={`{ id: "${id}" }`}
-								class="cursor-pointer text-sm font-semibold group-hover:font-medium group-hover:underline"
-							>
-								{regionValue.unwrap(name)}
-							</button>
-
-							<div class="inline-flex flex-wrap gap-1">
-								<span class="badge badge-sm color-band group-hover:color-band-alt line-clamp-1 border border-current font-medium">
-									{band.name} &bullet; {character.name}
-								</span>
-
-								<span class="badge badge-sm color-attribute group-hover:color-attribute-alt border border-white font-medium">
-									{type.toUpperCase()} &bullet; {attribute.toUpperCase()}{" "}
-									&starf;{rarity}
-								</span>
-							</div>
-						</div>
-					</li>
-				))
-			)
+			))
 		}
 	</ul>
 
 	{
-		currentPage < maxPage ? (
+		items.length === pageSize ? (
 			<a
 				id="next-page"
 				href={nextPage.href}
@@ -152,7 +130,11 @@ const items = filtered.slice(offset, offset + pageSize);
 				Next page
 			</a>
 		) : (
-			<div id="next-page" />
+			<div id="next-page" class="text-base-content/50 text-sm font-semibold">
+				{items.length === 0 && currentPage === 1
+					? "No cards found."
+					: currentPage > 1 && "No more cards."}
+			</div>
 		)
 	}
 
