@@ -10,6 +10,7 @@ export default defineConfig({
 	output: "server",
 	adapter: netlify(),
 	integrations: [icon()],
+	build: { concurrency: 4 },
 
 	vite: {
 		plugins: [tailwindcss()],
