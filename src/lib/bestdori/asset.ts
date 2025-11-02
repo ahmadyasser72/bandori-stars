@@ -2,20 +2,19 @@ import type { Entry } from "@/contents/data";
 
 import { client, limit } from "./client";
 
-const hasNoPreTrained = (type: string) =>
-	["kirafes", "birthday"].includes(type);
+const hasNoPreTrained = ({ name, type }: Entry<"card_list">) =>
+	name.en === "Graduation" || ["kirafes", "birthday"].includes(type);
 
 export const card = async (
 	kind: "icon" | "image",
 	trained: boolean,
-	{ id, ...data }: Entry<"card_list">,
+	data: Entry<"card_list">,
 ) => {
-	const type =
-		trained || hasNoPreTrained(data.type) ? "after_training" : "normal";
+	const type = trained || hasNoPreTrained(data) ? "after_training" : "normal";
 
 	switch (kind) {
 		case "icon": {
-			const chunkId = Math.floor(Number(id) / 50)
+			const chunkId = Math.floor(Number(data.id) / 50)
 				.toString()
 				.padStart(5, "0");
 
