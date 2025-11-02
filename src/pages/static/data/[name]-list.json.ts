@@ -17,7 +17,7 @@ export const GET: APIRoute<Props, Params> = ({ props }) =>
 export const getStaticPaths = (() =>
 	Object.entries(data).flatMap(([key, data]) => ({
 		params: { id: key.split("_")[0] },
-		props: { keys: data.keys().toArray() },
+		props: { keys: [...data.keys()] },
 	}))) satisfies GetStaticPaths;
 
 type Params = InferGetStaticParamsType<typeof getStaticPaths>;

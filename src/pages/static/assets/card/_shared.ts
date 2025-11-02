@@ -8,10 +8,10 @@ import type {
 import { card_list } from "@/contents/data";
 
 export const getStaticPaths = (() =>
-	card_list
-		.values()
-		.map((data) => ({ params: { id: data.id }, props: { data } }))
-		.toArray()) satisfies GetStaticPaths;
+	[...card_list.values()].map((data) => ({
+		params: { id: data.id },
+		props: { data },
+	}))) satisfies GetStaticPaths;
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 type Params = InferGetStaticParamsType<typeof getStaticPaths>;

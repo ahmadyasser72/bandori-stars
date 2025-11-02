@@ -9,7 +9,7 @@ import { randomInt, regionValue } from "~/lib/utilities";
 
 export const partial = true;
 
-const entries = card_list.values().toArray().reverse();
+const entries = [...card_list.values()].reverse();
 
 const searchWithFuse = (query: string) => {
 	const fuse = new Fuse(entries, {
