@@ -3,7 +3,7 @@ import { Icon } from "astro-icon/components";
 
 import { card_list, character_list } from "@/contents/data";
 
-import { createIndex } from "~/lib/search/card";
+import { createIndex, filterList } from "~/lib/search/card";
 import { randomInt, regionValue } from "~/lib/utilities";
 
 export const partial = true;
@@ -17,32 +17,52 @@ const nextPage = new URL(Astro.url);
 nextPage.searchParams.set("page", `${currentPage + 1}`);
 
 const query = Astro.url.searchParams.get("query")?.toLowerCase();
+const tags = filterList
+	.map(({ props, getValue }) => ({
+		name: props.name,
+		value: Astro.url.searchParams.get(props.name),
+		getValue,
+	}))
+	.filter(({ value }) => value);
+const tagValue = Object.fromEntries(
+	tags.map(({ name, value }) => [name, value!]),
+);
+
 const oldestFirst = Astro.url.searchParams.get("oldest_first") === "true";
 const showTrained = Astro.url.searchParams.get("show_trained") === "true";
 
 const items = (() => {
 	if (query) {
 		return createIndex(oldestFirst)
-			.search({ query, limit: pageSize, offset, merge: true, suggest: true })
-			.map(({ id }) => card_list.get(id.toString())!);
+			.search({ query, suggest: true })
+			.flatMap((entries) => entries.result.map((id) => id.toString()));
 	}
 
 	const keys = [...card_list.keys()];
-	if (!oldestFirst) keys.reverse();
-	return keys.slice(offset, offset + pageSize).map((id) => card_list.get(id)!);
-})();
+	return oldestFirst ? keys : keys.reverse();
+})().map((id) => card_list.get(id)!);
+
+const filtered = tags
+	.reduce(
+		(acc, { value, getValue }) =>
+			acc.filter((entry) => getValue(entry) === value),
+		items,
+	)
+	.slice(offset, offset + pageSize);
 ---
 
 <main class="flex flex-col items-center gap-y-4">
 	<form
-		up-target="#card-list, #next-page, #view-full-card"
+		up-target="#card-list, #next-page, #filter-list"
 		up-autosubmit
 		up-watch-delay="500"
 		up-watch-disable
 		up-watch-placeholder="#card-list-placeholder"
-		class="flex w-full gap-4 px-4 pt-2"
+		class="join w-full px-4 pt-2"
 	>
-		<label class="input flex-1">
+		<input type="hidden" name="page" value="1" />
+
+		<label class="input join-item flex-1">
 			<Icon name="lucide:search" />
 			<input
 				type="search"
@@ -61,8 +81,58 @@ const items = (() => {
 			</datalist>
 		</label>
 
+		<div>
+			{filterList.map(({ props: { name } }) => <input type="hidden" {name} />)}
+
+			<a
+				up-layer="new"
+				up-fragment="#filter-list"
+				up-on-accepted="applyFormValueToSiblings(this, value); up.submit(this)"
+				class="btn btn-square join-item"
+			>
+				<Icon name="lucide:filter" />
+
+				<template id="filter-list">
+					<form up-accept class="mx-0.5 flex flex-col gap-1 py-4">
+						{
+							filterList.map(
+								({ label, options, props: { class: className, ...props } }) => (
+									<fieldset class="fieldset bg-base-200 border-base-300 rounded-box p-2 pt-1 text-sm">
+										<legend class="fieldset-legend">{label}</legend>
+										<div class="filter">
+											<input
+												class="btn btn-sm filter-reset"
+												type="radio"
+												name={props.name}
+												aria-label="all"
+												value="false"
+											/>
+
+											{options.map((option) => (
+												<input
+													type="radio"
+													{...props}
+													class:list={["btn btn-sm", className]}
+													{...option}
+													checked={tagValue[props.name] === option.value}
+												/>
+											))}
+										</div>
+									</fieldset>
+								),
+							)
+						}
+
+						<button class="btn btn-sm btn-primary mt-2 w-full"
+							>Apply filter</button
+						>
+					</form>
+				</template>
+			</a>
+		</div>
+
 		<div class="dropdown dropdown-end">
-			<div tabindex="0" role="button" class="btn btn-circle">
+			<div tabindex="0" role="button" class="btn btn-square join-item">
 				<Icon name="lucide:ellipsis-vertical" />
 			</div>
 			<div
@@ -96,7 +166,7 @@ const items = (() => {
 
 	<ul id="card-list" class="list w-full">
 		{
-			items.map(({ id, name, character, band, attribute, rarity, type }) => (
+			filtered.map(({ id, name, character, band, attribute, rarity, type }) => (
 				<li
 					data-attribute={attribute}
 					data-band-id={band.id}
@@ -121,6 +191,32 @@ const items = (() => {
 								}
 								loading="lazy"
 							/>
+
+							<template id="view-full-card" type="text/minimustache">
+								<div class="tabs tabs-lift w-64 sm:w-lg">
+									{[false, true].map((trained) => (
+										<>
+											<input
+												type="radio"
+												name="card_image"
+												class="tab"
+												aria-label={trained ? "Trained" : "Normal"}
+												checked={showTrained ? trained : !trained}
+											/>
+											<div class="tab-content border-base-300 bg-base-100 aspect-4/3 w-64 px-4 py-2 sm:w-lg">
+												<img
+													src={
+														trained
+															? "/static/assets/card/{{id}}_trained.webp"
+															: "/static/assets/card/{{id}}.webp"
+													}
+													alt={trained ? "Trained " : "" + "{{name}}"}
+												/>
+											</div>
+										</>
+									))}
+								</div>
+							</template>
 						</a>
 					</div>
 
@@ -147,27 +243,6 @@ const items = (() => {
 			))
 		}
 	</ul>
-
-	{
-		items.length === pageSize ? (
-			<a
-				id="next-page"
-				href={nextPage.href}
-				up-defer="reveal"
-				up-target="#next-page, #card-list:after"
-				class="btn btn-wide"
-			>
-				Next page
-			</a>
-		) : (
-			<div id="next-page" class="text-base-content/50 text-sm font-semibold">
-				{items.length === 0 && currentPage === 1
-					? "No cards found."
-					: currentPage > 1 && "No more cards."}
-			</div>
-		)
-	}
-
 	<template id="card-list-placeholder">
 		<ul class="list w-full">
 			{
@@ -198,31 +273,23 @@ const items = (() => {
 		</ul>
 	</template>
 
-	<template id="view-full-card" type="text/minimustache">
-		<div class="tabs tabs-lift w-64 sm:w-lg">
-			{
-				[false, true].map((trained) => (
-					<>
-						<input
-							type="radio"
-							name="card_image"
-							class="tab"
-							aria-label={trained ? "Trained" : "Normal"}
-							checked={showTrained ? trained : !trained}
-						/>
-						<div class="tab-content border-base-300 bg-base-100 aspect-4/3 w-64 px-4 py-2 sm:w-lg">
-							<img
-								src={
-									trained
-										? "/static/assets/card/{{id}}_trained.webp"
-										: "/static/assets/card/{{id}}.webp"
-								}
-								alt={trained ? "Trained " : "" + "{{name}}"}
-							/>
-						</div>
-					</>
-				))
-			}
-		</div>
-	</template>
+	{
+		filtered.length === pageSize ? (
+			<a
+				id="next-page"
+				href={nextPage.href}
+				up-defer="reveal"
+				up-target="#next-page, #card-list:after"
+				class="btn btn-wide"
+			>
+				Next page
+			</a>
+		) : (
+			<div id="next-page" class="text-base-content/50 text-sm font-semibold">
+				{filtered.length === 0 && currentPage === 1
+					? "No cards found."
+					: currentPage > 1 && "No more cards."}
+			</div>
+		)
+	}
 </main>

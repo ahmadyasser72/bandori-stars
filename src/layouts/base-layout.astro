@@ -20,6 +20,10 @@ import "~/styles/global.css";
 
 <script>
 	import "unpoly/unpoly.js";
+
+	import { applyFormValueToSiblings } from "~/lib/unpoly";
+
+	window.applyFormValueToSiblings = applyFormValueToSiblings;
 </script>
 
 <script is:inline>
