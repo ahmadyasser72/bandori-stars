@@ -15,6 +15,12 @@ export const config: DocumentOptions<CardEntry> = {
 	},
 };
 
-export const index = new Document(config);
-for (const [id, data] of [...card_list.entries()].reverse())
-	index.add(Number(id), data);
+export const createIndex = (oldestFirst: boolean) => {
+	const index = new Document(config);
+	const entries = [...card_list.entries()];
+	if (!oldestFirst) entries.reverse();
+
+	for (const [id, data] of entries) index.add(Number(id), data);
+
+	return index;
+};

@@ -3,6 +3,7 @@ import { Icon } from "astro-icon/components";
 
 import { card_list } from "@/contents/data";
 
+import { createIndex } from "~/lib/search/card";
 import { randomInt, regionValue } from "~/lib/utilities";
 
 export const partial = true;
@@ -15,22 +16,21 @@ const offset = pageSize * (currentPage - 1);
 const nextPage = new URL(Astro.url);
 nextPage.searchParams.set("page", `${currentPage + 1}`);
 
-const search = async (query: string) => {
-	const { index } = await import("~/lib/search/card");
-
-	return index
-		.search({ query, limit: pageSize, offset, merge: true, suggest: true })
-		.map(({ id }) => id.toString());
-};
-
 const query = Astro.url.searchParams.get("query")?.toLowerCase();
-const showTrained = Astro.url.searchParams.get("showTrained") === "true";
+const oldestFirst = Astro.url.searchParams.get("oldest_first") === "true";
+const showTrained = Astro.url.searchParams.get("show_trained") === "true";
 
-const items = (
-	query
-		? await search(query)
-		: [...card_list.keys()].reverse().slice(offset, offset + pageSize)
-).map((id) => card_list.get(id)!);
+const items = (() => {
+	if (query) {
+		return createIndex(oldestFirst)
+			.search({ query, limit: pageSize, offset, merge: true, suggest: true })
+			.map(({ id }) => card_list.get(id.toString())!);
+	}
+
+	const keys = [...card_list.keys()];
+	if (!oldestFirst) keys.reverse();
+	return keys.slice(offset, offset + pageSize).map((id) => card_list.get(id)!);
+})();
 ---
 
 <main class="flex flex-col items-center gap-y-4">
@@ -40,9 +40,9 @@ const items = (
 		up-watch-delay="500"
 		up-watch-disable
 		up-watch-placeholder="#card-list-placeholder"
-		class="flex w-full gap-4 px-4 pt-2 max-sm:flex-col"
+		class="flex w-full gap-4 px-4 pt-2"
 	>
-		<label class="input sm:flex-1">
+		<label class="input flex-1">
 			<Icon name="lucide:search" />
 			<input
 				type="search"
@@ -52,16 +52,37 @@ const items = (
 			/>
 		</label>
 
-		<label class="label">
-			<input
-				up-watch-delay="0"
-				type="checkbox"
-				class="checkbox checkbox-sm"
-				name="showTrained"
-				value="true"
-			/>
-			Show trained
-		</label>
+		<div class="dropdown dropdown-end">
+			<div tabindex="0" role="button" class="btn btn-circle">
+				<Icon name="lucide:ellipsis-vertical" />
+			</div>
+			<div
+				tabindex="-1"
+				class="dropdown-content bg-base-100 rounded-box z-1 mt-2 p-4 pb-3 shadow-sm"
+			>
+				<label class="label text-sm">
+					<input
+						up-watch-delay="0"
+						type="checkbox"
+						class="checkbox checkbox-sm"
+						name="show_trained"
+						value="true"
+					/>
+					Show trained
+				</label>
+
+				<label class="label text-sm">
+					<input
+						up-watch-delay="0"
+						type="checkbox"
+						class="checkbox checkbox-sm"
+						name="oldest_first"
+						value="true"
+					/>
+					Oldest first
+				</label>
+			</div>
+		</div>
 	</form>
 
 	<ul id="card-list" class="list w-full">
