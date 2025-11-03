@@ -1,7 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 
-import { card_list } from "@/contents/data";
+import { card_list, character_list } from "@/contents/data";
 
 import { createIndex } from "~/lib/search/card";
 import { randomInt, regionValue } from "~/lib/utilities";
@@ -48,8 +48,17 @@ const items = (() => {
 				type="search"
 				name="query"
 				placeholder="Search cards..."
+				list="all_characters"
 				autofocus
 			/>
+
+			<datalist id="all_characters">
+				{
+					[...character_list.values()].map(({ name }) => (
+						<option value={regionValue.unwrap(name)} />
+					))
+				}
+			</datalist>
 		</label>
 
 		<div class="dropdown dropdown-end">
