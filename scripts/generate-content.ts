@@ -35,25 +35,23 @@ const cardList = await timed(
 	loader
 		.card()
 		.then((entries) =>
-			entries
-				.map(({ character: characterId, ...entry }) => {
-					const character = characterList.get(characterId)!;
-					const band = bandList.get(character.band)!;
+			entries.map(({ character: characterId, ...entry }) => {
+				const character = characterList.get(characterId)!;
+				const band = bandList.get(character.band)!;
 
-					return {
-						band: { id: band.id, name: regionValue.unwrap(band.name) },
-						character: {
-							id: character.id,
-							name: regionValue.unwrap(character.name),
-						},
-						rateUp: {
-							jp: getCardRateUp("jp", entry)!,
-							en: getCardRateUp("en", entry),
-						},
-						...entry,
-					};
-				})
-				.filter(({ rateUp }) => rateUp.jp !== null || rateUp.en !== null),
+				return {
+					band: { id: band.id, name: regionValue.unwrap(band.name) },
+					character: {
+						id: character.id,
+						name: regionValue.unwrap(character.name),
+					},
+					rateUp: {
+						jp: getCardRateUp("jp", entry),
+						en: getCardRateUp("en", entry),
+					},
+					...entry,
+				};
+			}),
 		)
 		.then(toMap),
 );

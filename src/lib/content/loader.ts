@@ -151,4 +151,4 @@ export const gacha = async () => {
 };
 
 const isUpcomingOnEn = ([jp, en]: Bandori.RegionTuple<string>) =>
-	jp && (en === null || Number(en) > Date.now());
+	jp && (en === null || new Date(Number(en)) > new Date());
