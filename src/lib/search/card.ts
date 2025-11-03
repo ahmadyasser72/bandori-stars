@@ -31,34 +31,38 @@ export const createIndex = (oldestFirst: boolean) => {
 export const filterList = [
 	{
 		label: "Band",
-		props: { class: "color-band", name: "band" },
-		options: [...band_list.values()].map(({ id, name }) => {
-			const value = regionValue.unwrap(name);
-			return {
-				"data-band-id": id,
-				"aria-label": value,
-				value,
-			};
-		}),
-		getValue: (entry: CardEntry) => entry.band.name,
+		props: { class: "color-band", name: "band" as const },
+		options: [...band_list.values()].map(({ id, name }) => ({
+			"data-band-id": id,
+			"aria-label": regionValue.unwrap(name),
+			value: id,
+		})),
+		getValue: (entry: CardEntry) => entry.band.id,
 	},
 	{
 		label: "Type",
-		props: { class: "text-accent-content bg-accent", name: "type" },
-		options: constants.cardTypes.map((type) => ({
+		props: { class: "text-accent-content bg-accent", name: "type" as const },
+		options: constants.cardTypes.map((type, idx) => ({
 			"aria-label": type.toUpperCase(),
-			value: type,
+			value: idx.toString(),
 		})),
-		getValue: (entry: CardEntry) => entry.type,
+		getValue: (entry: CardEntry) =>
+			constants.cardTypes.indexOf(entry.type).toString(),
 	},
 	{
 		label: "Attribute",
-		props: { class: "color-attribute", name: "attribute" },
-		options: constants.attributes.map((attribute) => ({
+		props: { class: "color-attribute", name: "attribute" as const },
+		options: constants.attributes.map((attribute, idx) => ({
 			"data-attribute": attribute,
 			"aria-label": attribute.toUpperCase(),
-			value: attribute,
+			value: idx.toString(),
 		})),
-		getValue: (entry: CardEntry) => entry.attribute,
+		getValue: (entry: CardEntry) =>
+			constants.attributes.indexOf(entry.attribute).toString(),
 	},
-];
+] satisfies {
+	label: string;
+	props: { name: string } & Record<string, string>;
+	options: ({ value: string } & Record<string, string>)[];
+	getValue: (entry: CardEntry) => string;
+}[];
