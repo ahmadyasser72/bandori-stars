@@ -74,7 +74,7 @@ const items = (
 				>
 					<div>
 						<a
-							up-layer="new popup"
+							up-layer="new"
 							up-size="grow"
 							up-fragment="#view-full-card"
 							up-use-data={JSON.stringify({
@@ -169,19 +169,30 @@ const items = (
 	</template>
 
 	<template id="view-full-card" type="text/minimustache">
-		<figure class="hover-gallery rounded-box aspect-4/3 w-64 sm:w-lg">
+		<div class="tabs tabs-lift w-64 sm:w-lg">
 			{
-				(showTrained ? [true, false] : [false, true]).map((trained) => (
-					<img
-						src={
-							trained
-								? "/static/assets/card/{{id}}_trained.webp"
-								: "/static/assets/card/{{id}}.webp"
-						}
-						alt={trained ? "Trained " : "" + "{{name}}"}
-					/>
+				[false, true].map((trained) => (
+					<>
+						<input
+							type="radio"
+							name="card_image"
+							class="tab"
+							aria-label={trained ? "Trained" : "Normal"}
+							checked={showTrained ? trained : !trained}
+						/>
+						<div class="tab-content border-base-300 bg-base-100 aspect-4/3 w-64 px-4 py-2 sm:w-lg">
+							<img
+								src={
+									trained
+										? "/static/assets/card/{{id}}_trained.webp"
+										: "/static/assets/card/{{id}}.webp"
+								}
+								alt={trained ? "Trained " : "" + "{{name}}"}
+							/>
+						</div>
+					</>
 				))
 			}
-		</figure>
+		</div>
 	</template>
 </main>
