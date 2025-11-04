@@ -17,16 +17,20 @@ const nextPage = new URL(Astro.url);
 nextPage.searchParams.set("page", `${currentPage + 1}`);
 
 const query = Astro.url.searchParams.get("query")?.toLowerCase();
+
+const sessionFilters = await Astro.session?.get("card_filters");
 const filters = filterList
 	.map(({ props: { name }, getValue }) => ({
 		name,
 		getValue,
-		value: Astro.url.searchParams.get(name),
+		value: Astro.url.searchParams.get(name) ?? sessionFilters?.[name],
 	}))
 	.filter(({ value }) => value);
+
 const filterMap = Object.fromEntries(
 	filters.map(({ name, value }) => [name, value!]),
 );
+Astro.session?.set("card_filters", filterMap);
 
 const oldestFirst = Astro.url.searchParams.get("oldest_first") === "true";
 const showTrained = Astro.url.searchParams.get("show_trained") === "true";
