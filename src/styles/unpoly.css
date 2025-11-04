@@ -11,3 +11,7 @@ up-popup,
 up-modal-box {
 	@apply rounded-box;
 }
+
+up-modal-box {
+	@apply my-auto;
+}

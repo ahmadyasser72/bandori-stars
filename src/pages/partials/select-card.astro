@@ -198,7 +198,6 @@ const filtered = filters
 					<div>
 						<a
 							up-layer="new"
-							up-size="grow"
 							up-fragment="#view-full-card"
 							up-use-data={JSON.stringify({
 								id,
@@ -218,17 +217,17 @@ const filtered = filters
 							/>
 
 							<template id="view-full-card" type="text/minimustache">
-								<div class="tabs tabs-lift w-64 sm:w-lg">
+								<div class="tabs tabs-box justify-center">
 									{[false, true].map((trained) => (
 										<>
 											<input
 												type="radio"
 												name="card_image"
-												class="tab"
+												class="tab flex-1"
 												aria-label={trained ? "Trained" : "Normal"}
 												checked={showTrained ? trained : !trained}
 											/>
-											<div class="tab-content border-base-300 bg-base-100 box-border aspect-4/3 w-64 px-4 py-2 sm:w-lg">
+											<div class="tab-content">
 												<img
 													src={
 														trained
@@ -238,7 +237,7 @@ const filtered = filters
 													alt={trained ? "Trained " : "" + "{{name}}"}
 													class:list={[
 														showTrained ? trained : !trained && "hidden",
-														"rounded-box aspect-4/3 w-full",
+														"rounded-box border-base-300 aspect-4/3 w-full border px-4 py-2 shadow-sm",
 													]}
 												/>
 											</div>
