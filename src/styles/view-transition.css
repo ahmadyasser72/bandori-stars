@@ -1,0 +1,6 @@
+::view-transition-old(animate-full-card),
+::view-transition-new(animate-full-card) {
+	height: 100%;
+	overflow: clip;
+	object-fit: cover;
+}

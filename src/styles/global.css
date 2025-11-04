@@ -8,6 +8,8 @@
 }
 
 @import "./bandori.css";
+@import "./unpoly.css";
+@import "./view-transition.css";
 
 :root {
 	color-scheme: light dark;
@@ -19,23 +21,4 @@
 	&[data-theme="dracula"] {
 		color-scheme: dark;
 	}
-}
-
-up-popup,
-up-cover-box,
-up-drawer-box,
-up-modal-box {
-	@apply bg-base-100 text-base-content;
-}
-
-up-popup,
-up-modal-box {
-	@apply rounded-box;
-}
-
-::view-transition-old(animate-full-card),
-::view-transition-new(animate-full-card) {
-	height: 100%;
-	overflow: clip;
-	object-fit: cover;
 }
