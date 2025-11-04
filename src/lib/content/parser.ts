@@ -35,6 +35,15 @@ export const event = {
 								point: Number(point),
 								stars: Number(rewardQuantity),
 							}))
+							.sort((a, b) => a.point - b.point)
+							.reduce(
+								(acc, next) => {
+									const previous = acc.length > 0 ? acc.at(-1)!.stars : 0;
+									acc.push({ point: next.point, stars: next.stars + previous });
+									return acc;
+								},
+								[] as { point: number; stars: number }[],
+							)
 					: null,
 			) as RegionTuple<{ point: number; stars: number }[]>,
 		),
@@ -42,12 +51,20 @@ export const event = {
 		regionTuple(
 			tuple.map((rewards) =>
 				rewards
-					? rewards
-							.filter(({ rewardType }) => rewardType === "star")
-							.map(({ toRank, rewardQuantity }) => ({
-								rank: Number(toRank),
-								stars: Number(rewardQuantity),
-							}))
+					? [
+							...rewards
+								.filter(({ rewardType }) => rewardType === "star")
+								.map(({ toRank, rewardQuantity }) => ({
+									rank: Number(toRank),
+									stars: Number(rewardQuantity),
+								}))
+								.sort((a, b) => a.rank - b.rank)
+								.reduce(
+									(map, next) => map.set(next.stars, next),
+									new Map<number, { rank: number; stars: number }>(),
+								)
+								.values(),
+						]
 					: null,
 			) as RegionTuple<{ rank: number; stars: number }[]>,
 		),
