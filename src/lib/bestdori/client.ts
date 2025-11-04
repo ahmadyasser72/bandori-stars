@@ -45,7 +45,8 @@ export const client = ky.create({
 
 						const compressedImage = await image
 							.webp({ quality: 50, preset: "drawing", effort: 6 })
-							.toBuffer();
+							.toArray()
+							.then(Buffer.from);
 						writeFileSync(fileImage, compressedImage);
 
 						return new Response(compressedImage, {
