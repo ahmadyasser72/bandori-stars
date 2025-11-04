@@ -23,51 +23,97 @@ const characterMap = await timed(
 		.then(toMap),
 );
 
-const gachaMap = await timed("fetch gacha_map", loader.gacha().then(toMap));
-const getCardRateUp = (
-	region: "en" | "jp",
-	card: Pick<Schema<"card">, "id" | "gacha">,
-) => {
-	const items = card.gacha[region];
-	if (!items) return null;
+const eventMap = await timed("fetch event_map", loader.event().then(toMap));
 
-	const filtered = items
-		.filter((id) => gachaMap.has(id))
-		.map((id) => gachaMap.get(id)!)
-		.filter(({ rateUp }) =>
-			rateUp[region]!.some((rateUp) => rateUp.card === card.id),
-		)
-		.map(({ id, startAt, endAt }) => ({ id, startAt, endAt }));
+const gachaMap = await timed(
+	"fetch gacha_map",
+	(async () => {
+		const getGachaEvent = (
+			region: "en" | "jp",
+			{ startAt, endAt }: Pick<Schema<"gacha">, "startAt" | "endAt">,
+		) => {
+			const gacha = { startAt: startAt[region], endAt: endAt[region] };
+			const events = [...eventMap.values()].map(({ id, startAt, endAt }) => ({
+				id,
+				startAt: startAt[region],
+				endAt: endAt[region],
+			}));
 
-	return filtered.length === 0 ? null : filtered;
-};
+			const results = events
+				.filter(
+					(event) =>
+						event.startAt &&
+						event.endAt &&
+						gacha.startAt &&
+						gacha.endAt &&
+						(gacha.startAt.isSame(event.startAt) ||
+							gacha.startAt.isBetween(event.startAt, event.endAt) ||
+							gacha.endAt.isBetween(event.startAt, event.endAt)),
+				)
+				.map(({ id }) => id);
+
+			return results.length > 0 ? results : null;
+		};
+
+		return loader
+			.gacha()
+			.then((entries) =>
+				entries.map((entry) => ({
+					...entry,
+					event: {
+						jp: getGachaEvent("jp", entry),
+						en: getGachaEvent("en", entry),
+					},
+				})),
+			)
+			.then(toMap);
+	})(),
+);
 
 const cardMap = await timed(
 	"fetch card_map",
-	loader
-		.card()
-		.then((entries) =>
-			entries.map(({ character: characterId, ...entry }) => {
-				const character = characterMap.get(characterId)!;
+	(async () => {
+		const getCardRateUp = (
+			region: "en" | "jp",
+			card: Pick<Schema<"card">, "id" | "gacha">,
+		) => {
+			const items = card.gacha[region];
+			if (!items) return null;
 
-				return {
-					band: character.band,
-					character: {
-						id: character.id,
-						name: regionValue.unwrap(character.name),
-					},
-					rateUp: {
-						jp: getCardRateUp("jp", entry),
-						en: getCardRateUp("en", entry),
-					},
-					...entry,
-				};
-			}),
-		)
-		.then(toMap),
+			const filtered = items
+				.filter((id) => gachaMap.has(id))
+				.map((id) => gachaMap.get(id)!)
+				.filter(({ rateUp }) =>
+					rateUp[region]!.some((rateUp) => rateUp.card === card.id),
+				)
+				.map(({ id }) => id);
+
+			return filtered.length === 0 ? null : filtered;
+		};
+
+		return loader
+			.card()
+			.then((entries) =>
+				entries.map(({ character: characterId, ...entry }) => {
+					const character = characterMap.get(characterId)!;
+
+					return {
+						band: character.band,
+						character: {
+							id: character.id,
+							name: regionValue.unwrap(character.name),
+						},
+						rateUp: {
+							jp: getCardRateUp("jp", entry),
+							en: getCardRateUp("en", entry),
+						},
+						...entry,
+					};
+				}),
+			)
+			.then(toMap);
+	})(),
 );
-
-const eventMap = await timed("fetch event_map", loader.event().then(toMap));
 
 const data = {
 	band_map: bandMap,
