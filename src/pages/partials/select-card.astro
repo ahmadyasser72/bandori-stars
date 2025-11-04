@@ -71,7 +71,7 @@ const filtered = filters
 
 <main class="flex flex-col items-center gap-y-4">
 	<form
-		up-target="#card-list, #next-page, #suggest-characters, #filter-list"
+		up-target="#card-list, #next-page, #suggest-characters, #filter-list, #view-full-card"
 		up-autosubmit
 		up-disable
 		up-placeholder="#card-list-placeholder"
@@ -222,38 +222,6 @@ const filtered = filters
 								}
 								loading="lazy"
 							/>
-
-							<template id="view-full-card" type="text/minimustache">
-								<div class="tabs tabs-box justify-center">
-									{[false, true].map((trained) => (
-										<>
-											<input
-												type="radio"
-												name="card_image"
-												class="tab flex-1"
-												aria-label={trained ? "Trained" : "Normal"}
-												checked={options.show_trained ? trained : !trained}
-											/>
-											<div class="tab-content">
-												<img
-													src={
-														trained
-															? `/static/assets/card/{{id}}_trained.${IMAGE_FORMAT}`
-															: `/static/assets/card/{{id}}.${IMAGE_FORMAT}`
-													}
-													alt={trained ? "Trained " : "" + "{{name}}"}
-													class:list={[
-														options.show_trained
-															? trained
-															: !trained && "hidden",
-														"rounded-box border-base-300 aspect-4/3 w-full border px-4 py-2 shadow-sm",
-													]}
-												/>
-											</div>
-										</>
-									))}
-								</div>
-							</template>
 						</a>
 					</div>
 
@@ -280,6 +248,7 @@ const filtered = filters
 			))
 		}
 	</ul>
+
 	<template id="card-list-placeholder">
 		<ul class="list w-full">
 			{
@@ -308,6 +277,37 @@ const filtered = filters
 				))
 			}
 		</ul>
+	</template>
+	<template id="view-full-card" type="text/minimustache">
+		<div class="tabs tabs-box justify-center">
+			{
+				[false, true].map((trained) => (
+					<>
+						<input
+							type="radio"
+							name="card_image"
+							class="tab flex-1"
+							aria-label={trained ? "Trained" : "Normal"}
+							checked={options.show_trained ? trained : !trained}
+						/>
+						<div class="tab-content">
+							<img
+								src={
+									trained
+										? `/static/assets/card/{{id}}_trained.${IMAGE_FORMAT}`
+										: `/static/assets/card/{{id}}.${IMAGE_FORMAT}`
+								}
+								alt={trained ? "Trained " : "" + "{{name}}"}
+								class:list={[
+									options.show_trained ? trained : !trained && "hidden",
+									"rounded-box border-base-300 aspect-4/3 w-full border px-4 py-2 shadow-sm",
+								]}
+							/>
+						</div>
+					</>
+				))
+			}
+		</div>
 	</template>
 
 	{
