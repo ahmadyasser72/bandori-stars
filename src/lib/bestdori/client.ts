@@ -1,14 +1,14 @@
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
-import path from "node:path";
+import { join as joinPath } from "node:path";
 
 import ky from "ky";
 import pLimit from "p-limit";
 import sharp from "sharp";
 
 const BESTDORI_CACHE_DIR = "./bestdori";
-const CACHED_IMAGE_FORMAT = ".webp";
-const MAX_IMAGE_HEIGHT = 600;
+const MAX_IMAGE_WIDTH = 1200;
+export const IMAGE_FORMAT = "avif";
 
 export const limit = pLimit(4);
 const cachedResponses = new Set<string>();
@@ -26,11 +26,10 @@ export const client = ky.create({
 				if (!cachedResponses.has(request.url) && response.ok) {
 					await mkdir(BESTDORI_CACHE_DIR).catch(() => {});
 
-					const file = getCachePath(request);
-					const fileImage = file + CACHED_IMAGE_FORMAT;
+					const path = getCachePath(request);
 					if (
-						!shouldPutCache(file, response) ||
-						!shouldPutCache(fileImage, response)
+						!shouldPutCache(path.file, response) ||
+						!shouldPutCache(path.image, response)
 					)
 						return;
 
@@ -38,25 +37,24 @@ export const client = ky.create({
 					const contentType = response.headers.get("content-type");
 
 					if (contentType && contentType.startsWith("image/")) {
-						const image = sharp(buffer);
-						const metadata = await image.metadata();
-						if (metadata.height > MAX_IMAGE_HEIGHT)
-							image.resize({ height: MAX_IMAGE_HEIGHT });
+						const image = (await sharp(buffer)
+							.resize({
+								width: MAX_IMAGE_WIDTH,
+								withoutEnlargement: true,
+								kernel: "mks2021",
+							})
+							.toFormat(IMAGE_FORMAT)
+							.toBuffer()) as Buffer<ArrayBuffer>;
 
-						const compressedImage = await image
-							.webp({ quality: 50, preset: "drawing", effort: 6 })
-							.toArray()
-							.then(Buffer.from);
-						writeFileSync(fileImage, compressedImage);
-
-						return new Response(compressedImage, {
+						writeFileSync(path.image, image);
+						return new Response(image, {
 							headers: {
-								"content-type": "image/webp",
-								"content-length": compressedImage.byteLength.toString(),
+								"content-type": `image/${IMAGE_FORMAT}`,
+								"content-length": image.byteLength.toString(),
 							},
 						});
 					} else {
-						writeFileSync(file, Buffer.from(buffer));
+						writeFileSync(path.file, Buffer.from(buffer));
 					}
 				}
 			},
@@ -65,14 +63,13 @@ export const client = ky.create({
 			async (request) => {
 				await mkdir(BESTDORI_CACHE_DIR).catch(() => {});
 
-				const file = getCachePath(request);
-				const fileImage = file + CACHED_IMAGE_FORMAT;
-				if (existsSync(file) && !file.includes("all")) {
+				const path = getCachePath(request);
+				if (existsSync(path.file) && !path.file.includes("all")) {
 					cachedResponses.add(request.url);
-					return new Response(readFileSync(file));
-				} else if (existsSync(fileImage)) {
+					return new Response(readFileSync(path.file));
+				} else if (existsSync(path.image)) {
 					cachedResponses.add(request.url);
-					return new Response(readFileSync(fileImage));
+					return new Response(readFileSync(path.image));
 				}
 			},
 		],
@@ -82,8 +79,9 @@ export const client = ky.create({
 const getCachePath = (request: Request) => {
 	const url = new URL(request.url);
 	const filename = url.pathname.slice(1).replaceAll("/", "-");
+	const path = joinPath(BESTDORI_CACHE_DIR, filename);
 
-	return path.join(BESTDORI_CACHE_DIR, filename);
+	return { file: path, image: `${path}.${IMAGE_FORMAT}` };
 };
 
 const shouldPutCache = (file: string, response: Response) => {

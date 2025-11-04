@@ -3,6 +3,7 @@ import { Icon } from "astro-icon/components";
 
 import { card_map, character_map } from "@/contents/data";
 
+import { IMAGE_FORMAT } from "~/lib/bestdori/client";
 import { createIndex, filterList } from "~/lib/search/card";
 import { randomInt, regionValue } from "~/lib/utilities";
 
@@ -210,8 +211,8 @@ const filtered = filters
 								class="rounded-box size-12"
 								src={
 									showTrained
-										? `/static/assets/card/${id}_icon-trained.webp`
-										: `/static/assets/card/${id}_icon.webp`
+										? `/static/assets/card/${id}_icon-trained.${IMAGE_FORMAT}`
+										: `/static/assets/card/${id}_icon.${IMAGE_FORMAT}`
 								}
 								loading="lazy"
 							/>
@@ -231,8 +232,8 @@ const filtered = filters
 												<img
 													src={
 														trained
-															? "/static/assets/card/{{id}}_trained.webp"
-															: "/static/assets/card/{{id}}.webp"
+															? `/static/assets/card/{{id}}_trained.${IMAGE_FORMAT}`
+															: `/static/assets/card/{{id}}.${IMAGE_FORMAT}`
 													}
 													alt={trained ? "Trained " : "" + "{{name}}"}
 													class:list={[
