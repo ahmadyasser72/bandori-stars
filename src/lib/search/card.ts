@@ -1,11 +1,11 @@
 import { Document, type DocumentOptions } from "flexsearch";
 
-import { band_list, card_list, type Entry } from "@/contents/data";
+import { band_map, card_map, type Entry } from "@/contents/data";
 
 import { constants } from "~/lib/content";
 import { regionValue } from "~/lib/utilities";
 
-type CardEntry = Omit<Entry<"card_list">, "releasedAt" | "rateUp">;
+type CardEntry = Omit<Entry<"card_map">, "releasedAt" | "rateUp">;
 export const config: DocumentOptions<CardEntry> = {
 	preset: "match",
 	resolution: 3,
@@ -13,7 +13,7 @@ export const config: DocumentOptions<CardEntry> = {
 	store: false,
 
 	document: {
-		id: "card_list",
+		id: "card_map",
 		index: ["character:name", "name:en", "attribute", "band:name", "type"],
 	},
 };
@@ -21,7 +21,7 @@ export const config: DocumentOptions<CardEntry> = {
 export const createIndex = (oldestFirst: boolean) => {
 	const index = new Document(config);
 
-	const entries = [...card_list.entries()];
+	const entries = [...card_map.entries()];
 	if (!oldestFirst) entries.reverse();
 	for (const [id, data] of entries) index.add(Number(id), data);
 
@@ -32,7 +32,7 @@ export const filterList = [
 	{
 		label: "Band",
 		props: { class: "color-band", name: "band" as const },
-		options: [...band_list.values()].map(({ id, name }) => ({
+		options: [...band_map.values()].map(({ id, name }) => ({
 			"data-band-id": id,
 			"aria-label": regionValue.unwrap(name),
 			value: id,

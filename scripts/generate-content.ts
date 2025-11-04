@@ -5,14 +5,14 @@ import { save, timed, toMap } from "./helpers";
 
 console.time("everything");
 
-const bandList = await timed("get band-list", loader.band().then(toMap));
-const characterList = await timed(
-	"get character-list",
+const bandMap = await timed("fetch band_map", loader.band().then(toMap));
+const characterMap = await timed(
+	"fetch character_map",
 	loader
 		.character()
 		.then((entries) =>
 			entries.map((character) => {
-				const band = bandList.get(character.band)!;
+				const band = bandMap.get(character.band)!;
 
 				return {
 					...character,
@@ -23,7 +23,7 @@ const characterList = await timed(
 		.then(toMap),
 );
 
-const gachaList = await timed("get gacha-list", loader.gacha().then(toMap));
+const gachaMap = await timed("fetch gacha_map", loader.gacha().then(toMap));
 const getCardRateUp = (
 	region: "en" | "jp",
 	card: Pick<Schema<"card">, "id" | "gacha">,
@@ -32,8 +32,8 @@ const getCardRateUp = (
 	if (!items) return null;
 
 	const filtered = items
-		.filter((id) => gachaList.has(id))
-		.map((id) => gachaList.get(id)!)
+		.filter((id) => gachaMap.has(id))
+		.map((id) => gachaMap.get(id)!)
 		.filter(({ rateUp }) =>
 			rateUp[region]!.some((rateUp) => rateUp.card === card.id),
 		)
@@ -42,13 +42,13 @@ const getCardRateUp = (
 	return filtered.length === 0 ? null : filtered;
 };
 
-const cardList = await timed(
-	"get card-list",
+const cardMap = await timed(
+	"fetch card_map",
 	loader
 		.card()
 		.then((entries) =>
 			entries.map(({ character: characterId, ...entry }) => {
-				const character = characterList.get(characterId)!;
+				const character = characterMap.get(characterId)!;
 
 				return {
 					band: character.band,
@@ -67,16 +67,16 @@ const cardList = await timed(
 		.then(toMap),
 );
 
-const eventList = await timed("get event-list", loader.event().then(toMap));
+const eventMap = await timed("fetch event_map", loader.event().then(toMap));
 
 const data = {
-	band_list: bandList,
-	character_list: characterList,
-	card_list: cardList,
-	event_list: eventList,
-	gacha_list: gachaList,
+	band_map: bandMap,
+	character_map: characterMap,
+	card_map: cardMap,
+	event_map: eventMap,
+	gacha_map: gachaMap,
 };
-await timed("save data", save("data", data));
+await timed(`save data [${Object.keys(data).join(", ")}]`, save(data));
 
 console.timeEnd("everything");
 

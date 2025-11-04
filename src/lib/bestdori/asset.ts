@@ -2,13 +2,13 @@ import type { Entry } from "@/contents/data";
 
 import { client, limit } from "./client";
 
-const hasNoPreTrained = ({ name, type }: Entry<"card_list">) =>
+const hasNoPreTrained = ({ name, type }: Entry<"card_map">) =>
 	name.en === "Graduation" || ["kirafes", "birthday"].includes(type);
 
 export const card = async (
 	kind: "icon" | "image",
 	trained: boolean,
-	data: Entry<"card_list">,
+	data: Entry<"card_map">,
 ) => {
 	const type = trained || hasNoPreTrained(data) ? "after_training" : "normal";
 

@@ -9,11 +9,11 @@ export const toMap = <T extends { id: string } & object>(
 	new Map(array.map((data) => [data.id, data] as [string, T]));
 
 const BASE_CONTENT_PATH = path.resolve(__dirname, "../.contents/");
-export const save = async (name: string, data: any) => {
+export const save = async (data: any) => {
 	await mkdir(BASE_CONTENT_PATH).catch(() => {});
 
 	const content = devalue.stringify(data);
-	await writeFile(path.join(BASE_CONTENT_PATH, `${name}.json`), content);
+	await writeFile(path.join(BASE_CONTENT_PATH, "data.json"), content);
 };
 
 export const timed = async <T>(

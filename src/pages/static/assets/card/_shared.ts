@@ -5,10 +5,10 @@ import type {
 	InferGetStaticPropsType,
 } from "astro";
 
-import { card_list } from "@/contents/data";
+import { card_map } from "@/contents/data";
 
 export const getStaticPaths = (() =>
-	[...card_list.values()].map((data) => ({
+	[...card_map.values()].map((data) => ({
 		params: { id: data.id },
 		props: { data },
 	}))) satisfies GetStaticPaths;

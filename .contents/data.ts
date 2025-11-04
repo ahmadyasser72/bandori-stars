@@ -5,12 +5,11 @@ import type { ContentData } from "@/scripts/generate-content";
 import json from "./data.json?raw";
 
 const data: ContentData = devalue.parse(json);
-const { band_list, character_list, card_list, gacha_list, event_list } = data;
-
-export { band_list, character_list, card_list, gacha_list, event_list };
+const { band_map, character_map, card_map, gacha_map, event_map } = data;
+export { band_map, character_map, card_map, gacha_map, event_map };
 
 type MapValue<T extends Map<any, any>> =
-	T extends Map<any, infer K> ? K : never;
+	T extends Map<any, infer Value> ? Value : never;
 
 type Collections = keyof ContentData;
 export type Entry<T extends Collections> = MapValue<ContentData[T]>;
