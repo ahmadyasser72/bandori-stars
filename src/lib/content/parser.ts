@@ -70,10 +70,11 @@ export const gacha = {
 							.filter(([, { pickup }]) => pickup)
 							.map(([card, { rarityIndex: rarity, weight }]) => {
 								const { rate, weightTotal } = ratesTuple[tupleId]![rarity];
+								const weightedRate = (weight / weightTotal) * rate;
 								return {
 									card,
 									rarity,
-									rate: (weight / weightTotal) * rate,
+									rate: Math.round((weightedRate + Number.EPSILON) * 100) / 100,
 								};
 							})
 					: null,
