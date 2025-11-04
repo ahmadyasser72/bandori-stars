@@ -185,6 +185,8 @@ const filtered = filters
 								id,
 								name: `${character.name} - ${regionValue.unwrap(name)}`,
 							})}
+							up-on-opened="animateViewFullCard(this, layer.element)"
+							up-on-dismissed="animateViewFullCard(layer.element, this)"
 						>
 							<img
 								class="rounded-box size-12"
@@ -207,7 +209,7 @@ const filtered = filters
 												aria-label={trained ? "Trained" : "Normal"}
 												checked={showTrained ? trained : !trained}
 											/>
-											<div class="tab-content border-base-300 bg-base-100 aspect-4/3 w-64 px-4 py-2 sm:w-lg">
+											<div class="tab-content border-base-300 bg-base-100 box-border aspect-4/3 w-64 px-4 py-2 sm:w-lg">
 												<img
 													src={
 														trained
@@ -215,6 +217,10 @@ const filtered = filters
 															: "/static/assets/card/{{id}}.webp"
 													}
 													alt={trained ? "Trained " : "" + "{{name}}"}
+													class:list={[
+														showTrained ? trained : !trained && "hidden",
+														"rounded-box aspect-4/3 w-full",
+													]}
 												/>
 											</div>
 										</>
