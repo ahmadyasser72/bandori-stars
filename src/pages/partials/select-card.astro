@@ -75,7 +75,7 @@ const filtered = filters
 			<datalist id="suggest-characters">
 				{
 					[...character_list.values()]
-						.filter(({ band }) => !filterMap.band || filterMap.band === band)
+						.filter(({ band }) => !filterMap.band || filterMap.band === band.id)
 						.map(({ name }) => <option value={regionValue.unwrap(name)} />)
 				}
 			</datalist>

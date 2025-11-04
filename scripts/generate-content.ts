@@ -8,7 +8,19 @@ console.time("everything");
 const bandList = await timed("get band-list", loader.band().then(toMap));
 const characterList = await timed(
 	"get character-list",
-	loader.character().then(toMap),
+	loader
+		.character()
+		.then((entries) =>
+			entries.map((character) => {
+				const band = bandList.get(character.band)!;
+
+				return {
+					...character,
+					band: { id: band.id, name: regionValue.unwrap(band.name) },
+				};
+			}),
+		)
+		.then(toMap),
 );
 
 const gachaList = await timed("get gacha-list", loader.gacha().then(toMap));
@@ -37,10 +49,9 @@ const cardList = await timed(
 		.then((entries) =>
 			entries.map(({ character: characterId, ...entry }) => {
 				const character = characterList.get(characterId)!;
-				const band = bandList.get(character.band)!;
 
 				return {
-					band: { id: band.id, name: regionValue.unwrap(band.name) },
+					band: character.band,
 					character: {
 						id: character.id,
 						name: regionValue.unwrap(character.name),
