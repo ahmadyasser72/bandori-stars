@@ -19,16 +19,16 @@ export const animateViewFullCard = (
 	layerElement: HTMLElement,
 	reverse: boolean = false,
 ) => {
-	const from = (
-		reverse
-			? [...layerElement.querySelectorAll("img")].at(
-					[...layerElement.querySelectorAll("input")].findIndex(
-						(input) => input.checked,
-					),
-				)
-			: el.querySelector("img")
+	const iconImage = el.querySelector("img")!;
+	const activeImage = [...layerElement.querySelectorAll("img")].at(
+		[...layerElement.querySelectorAll("input")].findIndex(
+			(input) => input.checked,
+		),
 	)!;
-	const to = (reverse ? el : layerElement).querySelector("img")!;
+
+	const [from, to] = reverse
+		? [activeImage, iconImage]
+		: [iconImage, activeImage];
 
 	if (!reverse && !to.complete) {
 		// show placeholder if image is not yet loaded
