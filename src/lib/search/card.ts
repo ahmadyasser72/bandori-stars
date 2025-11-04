@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { Document, type DocumentOptions } from "flexsearch";
 
 import { band_map, card_map, type Entry } from "@/contents/data";
@@ -31,7 +32,12 @@ export const createIndex = (oldestFirst: boolean) => {
 export const filterList = [
 	{
 		label: "Band",
-		props: { class: "color-band", name: "band" as const },
+		props: {
+			class: clsx(
+				"border-bandori-band bg-bandori-band hover:bg-bandori-band-alt text-bandori-band-content",
+			),
+			name: "band" as const,
+		},
 		options: [...band_map.values()].map(({ id, name }) => ({
 			"data-band-id": id,
 			"aria-label": regionValue.unwrap(name),
@@ -41,7 +47,10 @@ export const filterList = [
 	},
 	{
 		label: "Type",
-		props: { class: "text-accent-content bg-accent", name: "type" as const },
+		props: {
+			class: clsx("border-accent bg-accent text-accent-content"),
+			name: "type" as const,
+		},
 		options: constants.cardTypes.map((type, idx) => ({
 			"aria-label": type.toUpperCase(),
 			value: idx.toString(),
@@ -51,7 +60,12 @@ export const filterList = [
 	},
 	{
 		label: "Attribute",
-		props: { class: "color-attribute", name: "attribute" as const },
+		props: {
+			class: clsx(
+				"border-bandori-attribute bg-bandori-attribute hover:bg-bandori-attribute-alt text-bandori-attribute-content",
+			),
+			name: "attribute" as const,
+		},
 		options: constants.attributes.map((attribute, idx) => ({
 			"data-attribute": attribute,
 			"aria-label": attribute.toUpperCase(),

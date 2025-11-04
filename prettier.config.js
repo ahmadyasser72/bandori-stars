@@ -10,10 +10,11 @@ const config = {
 
 	plugins: [
 		"prettier-plugin-astro",
-		"prettier-plugin-tailwindcss",
 		"@ianvs/prettier-plugin-sort-imports",
+		"prettier-plugin-tailwindcss",
 	],
 	overrides: [{ files: "*.astro", options: { parser: "astro" } }],
+	tailwindFunctions: ["clsx"],
 	importOrder: [
 		"^astro",
 		"",

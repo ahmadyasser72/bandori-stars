@@ -1,3 +1,13 @@
+@theme inline {
+	--color-bandori-attribute: var(--attribute-color);
+	--color-bandori-attribute-alt: var(--attribute-color-alt);
+	--color-bandori-attribute-content: var(--attribute-color-content);
+
+	--color-bandori-band: var(--band-color);
+	--color-bandori-band-alt: var(--band-color-alt);
+	--color-bandori-band-content: var(--band-color-content);
+}
+
 @theme static {
 	/* card attributes */
 	--color-cool: hsl(232 77% 57%);
@@ -50,154 +60,98 @@
 	--color-mygo-content: hsl(0 0% 100%);
 }
 
-@utility color-attribute {
-	/* Cool */
-	&[data-attribute="cool"],
-	[data-attribute="cool"] & {
-		@apply bg-cool text-cool-content;
-	}
-
-	/* Happy */
-	&[data-attribute="happy"],
-	[data-attribute="happy"] & {
-		@apply bg-happy text-happy-content;
-	}
-
-	/* Powerful */
-	&[data-attribute="powerful"],
-	[data-attribute="powerful"] & {
-		@apply bg-powerful text-powerful-content;
-	}
-
-	/* Pure */
-	&[data-attribute="pure"],
-	[data-attribute="pure"] & {
-		@apply bg-pure text-pure-content;
-	}
+/* Cool */
+[data-attribute="cool"],
+[data-attribute="cool"] & {
+	--attribute-color: var(--color-cool);
+	--attribute-color-alt: var(--color-cool-alt);
+	--attribute-color-content: var(--color-cool-content);
 }
 
-@utility color-attribute-alt {
-	/* Cool */
-	&[data-attribute="cool"],
-	[data-attribute="cool"] & {
-		@apply bg-cool-alt text-cool-content;
-	}
-
-	/* Happy */
-	&[data-attribute="happy"],
-	[data-attribute="happy"] & {
-		@apply bg-happy-alt text-happy-content;
-	}
-
-	/* Powerful */
-	&[data-attribute="powerful"],
-	[data-attribute="powerful"] & {
-		@apply bg-powerful-alt text-powerful-content;
-	}
-
-	/* Pure */
-	&[data-attribute="pure"],
-	[data-attribute="pure"] & {
-		@apply bg-pure-alt text-pure-content;
-	}
+/* Happy */
+[data-attribute="happy"],
+[data-attribute="happy"] & {
+	--attribute-color: var(--color-happy);
+	--attribute-color-alt: var(--color-happy-alt);
+	--attribute-color-content: var(--color-happy-content);
 }
 
-@utility color-band {
-	/* Poppin' Party */
-	&[data-band-id="1"],
-	[data-band-id="1"] & {
-		@apply bg-poppin-party text-poppin-party-content;
-	}
-
-	/* Afterglow */
-	&[data-band-id="2"],
-	[data-band-id="2"] & {
-		@apply bg-afterglow text-afterglow-content;
-	}
-
-	/* Hello, Happy World! */
-	&[data-band-id="3"],
-	[data-band-id="3"] & {
-		@apply bg-hello-happy-world text-hello-happy-world-content;
-	}
-
-	/* Pastel*Palettes */
-	&[data-band-id="4"],
-	[data-band-id="4"] & {
-		@apply bg-pastel-palettes text-pastel-palettes-content;
-	}
-
-	/* Roselia */
-	&[data-band-id="5"],
-	[data-band-id="5"] & {
-		@apply bg-roselia text-roselia-content;
-	}
-
-	/* RAISE A SUILEN */
-	&[data-band-id="18"],
-	[data-band-id="18"] & {
-		@apply bg-raise-a-suilen text-raise-a-suilen-content;
-	}
-
-	/* Morfonica */
-	&[data-band-id="21"],
-	[data-band-id="21"] & {
-		@apply bg-morfonica text-morfonica-content;
-	}
-
-	/* MyGO!!!!! */
-	&[data-band-id="45"],
-	[data-band-id="45"] & {
-		@apply bg-mygo text-mygo-content;
-	}
+/* Powerful */
+[data-attribute="powerful"],
+[data-attribute="powerful"] & {
+	--attribute-color: var(--color-powerful);
+	--attribute-color-alt: var(--color-powerful-alt);
+	--attribute-color-content: var(--color-powerful-content);
 }
 
-@utility color-band-alt {
-	/* Poppin' Party */
-	&[data-band-id="1"],
-	[data-band-id="1"] & {
-		@apply bg-poppin-party-alt text-poppin-party-content;
-	}
+/* Pure */
+[data-attribute="pure"],
+[data-attribute="pure"] & {
+	--attribute-color: var(--color-pure);
+	--attribute-color-alt: var(--color-pure-alt);
+	--attribute-color-content: var(--color-pure-content);
+}
 
-	/* Afterglow */
-	&[data-band-id="2"],
-	[data-band-id="2"] & {
-		@apply bg-afterglow-alt text-afterglow-content;
-	}
+/* Poppin' Party */
+[data-band-id="1"],
+[data-band-id="1"] & {
+	--band-color: var(--color-poppin-party);
+	--band-color-alt: var(--color-poppin-party-alt);
+	--band-color-content: var(--color-poppin-party-content);
+}
 
-	/* Hello, Happy World! */
-	&[data-band-id="3"],
-	[data-band-id="3"] & {
-		@apply bg-hello-happy-world-alt text-hello-happy-world-content;
-	}
+/* Afterglow */
+[data-band-id="2"],
+[data-band-id="2"] & {
+	--band-color: var(--color-afterglow);
+	--band-color-alt: var(--color-afterglow-alt);
+	--band-color-content: var(--color-afterglow-content);
+}
 
-	/* Pastel*Palettes */
-	&[data-band-id="4"],
-	[data-band-id="4"] & {
-		@apply bg-pastel-palettes-alt text-pastel-palettes-content;
-	}
+/* Hello, Happy World! */
+[data-band-id="3"],
+[data-band-id="3"] & {
+	--band-color: var(--color-hello-happy-world);
+	--band-color-alt: var(--color-hello-happy-world-alt);
+	--band-color-content: var(--color-hello-happy-world-content);
+}
 
-	/* Roselia */
-	&[data-band-id="5"],
-	[data-band-id="5"] & {
-		@apply bg-roselia-alt text-roselia-content;
-	}
+/* Pastel*Palettes */
+[data-band-id="4"],
+[data-band-id="4"] & {
+	--band-color: var(--color-pastel-palettes);
+	--band-color-alt: var(--color-pastel-palettes-alt);
+	--band-color-content: var(--color-pastel-palettes-content);
+}
 
-	/* RAISE A SUILEN */
-	&[data-band-id="18"],
-	[data-band-id="18"] & {
-		@apply bg-raise-a-suilen-alt text-raise-a-suilen-content;
-	}
+/* Roselia */
+[data-band-id="5"],
+[data-band-id="5"] & {
+	--band-color: var(--color-roselia);
+	--band-color-alt: var(--color-roselia-alt);
+	--band-color-content: var(--color-roselia-content);
+}
 
-	/* Morfonica */
-	&[data-band-id="21"],
-	[data-band-id="21"] & {
-		@apply bg-morfonica-alt text-morfonica-content;
-	}
+/* RAISE A SUILEN */
+[data-band-id="18"],
+[data-band-id="18"] & {
+	--band-color: var(--color-raise-a-suilen);
+	--band-color-alt: var(--color-raise-a-suilen-alt);
+	--band-color-content: var(--color-raise-a-suilen-content);
+}
 
-	/* MyGO!!!!! */
-	&[data-band-id="45"],
-	[data-band-id="45"] & {
-		@apply bg-mygo-alt text-mygo-content;
-	}
+/* Morfonica */
+[data-band-id="21"],
+[data-band-id="21"] & {
+	--band-color: var(--color-morfonica);
+	--band-color-alt: var(--color-morfonica-alt);
+	--band-color-content: var(--color-morfonica-content);
+}
+
+/* MyGO!!!!! */
+[data-band-id="45"],
+[data-band-id="45"] & {
+	--band-color: var(--color-mygo);
+	--band-color-alt: var(--color-mygo-alt);
+	--band-color-content: var(--color-mygo-content);
 }

@@ -8,8 +8,9 @@ export const applyFormValueToSiblings = (
 ) => {
 	for (const sibling of siblings(el)) {
 		if (sibling instanceof HTMLInputElement) {
-			const entry = entries.find((entry) => entry.name === sibling.name);
-			if (entry) sibling.value = entry.value === "false" ? "" : entry.value;
+			const values = entries.filter((entry) => entry.name === sibling.name);
+			sibling.value =
+				values.length > 0 ? values.map(({ value }) => value).join("|") : "";
 		}
 	}
 };

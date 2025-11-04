@@ -19,16 +19,17 @@ nextPage.searchParams.set("page", `${currentPage + 1}`);
 const query = Astro.url.searchParams.get("query")?.toLowerCase();
 
 const sessionFilters = await Astro.session?.get("card_search_filters");
-const filters = filterList
-	.map(({ props: { name }, getValue }) => ({
-		name,
-		getValue,
-		value: Astro.url.searchParams.get(name) ?? sessionFilters?.[name],
-	}))
-	.filter(({ value }) => value);
+const filters = filterList.map(({ props: { name }, getValue }) => ({
+	name,
+	getValue,
+	values: Astro.url.searchParams.get(name),
+}));
 
 const filterMap = Object.fromEntries(
-	filters.map(({ name, value }) => [name, value!]),
+	filters.map(({ name, values }) => [
+		name,
+		values?.split("|") ?? sessionFilters?.[name] ?? [],
+	]),
 );
 Astro.session?.set("card_search_filters", filterMap);
 
@@ -57,8 +58,10 @@ const items = (() => {
 
 const filtered = filters
 	.reduce(
-		(acc, { value, getValue }) =>
-			acc.filter((entry) => getValue(entry) === value),
+		(items, { name, getValue }) =>
+			items.filter((entry) =>
+				filterMap[name].every((value) => value !== getValue(entry)),
+			),
 		items,
 	)
 	.slice(offset, offset + pageSize);
@@ -90,7 +93,11 @@ const filtered = filters
 			<datalist id="suggest-characters">
 				{
 					[...character_map.values()]
-						.filter(({ band }) => !filterMap.band || filterMap.band === band.id)
+						.filter(
+							({ band }) =>
+								filterMap.band.length === 0 ||
+								!filterMap.band.includes(band.id),
+						)
 						.map(({ name }) => <option value={regionValue.unwrap(name)} />)
 				}
 			</datalist>
@@ -112,24 +119,19 @@ const filtered = filters
 						{
 							filterList.map(
 								({ label, options, props: { class: className, ...props } }) => (
-									<fieldset class="fieldset bg-base-200 border-base-300 rounded-box p-2 pt-1 text-sm">
+									<fieldset class="fieldset bg-base-100 border-base-300 rounded-box border p-2 pt-1 text-sm">
 										<legend class="fieldset-legend">{label}</legend>
-										<div class="filter">
-											<input
-												class="btn btn-sm filter-reset"
-												type="radio"
-												name={props.name}
-												aria-label="all"
-												value="false"
-											/>
-
+										<div class="flex flex-wrap gap-1">
 											{options.map((option) => (
 												<input
-													type="radio"
+													type="checkbox"
 													{...props}
-													class:list={["btn btn-sm", className]}
+													class:list={[
+														"btn btn-sm checked:text-base-content checked:hover:bg-base-300 checked:bg-transparent",
+														className,
+													]}
 													{...option}
-													checked={filterMap[props.name] === option.value}
+													checked={filterMap[props.name].includes(option.value)}
 												/>
 											))}
 										</div>
@@ -138,9 +140,14 @@ const filtered = filters
 							)
 						}
 
-						<button class="btn btn-sm btn-primary mt-2 w-full"
-							>Apply filter</button
-						>
+						<div class="mt-2 flex w-full gap-2 max-sm:flex-col">
+							<button type="submit" class="btn btn-primary sm:flex-1"
+								>Apply</button
+							>
+							<button type="reset" class="btn btn-outline sm:flex-1"
+								>Reset</button
+							>
+						</div>
 					</form>
 				</template>
 			</a>
@@ -185,7 +192,7 @@ const filtered = filters
 				<li
 					data-attribute={attribute}
 					data-band-id={band.id}
-					class="group list-row hover:color-band select-none"
+					class="group list-row hover:bg-band hover:text-band-content select-none"
 				>
 					<div>
 						<a
@@ -250,11 +257,11 @@ const filtered = filters
 						</button>
 
 						<div class="inline-flex flex-wrap gap-1">
-							<span class="badge badge-sm color-band group-hover:color-band-alt line-clamp-1 border border-current font-medium">
+							<span class="badge badge-sm bg-bandori-band text-bandori-band-content group-hover:bg-bandori-band-alt line-clamp-1 border border-current font-medium">
 								{band.name} &bullet; {character.name}
 							</span>
 
-							<span class="badge badge-sm color-attribute group-hover:color-attribute-alt border border-white font-medium">
+							<span class="badge badge-sm bg-bandori-attribute text-bandori-attribute-content group-hover:bg-bandori-attribute-alt border border-white font-medium">
 								{type.toUpperCase()} &bullet; {attribute.toUpperCase()} &starf;
 								{rarity}
 							</span>
