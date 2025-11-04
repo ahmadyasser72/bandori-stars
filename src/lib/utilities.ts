@@ -1,3 +1,4 @@
+const textEncoder = new TextEncoder();
 export const toJsonResponse = <T extends object>(o: T) => {
 	const json = JSON.stringify(
 		o instanceof Map ? Object.fromEntries(o.entries()) : o,
@@ -6,7 +7,7 @@ export const toJsonResponse = <T extends object>(o: T) => {
 	return new Response(json, {
 		headers: {
 			"content-type": "application/json",
-			"content-length": json.length.toString(),
+			"content-length": textEncoder.encode(json).byteLength.toString(),
 		},
 	});
 };
