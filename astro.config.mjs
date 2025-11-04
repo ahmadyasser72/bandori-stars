@@ -9,9 +9,10 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
 	output: "server",
 	adapter: netlify(),
+	session: { cookie: "laravel_session", ttl: 24 * 60 * 60 /* 1 day */ },
 	integrations: [icon()],
-	build: { concurrency: 4 },
 
+	build: { concurrency: 4 },
 	vite: {
 		plugins: [tailwindcss()],
 		server: { hmr: false },
