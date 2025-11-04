@@ -105,7 +105,7 @@ const filtered = filters
 			</datalist>
 		</label>
 
-		<div>
+		<div id="filter-list">
 			{
 				filterList.map(({ props: { name } }) => (
 					<input type="hidden" {name} value={filterMap[name].join("|")} />
@@ -114,13 +114,13 @@ const filtered = filters
 
 			<a
 				up-layer="new"
-				up-fragment="#filter-list"
+				up-fragment="#filter-list-form"
 				up-on-accepted="applyFormValueToSiblings(this, value); up.submit(this)"
 				class="btn btn-square join-item"
 			>
 				<Icon name="lucide:filter" />
 
-				<template id="filter-list">
+				<template id="filter-list-form">
 					<form up-accept class="mx-0.5 flex flex-col gap-1 py-4">
 						{
 							filterList.map(
