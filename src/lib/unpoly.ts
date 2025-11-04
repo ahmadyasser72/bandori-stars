@@ -16,11 +16,20 @@ export const applyFormValueToSiblings = (
 export const animateViewFullCard = (
 	el: HTMLElement,
 	layerElement: HTMLElement,
+	reverse: boolean = false,
 ) => {
-	const from = el.querySelector("img")!;
-	const to = layerElement.querySelector("img")!;
+	const from = (
+		reverse
+			? [...layerElement.querySelectorAll("img")].at(
+					[...layerElement.querySelectorAll("input")].findIndex(
+						(input) => input.checked,
+					),
+				)
+			: el.querySelector("img")
+	)!;
+	const to = (reverse ? el : layerElement).querySelector("img")!;
 
-	if (!to.complete) {
+	if (!reverse && !to.complete) {
 		// show placeholder if image is not yet loaded
 		to.classList.add("skeleton");
 		to.addEventListener("load", () => {

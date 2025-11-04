@@ -186,7 +186,7 @@ const filtered = filters
 								name: `${character.name} - ${regionValue.unwrap(name)}`,
 							})}
 							up-on-opened="animateViewFullCard(this, layer.element)"
-							up-on-dismissed="animateViewFullCard(layer.element, this)"
+							up-on-dismissed="animateViewFullCard(this, layer.element, true)"
 						>
 							<img
 								class="rounded-box size-12"
