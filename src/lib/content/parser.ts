@@ -1,3 +1,4 @@
+import { dayjs } from "~/lib/date";
 import { sum } from "~/lib/math";
 import type { Card, Event, Gacha, RegionTuple } from "~/lib/schema";
 import { emptyObjectIsNull } from "~/lib/utilities";
@@ -8,8 +9,8 @@ export const timestamp = (timestamps: RegionTuple<string>) =>
 	regionTuple(
 		timestamps.map((timestamp) => {
 			const n = Number(timestamp ?? NaN);
-			return Number.isNaN(n) ? null : new Date(n);
-		}) as RegionTuple<Date>,
+			return Number.isNaN(n) ? null : dayjs(n);
+		}) as RegionTuple<dayjs.Dayjs>,
 	);
 
 export const card = {

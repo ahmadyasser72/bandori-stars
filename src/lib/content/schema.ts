@@ -1,5 +1,6 @@
 import { z, ZodType } from "zod";
 
+import { dayjs } from "~/lib/date";
 import constants from "./constants";
 
 export const types = {
@@ -14,6 +15,9 @@ export const createMultiRegion = <T extends ZodType>(schema: T) =>
 
 export const id = z.string().nonempty();
 export const name = createMultiRegion(z.string().nonempty());
+export const timestamp = createMultiRegion(
+	z.custom<dayjs.Dayjs>((it) => dayjs.isDayjs(it)),
+);
 
 export const schema = {
 	band: z.strictObject({ id, name }),
@@ -27,7 +31,7 @@ export const schema = {
 		rarity: z.number().min(2).max(5),
 		type: types.card,
 		attribute: types.attribute,
-		releasedAt: createMultiRegion(z.date()),
+		releasedAt: timestamp,
 		gacha: createMultiRegion(z.array(id)),
 	}),
 
@@ -37,8 +41,8 @@ export const schema = {
 		type: types.event,
 		attribute: types.attribute,
 		characters: z.array(id),
-		startAt: createMultiRegion(z.date()),
-		endAt: createMultiRegion(z.date()),
+		startAt: timestamp,
+		endAt: timestamp,
 		pointRewards: createMultiRegion(
 			z.array(
 				z.strictObject({
@@ -62,8 +66,8 @@ export const schema = {
 		id,
 		name,
 		type: types.gacha,
-		startAt: createMultiRegion(z.date()),
-		endAt: createMultiRegion(z.date()),
+		startAt: timestamp,
+		endAt: timestamp,
 		rateUp: createMultiRegion(
 			z.array(
 				z.strictObject({

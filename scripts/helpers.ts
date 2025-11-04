@@ -3,6 +3,8 @@ import path from "node:path";
 
 import * as devalue from "devalue";
 
+import { dayjs } from "~/lib/date";
+
 export const toMap = <T extends { id: string } & object>(
 	array: T[],
 ): Map<string, T> =>
@@ -12,7 +14,9 @@ const BASE_CONTENT_PATH = path.resolve(__dirname, "../.contents/");
 export const save = async (data: any) => {
 	await mkdir(BASE_CONTENT_PATH).catch(() => {});
 
-	const content = devalue.stringify(data);
+	const content = devalue.stringify(data, {
+		dayjs: (value) => dayjs.isDayjs(value) && value.unix(),
+	});
 	await writeFile(path.join(BASE_CONTENT_PATH, "data.json"), content);
 };
 
