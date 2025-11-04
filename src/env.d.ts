@@ -7,7 +7,7 @@ declare namespace App {
 			Record<"band" | "type" | "attribute", string[]>
 		>;
 		card_search_options: Partial<
-			Record<"oldest_first" | "show_trained", string>
+			Record<"oldest_first" | "show_trained", boolean>
 		>;
 	}
 }
