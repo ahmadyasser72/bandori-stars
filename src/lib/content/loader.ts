@@ -1,4 +1,5 @@
 import { bestdori } from "~/lib/bestdori";
+import { dayjs, now } from "~/lib/date";
 import * as Bandori from "~/lib/schema";
 import { parser, schema } from ".";
 
@@ -78,7 +79,7 @@ export const event = async () => {
 
 	const entries = await Promise.all(
 		Object.entries(eventList)
-			.filter(([, { startAt }]) => isUpcomingOnEn(startAt))
+			.filter(([, { startAt, endAt }]) => maybeCanPullOnEn(startAt, endAt))
 			.map(async ([id]) => {
 				const bandoriEvent = await bestdori<Bandori.Event>(
 					`api/events/${id}.json`,
@@ -125,8 +126,8 @@ export const gacha = async () => {
 	const entries = await Promise.all(
 		Object.entries(gachaList)
 			.filter(
-				([_, { type, publishedAt }]) =>
-					f2p.includes(type) && isUpcomingOnEn(publishedAt),
+				([_, { type, publishedAt, closedAt }]) =>
+					f2p.includes(type) && maybeCanPullOnEn(publishedAt, closedAt),
 			)
 			.map(async ([id]) => {
 				const gacha = await bestdori<Bandori.Gacha>(`api/gacha/${id}.json`);
@@ -150,5 +151,20 @@ export const gacha = async () => {
 		.map((entry) => schema.gacha.parse(entry));
 };
 
-const isUpcomingOnEn = ([jp, en]: Bandori.RegionTuple<string>) =>
-	jp && (en === null || new Date(Number(en)) > new Date());
+const maybeCanPullOnEn = (
+	from: Bandori.RegionTuple<string>,
+	to: Bandori.RegionTuple<string>,
+) => {
+	const [jpStart, enStart] = from.map((n) => n !== null && dayjs(Number(n)));
+	const [jpEnd, enEnd] = to.map((n) => n !== null && dayjs(Number(n)));
+
+	const isFarTooLongSinceJpRelease =
+		// it probably won't be released ever on EN
+		// if it still wasn't released after 15 months since JP release
+		jpStart && jpEnd && !enStart && now().isAfter(jpEnd.add(15, "months"));
+
+	const soonToBeOnEn = !enStart || enStart.isAfter(dayjs());
+	const currentlyOnEn = enStart && enEnd && now().isBetween(enStart, enEnd);
+
+	return !isFarTooLongSinceJpRelease && (soonToBeOnEn || currentlyOnEn);
+};

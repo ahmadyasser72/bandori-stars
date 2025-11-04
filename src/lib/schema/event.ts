@@ -1,7 +1,7 @@
 import type { Attribute } from ".";
 import type { RegionTuple } from "./utilities";
 
-export type EventList = Record<string, Pick<Event, "startAt">>;
+export type EventList = Record<string, Pick<Event, "startAt" | "endAt">>;
 
 export interface Event {
 	eventType: EventType;

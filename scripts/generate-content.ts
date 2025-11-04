@@ -76,7 +76,12 @@ const data = {
 	event_map: eventMap,
 	gacha_map: gachaMap,
 };
-await timed(`save data [${Object.keys(data).join(", ")}]`, save(data));
+await timed(
+	`save data [${Object.entries(data)
+		.map(([key, map]) => `${key} (${[...map.keys()].length})`)
+		.join(", ")}]`,
+	save(data),
+);
 
 console.timeEnd("everything");
 

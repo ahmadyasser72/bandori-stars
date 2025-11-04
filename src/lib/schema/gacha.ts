@@ -1,7 +1,10 @@
 import type { CardRarity } from ".";
 import type { RegionTuple } from "./utilities";
 
-export type GachaList = Record<string, Pick<Gacha, "publishedAt" | "type">>;
+export type GachaList = Record<
+	string,
+	Pick<Gacha, "publishedAt" | "closedAt" | "type">
+>;
 
 export interface Gacha {
 	details: RegionTuple<Record<string, GachaDetail>>;
