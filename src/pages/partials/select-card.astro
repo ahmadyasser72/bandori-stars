@@ -71,7 +71,7 @@ const filtered = filters
 
 <main class="flex flex-col items-center gap-y-4">
 	<form
-		up-target="#card-list, #next-page, #suggest-characters, #filter-list, #view-full-card"
+		up-target="#card-list, #next-page, #suggestions, #filter-list, #view-full-card"
 		up-autosubmit
 		up-disable
 		up-placeholder="#card-list-placeholder"
@@ -88,11 +88,11 @@ const filtered = filters
 				type="search"
 				name="query"
 				placeholder="Search cards..."
-				list="suggest-characters"
+				list="suggestions"
 				autofocus
 			/>
 
-			<datalist id="suggest-characters">
+			<datalist id="suggestions">
 				{
 					[...character_map.values()]
 						.filter(

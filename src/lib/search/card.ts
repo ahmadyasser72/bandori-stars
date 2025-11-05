@@ -6,17 +6,13 @@ import { band_map, card_map, type Entry } from "@/contents/data";
 import { constants } from "~/lib/content";
 import { regionValue } from "~/lib/utilities";
 
-type CardEntry = Omit<Entry<"card_map">, "releasedAt" | "rateUp">;
-export const config: DocumentOptions<CardEntry> = {
-	preset: "match",
-	resolution: 3,
+type CardName = Record<"character" | "name", string>;
+export const config: DocumentOptions<CardName> = {
+	tokenize: "tolerant",
 	cache: false,
 	store: false,
 
-	document: {
-		id: "card_map",
-		index: ["character:name", "name:en", "attribute", "band:name", "type"],
-	},
+	document: { id: "card_names", index: ["character", "name"] },
 };
 
 export const createIndex = (oldestFirst: boolean) => {
@@ -24,7 +20,11 @@ export const createIndex = (oldestFirst: boolean) => {
 
 	const entries = [...card_map.entries()];
 	if (!oldestFirst) entries.reverse();
-	for (const [id, data] of entries) index.add(Number(id), data);
+	for (const [id, data] of entries)
+		index.add(Number(id), {
+			name: regionValue.unwrap(data.name),
+			character: data.character.name,
+		});
 
 	return index;
 };
@@ -43,7 +43,7 @@ export const filterList = [
 			"aria-label": regionValue.unwrap(name),
 			value: id,
 		})),
-		getValue: (entry: CardEntry) => entry.band.id,
+		getValue: (entry: Entry<"card_map">) => entry.band.id,
 	},
 	{
 		label: "Type",
@@ -55,7 +55,7 @@ export const filterList = [
 			"aria-label": type.toUpperCase(),
 			value: idx.toString(),
 		})),
-		getValue: (entry: CardEntry) =>
+		getValue: (entry: Entry<"card_map">) =>
 			constants.cardTypes.indexOf(entry.type).toString(),
 	},
 	{
@@ -71,12 +71,12 @@ export const filterList = [
 			"aria-label": attribute.toUpperCase(),
 			value: idx.toString(),
 		})),
-		getValue: (entry: CardEntry) =>
+		getValue: (entry: Entry<"card_map">) =>
 			constants.attributes.indexOf(entry.attribute).toString(),
 	},
 ] satisfies {
 	label: string;
 	props: { name: string } & Record<string, string>;
 	options: ({ value: string } & Record<string, string>)[];
-	getValue: (entry: CardEntry) => string;
+	getValue: (entry: Entry<"card_map">) => string;
 }[];
