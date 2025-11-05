@@ -1,0 +1,89 @@
+---
+import { Icon } from "astro-icon/components";
+
+import { card_map, gacha_map } from "@/contents/data";
+
+import { getGachaBannerUrl } from "~/lib/assets";
+import { regionValue } from "~/lib/utilities";
+
+export const partial = true;
+
+const card = card_map.get(Astro.params.card_id!);
+if (!card) {
+	return new Response("Card not found.", { status: 404 });
+}
+
+const gachaList = regionValue
+	.unwrap(card.rateUp)
+	?.map((id) => gacha_map.get(id)!)
+	.map(({ rateUp, ...entry }) => ({
+		...entry,
+		rate: regionValue.unwrap(rateUp).find((it) => it.card === card.id)!.rate,
+	}));
+---
+
+<main>
+	<h1
+		data-scroll-here="start"
+		class="scroll-here mb-4 scroll-mt-4 text-center text-2xl font-semibold"
+	>
+		Gacha List
+	</h1>
+
+	{
+		(gachaList?.length ?? 0) === 0 ? (
+			<p class="text-base-content/50 text-center">
+				No rate-up gacha available.
+			</p>
+		) : (
+			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+				{gachaList!.map(({ id, name, type, rate, startAt }) => (
+					<a
+						href="/to/be/defined"
+						up-follow
+						class="group card bg-base-100 hover:shadow-bandori-band shadow-sm"
+					>
+						<figure>
+							<img
+								src={getGachaBannerUrl(id)}
+								alt={`Banner of ${regionValue.unwrap(name)}`}
+								class="aspect-3/1 w-full"
+							/>
+						</figure>
+						<div class="card-body items-center text-center">
+							<h2 class="card-title group-hover:link">
+								{regionValue.unwrap(name)}
+							</h2>
+
+							<div class="flex flex-wrap justify-center gap-1.5 *:gap-1">
+								<div class="badge badge-primary font-medium">
+									<Icon class="size-4" name="lucide:percent" /> {rate}
+								</div>
+								<div class="badge badge-secondary font-medium">
+									{type.toUpperCase()}
+								</div>
+
+								<div class="badge badge-soft badge-neutral">
+									<Icon
+										class="size-6 rounded-full border border-current"
+										name="emojione:flag-for-japan"
+									/>
+									{startAt.jp.format("DD/MM/YYYY")} ({startAt.jp.fromNow()})
+								</div>
+								{startAt.en && (
+									<div class="badge badge-soft badge-neutral">
+										<Icon
+											class="size-6 rounded-full border border-current"
+											name="emojione:flag-for-united-states"
+										/>
+										{startAt.en.format("DD/MM/YYYY")} ({startAt.en.fromNow()})
+									</div>
+								)}
+							</div>
+						</div>
+					</a>
+				))}
+			</div>
+		)
+	}
+</main>

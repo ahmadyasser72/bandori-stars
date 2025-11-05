@@ -4,7 +4,7 @@ import type { APIRoute } from "./_shared";
 export const prerender = true;
 export { getStaticPaths } from "./_shared";
 
-export const GET: APIRoute = ({ props }) =>
+export const GET: APIRoute = ({ params, props }) =>
 	bestdoriAsset
-		.card("icon", true, props.data)
+		.card(params.type, false, props.data)
 		.then((data) => new Response(data));

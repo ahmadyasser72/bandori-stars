@@ -10,10 +10,12 @@ import { card_map } from "@/contents/data";
 import { IMAGE_FORMAT } from "~/lib/bestdori/client";
 
 export const getStaticPaths = (() =>
-	[...card_map.values()].map((data) => ({
-		params: { id: data.id, ext: IMAGE_FORMAT },
-		props: { data },
-	}))) satisfies GetStaticPaths;
+	[...card_map.values()].flatMap((data) =>
+		(["icon", "full"] as const).map((type) => ({
+			params: { id: data.id, type, ext: IMAGE_FORMAT },
+			props: { data },
+		})),
+	)) satisfies GetStaticPaths;
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 type Params = InferGetStaticParamsType<typeof getStaticPaths>;

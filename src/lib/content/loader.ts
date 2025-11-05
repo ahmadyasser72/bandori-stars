@@ -132,8 +132,15 @@ export const gacha = async () => {
 			.map(async ([id]) => {
 				const gacha = await bestdori<Bandori.Gacha>(`api/gacha/${id}.json`);
 
-				const { gachaName, type, publishedAt, closedAt, details, rates } =
-					gacha;
+				const {
+					gachaName,
+					type,
+					publishedAt,
+					closedAt,
+					details,
+					rates,
+					bannerAssetBundleName,
+				} = gacha;
 
 				return {
 					id,
@@ -142,6 +149,7 @@ export const gacha = async () => {
 					startAt: parser.timestamp(publishedAt),
 					endAt: parser.timestamp(closedAt),
 					rateUp: parser.gacha.rateUp(details, rates),
+					bannerAssetBundleName,
 				};
 			}),
 	);

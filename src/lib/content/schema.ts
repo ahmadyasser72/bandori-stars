@@ -68,6 +68,7 @@ export const schema = {
 		type: types.gacha,
 		startAt: timestamp,
 		endAt: timestamp,
+		bannerAssetBundleName: id,
 		rateUp: createMultiRegion(
 			z.array(
 				z.strictObject({

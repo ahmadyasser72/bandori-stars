@@ -22,3 +22,15 @@
 		color-scheme: dark;
 	}
 }
+
+@utility absolute-center-x {
+	@apply left-1/2 -translate-x-1/2;
+}
+
+@utility absolute-center-y {
+	@apply top-1/2 -translate-y-1/2;
+}
+
+@utility absolute-center {
+	@apply absolute-center-x absolute-center-y;
+}

@@ -21,10 +21,10 @@ import "~/styles/global.css";
 	import "unpoly/unpoly.js";
 	import "~/lib/unpoly-minimustache";
 
-	import { animateViewFullCard, applyFormValueToSiblings } from "~/lib/unpoly";
+	import { animateShowFullCard, applyFormValueToSiblings } from "~/lib/unpoly";
 
 	window.applyFormValueToSiblings = applyFormValueToSiblings;
-	window.animateViewFullCard = animateViewFullCard;
+	window.animateShowFullCard = animateShowFullCard;
 
 	up.compiler(".radio-group", (fieldset) => {
 		const isToggleAll = (el: HTMLInputElement) => el.ariaLabel === "All";
@@ -48,5 +48,16 @@ import "~/styles/global.css";
 				}
 			}
 		});
+	});
+
+	up.compiler(".scroll-here", (el) => {
+		setTimeout(
+			() =>
+				el.scrollIntoView({
+					behavior: "smooth",
+					block: (el.dataset.scrollHere ?? "nearest") as ScrollLogicalPosition,
+				}),
+			150,
+		);
 	});
 </script>

@@ -19,12 +19,12 @@ export const applyFormValueToSiblings = (
 		}
 	}
 };
-export const animateViewFullCard = (
+export const animateShowFullCard = (
 	el: HTMLElement,
 	layerElement: HTMLElement,
 	reverse: boolean = false,
 ) => {
-	const iconImage = el.querySelector("img")!;
+	const iconImage = el.closest("li")!.querySelector("img")!;
 	const activeImage = [...layerElement.querySelectorAll("img")].at(
 		[...layerElement.querySelectorAll("input")].findIndex(
 			(input) => input.checked,

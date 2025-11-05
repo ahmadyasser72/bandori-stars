@@ -9,6 +9,7 @@ export type GachaList = Record<
 export interface Gacha {
 	details: RegionTuple<Record<string, GachaDetail>>;
 	rates: RegionTuple<Record<string, GachaRate>>;
+	bannerAssetBundleName: string;
 	gachaName: RegionTuple<string>;
 	publishedAt: RegionTuple<string>;
 	closedAt: RegionTuple<string>;

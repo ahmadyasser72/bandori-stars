@@ -3,7 +3,7 @@ import { Icon } from "astro-icon/components";
 
 import { card_map, character_map } from "@/contents/data";
 
-import { IMAGE_FORMAT } from "~/lib/bestdori/client";
+import { getCardAssetUrl } from "~/lib/assets";
 import { createIndex, filterList } from "~/lib/search/card";
 import { randomInt, regionValue } from "~/lib/utilities";
 
@@ -38,7 +38,7 @@ Astro.session?.set("card_search_filters", filterMap);
 
 const sessionOptions = await Astro.session?.get("card_search_options");
 const getOption = (name: keyof App.SessionData["card_search_options"]) =>
-	params.get(name) !== ""
+	params.get(name) !== null
 		? params.get(name) === "true"
 		: sessionOptions?.[name] === true;
 const options = {
@@ -71,7 +71,7 @@ const filtered = filters
 
 <main class="flex flex-col items-center gap-y-4">
 	<form
-		up-target="#card-list, #next-page, #suggestions, #filter-list, #view-full-card"
+		up-target="#card-list, #next-page, #suggestions, #filter-list, #show-full-card"
 		up-autosubmit
 		up-disable
 		up-placeholder="#card-list-placeholder"
@@ -209,56 +209,59 @@ const filtered = filters
 
 	<ul id="card-list" class="list w-full">
 		{
-			filtered.map(({ id, name, character, band, attribute, rarity, type }) => (
-				<li
-					data-attribute={attribute}
-					data-band-id={band.id}
-					class="group list-row hover:bg-bandori-band hover:text-bandori-band-content select-none"
-				>
-					<div>
-						<a
-							up-layer="new"
-							up-fragment="#view-full-card"
-							up-use-data={JSON.stringify({
-								id,
-								name: `${character.name} - ${regionValue.unwrap(name)}`,
-							})}
-							up-on-opened="animateViewFullCard(this, layer.element)"
-							up-on-dismissed="animateViewFullCard(this, layer.element, true)"
-						>
-							<img
-								class="rounded-box size-12"
-								src={
-									options.show_trained
-										? `/static/assets/card/${id}_icon-trained.${IMAGE_FORMAT}`
-										: `/static/assets/card/${id}_icon.${IMAGE_FORMAT}`
-								}
-								loading="lazy"
-							/>
-						</a>
-					</div>
+			filtered.map(({ id, name, character, band, attribute, rarity, type }) => {
+				const showFullCardOnClick = {
+					"up-layer": "new",
+					"up-size": "large",
+					"up-fragment": "#show-full-card",
+					"up-use-data": JSON.stringify({
+						id,
+						band: band.id,
+						name: `${character.name} - ${regionValue.unwrap(name)}`,
+					}),
+					"up-on-opened": "animateShowFullCard(this, layer.element)",
+					"up-on-dismissed": "animateShowFullCard(this, layer.element, true)",
+				};
 
-					<div class="flex flex-col items-start gap-1">
-						<button
-							up-accept={`{ id: "${id}" }`}
-							class="cursor-pointer text-start text-sm font-semibold group-hover:font-medium group-hover:underline"
-						>
-							{regionValue.unwrap(name)}
-						</button>
-
-						<div class="inline-flex flex-wrap gap-1">
-							<span class="badge badge-sm bg-bandori-band text-bandori-band-content group-hover:bg-bandori-band-alt line-clamp-1 border border-current font-medium">
-								{band.name} &bullet; {character.name}
-							</span>
-
-							<span class="badge badge-sm bg-bandori-attribute text-bandori-attribute-content group-hover:bg-bandori-attribute-alt border border-white font-medium">
-								{type.toUpperCase()} &bullet; {attribute.toUpperCase()} &starf;
-								{rarity}
-							</span>
+				return (
+					<li
+						data-attribute={attribute}
+						data-band-id={band.id}
+						class="group list-row hover:bg-bandori-band hover:text-bandori-band-content select-none"
+					>
+						<div>
+							<a {...showFullCardOnClick}>
+								<img
+									class="rounded-box size-12"
+									src={getCardAssetUrl("icon", options.show_trained, id)}
+									loading="lazy"
+								/>
+							</a>
 						</div>
-					</div>
-				</li>
-			))
+
+						<div class="flex flex-col items-start gap-1">
+							<a
+								{...showFullCardOnClick}
+								class="text-start text-sm font-semibold group-hover:font-medium group-hover:underline"
+							>
+								{regionValue.unwrap(name)}
+							</a>
+
+							<div class="inline-flex flex-wrap gap-1">
+								<span class="badge badge-sm bg-bandori-band text-bandori-band-content group-hover:bg-bandori-band-alt line-clamp-1 border border-current font-medium">
+									{band.name} &bullet; {character.name}
+								</span>
+
+								<span class="badge badge-sm bg-bandori-attribute text-bandori-attribute-content group-hover:bg-bandori-attribute-alt border border-white font-medium">
+									{type.toUpperCase()} &bullet; {attribute.toUpperCase()}{" "}
+									&starf;
+									{rarity}
+								</span>
+							</div>
+						</div>
+					</li>
+				);
+			})
 		}
 	</ul>
 
@@ -291,35 +294,51 @@ const filtered = filters
 			}
 		</ul>
 	</template>
-	<template id="view-full-card" type="text/minimustache">
-		<div class="tabs tabs-box justify-center">
-			{
-				[false, true].map((trained) => (
-					<>
-						<input
-							type="radio"
-							name="card_image"
-							class="tab flex-1"
-							aria-label={trained ? "Trained" : "Normal"}
-							checked={options.show_trained ? trained : !trained}
-						/>
-						<div class="tab-content">
-							<img
-								src={
-									trained
-										? `/static/assets/card/{{id}}_trained.${IMAGE_FORMAT}`
-										: `/static/assets/card/{{id}}.${IMAGE_FORMAT}`
-								}
-								alt={trained ? "Trained " : "" + "{{name}}"}
-								class:list={[
-									options.show_trained ? trained : !trained && "hidden",
-									"rounded-box border-base-300 aspect-4/3 w-full border px-4 py-2 shadow-sm",
-								]}
-							/>
-						</div>
-					</>
-				))
-			}
+	<template id="show-full-card" type="text/minimustache">
+		<div data-band-id="{{band}}" class="grid gap-4">
+			<h1 is:raw class="text-xl font-semibold">{{name}}</h1>
+
+			<div class="flex flex-col gap-4 sm:flex-col-reverse">
+				<div class="tabs tabs-box max-sm:tabs-bottom max-sm:pb-4">
+					{
+						[false, true].map((trained) => {
+							const active = options.show_trained ? trained : !trained;
+
+							return (
+								<>
+									<input
+										type="radio"
+										name="card_image"
+										class="tab checked:text-bandori-band-content flex-1 font-medium [--tab-bg:var(--band-color)] hover:[--tab-bg:var(--band-color-alt)] max-sm:mt-2"
+										aria-label={trained ? "Trained" : "Normal"}
+										checked={active}
+									/>
+									<div class="tab-content shadow-bandori-band px-2 py-1 shadow-sm">
+										<img
+											src={getCardAssetUrl("full", trained, "{{id}}")}
+											alt={trained ? "Trained " : "" + "{{name}}"}
+											class:list={[
+												active && "hidden",
+												"rounded-box border-base-300 aspect-4/3 w-full border",
+											]}
+										/>
+									</div>
+								</>
+							);
+						})
+					}
+				</div>
+
+				<main>
+					<a
+						href="/partials/select-gacha/{{id}}"
+						up-follow
+						up-scroll="false"
+						class="scroll-here btn bg-bandori-band hover:bg-bandori-band-alt text-bandori-band-content sm:absolute-center-x sm:btn-wide scroll-mb-8 max-sm:w-full sm:absolute sm:bottom-20"
+						>Show Gacha List</a
+					>
+				</main>
+			</div>
 		</div>
 	</template>
 

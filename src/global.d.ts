@@ -3,7 +3,7 @@ type UnpolyUtilities = typeof import("~/lib/unpoly");
 declare global {
 	interface Window {
 		applyFormValueToSiblings: UnpolyUtilities["applyFormValueToSiblings"];
-		animateViewFullCard: UnpolyUtilities["animateViewFullCard"];
+		animateShowFullCard: UnpolyUtilities["animateShowFullCard"];
 	}
 
 	interface ObjectConstructor {

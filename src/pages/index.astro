@@ -3,16 +3,15 @@ import BaseLayout from "~/layouts/base-layout.astro";
 ---
 
 <BaseLayout>
-	<div class="self-center">
+	<div class="absolute-center absolute">
 		<a
 			href="/partials/select-card"
 			up-layer="new"
 			up-history="false"
 			up-evict-cache="/partials/select-card"
-			up-on-accepted={'alert("You choose " + value.id)'}
 			class="btn btn-accent"
 		>
-			Choose
+			Select card
 		</a>
 	</div>
 </BaseLayout>
