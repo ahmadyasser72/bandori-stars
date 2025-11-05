@@ -19,22 +19,10 @@ import "~/styles/global.css";
 
 <script>
 	import "unpoly/unpoly.js";
+	import "~/lib/unpoly-minimustache";
 
 	import { animateViewFullCard, applyFormValueToSiblings } from "~/lib/unpoly";
 
 	window.applyFormValueToSiblings = applyFormValueToSiblings;
 	window.animateViewFullCard = animateViewFullCard;
-</script>
-
-<script is:inline>
-	document.addEventListener("DOMContentLoaded", () => {
-		// https://unpoly.com/templates#template-engine-example
-		up.on("up:template:clone", '[type="text/minimustache"]', function (event) {
-			let template = event.target.innerHTML;
-			let evaluate = (_match, variable) =>
-				up.util.escapeHTML(event.data[variable]);
-			let filled = template.replace(/{{(\w+)}}/g, evaluate);
-			event.nodes = up.element.createNodesFromHTML(filled);
-		});
-	});
 </script>
