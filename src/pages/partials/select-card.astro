@@ -31,7 +31,7 @@ const filters = filterList.map(({ props: { name }, getValue }) => ({
 const filterMap = Object.fromEntries(
 	filters.map(({ name, values }) => [
 		name,
-		values?.split("|") ?? sessionFilters?.[name] ?? [],
+		(values?.split("|") ?? sessionFilters?.[name] ?? []).filter(Boolean),
 	]),
 );
 Astro.session?.set("card_search_filters", filterMap);
@@ -108,7 +108,11 @@ const filtered = filters
 		<div id="filter-list">
 			{
 				filterList.map(({ props: { name } }) => (
-					<input type="hidden" {name} value={filterMap[name].join("|")} />
+					<input
+						type="hidden"
+						{name}
+						value={filterMap[name].join("|") || undefined}
+					/>
 				))
 			}
 
@@ -125,7 +129,7 @@ const filtered = filters
 						{
 							filterList.map(
 								({ label, options, props: { class: className, ...props } }) => (
-									<fieldset class="fieldset bg-base-100 border-base-300 rounded-box border p-2 pt-1 text-sm">
+									<fieldset class="radio-group fieldset bg-base-100 border-base-300 rounded-box border p-2 pt-1 text-sm">
 										<legend class="fieldset-legend">{label}</legend>
 										<div class="flex flex-wrap gap-1">
 											{options.map((option) => (
@@ -140,6 +144,15 @@ const filtered = filters
 													checked={filterMap[props.name].includes(option.value)}
 												/>
 											))}
+
+											<input
+												type="checkbox"
+												{...props}
+												class="btn btn-sm btn-neutral checked:text-base-content checked:hover:bg-base-300 checked:bg-transparent"
+												aria-label="All"
+												value=""
+												checked={filterMap[props.name].length > 0}
+											/>
 										</div>
 									</fieldset>
 								),

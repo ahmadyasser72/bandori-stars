@@ -10,7 +10,12 @@ export const applyFormValueToSiblings = (
 		if (sibling instanceof HTMLInputElement) {
 			const values = entries.filter((entry) => entry.name === sibling.name);
 			sibling.value =
-				values.length > 0 ? values.map(({ value }) => value).join("|") : "";
+				values.length > 0
+					? values
+							.map(({ value }) => value)
+							.filter(Boolean)
+							.join("|")
+					: "";
 		}
 	}
 };
