@@ -7,6 +7,10 @@ on:
   schedule:
     - cron: "30 6 * * *"
 
+concurrency:
+  group: deploy-cloudflare-workers
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
