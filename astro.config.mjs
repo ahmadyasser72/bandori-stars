@@ -2,13 +2,13 @@
 import icon from "astro-icon";
 import { defineConfig } from "astro/config";
 
-import netlify from "@astrojs/netlify";
+import cloudflare from "@astrojs/cloudflare";
 import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
 export default defineConfig({
 	output: "server",
-	adapter: netlify(),
+	adapter: cloudflare(),
 	session: { cookie: "laravel_session", ttl: 24 * 60 * 60 /* 1 day */ },
 	integrations: [icon()],
 
