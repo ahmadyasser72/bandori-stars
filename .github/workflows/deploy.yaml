@@ -15,39 +15,38 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
 
-      - name: Cache bestdori API responses
+      - name: Cache bestdori responses
         uses: actions/cache@v4
         with:
           path: |
             bestdori/*.json
-          key: bestdori-${{ github.run_id }}
-          restore-keys: |
-            bestdori-
-      - name: Cache bestdori asset responses
+            bestdori/*.png
+          key: bestdori-response-${{ github.run_id }}
+          restore-keys: bestdori-response-
+
+      - name: Cache compressed assets
         uses: actions/cache@v4
         with:
-          path: |
-            bestdori/
-            !bestdori/*.json
-          key: bestdori-${{ hashFiles('src/lib/bestdori/*') }}-${{ github.run_id }}
+          path: bestdori/compressed/
+          key: compressed-bestdori-asset-${{ hashFiles('src/lib/bestdori/compress.ts') }}-${{ github.run_id }}
           restore-keys: |
-            bestdori-${{ hashFiles('src/lib/bestdori/*') }}-
+            compressed-bestdori-asset-${{ hashFiles('src/lib/bestdori/compress.ts') }}-
 
       - name: Build site
         run: bun run build
 
-      - name: Upload bestdori API responses
+      - name: Upload bestdori responses
         uses: actions/upload-artifact@v4
         with:
-          name: bestdori-${{ github.run_id }}-api
-          path: bestdori/*.json
-      - name: Upload bestdori assets responses
-        uses: actions/upload-artifact@v4
-        with:
-          name: bestdori-${{ github.run_id }}-assets
+          name: bestdori-${{ github.run_id }}
           path: |
-            bestdori/
-            !bestdori/*.json
+            bestdori/*.json
+            bestdori/*.png
+      - name: Upload compressed assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: compressed-bestdori-${{ github.run_id }}
+          path: bestdori/compressed/
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4

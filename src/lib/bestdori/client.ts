@@ -1,13 +1,11 @@
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { mkdir } from "node:fs/promises";
 import { join as joinPath } from "node:path";
 
 import ky from "ky";
 import pLimit from "p-limit";
-import sharp from "sharp";
 
-const BESTDORI_CACHE_DIR = "./bestdori";
-const MAX_IMAGE_WIDTH = 1200;
+export const BESTDORI_CACHE_DIR = "./bestdori";
+export const MAX_IMAGE_WIDTH = 1200;
 export const IMAGE_FORMAT = "avif";
 
 export const limit = pLimit(4);
@@ -24,52 +22,20 @@ export const client = ky.create({
 		afterResponse: [
 			async (request, _options, response) => {
 				if (!cachedResponses.has(request.url) && response.ok) {
-					await mkdir(BESTDORI_CACHE_DIR).catch(() => {});
-
 					const path = getCachePath(request);
-					if (
-						!shouldPutCache(path.file, response) ||
-						!shouldPutCache(path.image, response)
-					)
-						return;
-
-					const buffer = await response.arrayBuffer();
-					const contentType = response.headers.get("content-type");
-
-					if (contentType && contentType.startsWith("image/")) {
-						const image = (await sharp(buffer)
-							.resize({
-								width: MAX_IMAGE_WIDTH,
-								withoutEnlargement: true,
-								kernel: "mks2021",
-							})
-							.toFormat(IMAGE_FORMAT)
-							.toBuffer()) as Buffer<ArrayBuffer>;
-
-						writeFileSync(path.image, image);
-						return new Response(image, {
-							headers: {
-								"content-type": `image/${IMAGE_FORMAT}`,
-								"content-length": image.byteLength.toString(),
-							},
-						});
-					} else {
-						writeFileSync(path.file, Buffer.from(buffer));
+					if (shouldPutCache(path, response)) {
+						const buffer = await response.arrayBuffer().then(Buffer.from);
+						writeFileSync(path, buffer);
 					}
 				}
 			},
 		],
 		beforeRequest: [
 			async (request) => {
-				await mkdir(BESTDORI_CACHE_DIR).catch(() => {});
-
 				const path = getCachePath(request);
-				if (existsSync(path.file) && !path.file.includes("all")) {
+				if (existsSync(path) && !path.includes("all")) {
 					cachedResponses.add(request.url);
-					return new Response(readFileSync(path.file));
-				} else if (existsSync(path.image)) {
-					cachedResponses.add(request.url);
-					return new Response(readFileSync(path.image));
+					return new Response(readFileSync(path));
 				}
 			},
 		],
@@ -81,7 +47,7 @@ const getCachePath = (request: Request) => {
 	const filename = url.pathname.slice(1).replaceAll("/", "-");
 	const path = joinPath(BESTDORI_CACHE_DIR, filename);
 
-	return { file: path, image: `${path}.${IMAGE_FORMAT}` };
+	return path;
 };
 
 const shouldPutCache = (file: string, response: Response) => {

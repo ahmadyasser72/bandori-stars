@@ -1,6 +1,7 @@
 import type { Entry } from "@/contents/data";
 
 import { client, limit } from "./client";
+import { compressImage } from "./compress";
 
 const hasNoPreTrained = ({ name, type }: Entry<"card_map">) =>
 	name.en === "Graduation" || ["kirafes", "birthday"].includes(type);
@@ -11,6 +12,7 @@ export const card = async (
 	data: Entry<"card_map">,
 ) => {
 	const type = trained || hasNoPreTrained(data) ? "after_training" : "normal";
+	const compress = compressImage([data.id, kind, type].join("_"));
 
 	switch (kind) {
 		case "icon": {
@@ -24,7 +26,7 @@ export const card = async (
 						`assets/jp/thumb/chara/card${chunkId}_rip/${data.resourceId}_${type}.png`,
 					)
 					.arrayBuffer(),
-			);
+			).then(compress);
 		}
 
 		case "image": {
@@ -34,7 +36,7 @@ export const card = async (
 						`assets/jp/characters/resourceset/${data.resourceId}_rip/card_${type}.png`,
 					)
 					.arrayBuffer(),
-			);
+			).then(compress);
 		}
 	}
 };
