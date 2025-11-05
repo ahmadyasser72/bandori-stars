@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { join as joinPath } from "node:path";
 
 import sharp from "sharp";
@@ -15,16 +15,15 @@ export const compressImage = (name: string) => {
 	return async (buffer: ArrayBuffer) => {
 		if (existsSync(path)) return readFileSync(path);
 
-		const image = await sharp(buffer)
+		await sharp(buffer)
 			.resize({
 				width: MAX_IMAGE_WIDTH,
 				withoutEnlargement: true,
 				kernel: "mks2021",
 			})
-			.toFormat(IMAGE_FORMAT)
-			.toBuffer();
+			[IMAGE_FORMAT]({ effort: 2 })
+			.toFile(path);
 
-		writeFileSync(path, image);
-		return image as Buffer<ArrayBuffer>;
+		return readFileSync(path);
 	};
 };
