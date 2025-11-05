@@ -23,6 +23,8 @@ export const card = async (
 			const url = `assets/jp/thumb/chara/card${chunkId}_rip/${data.resourceId}_${type}.png`;
 			return fetchBestdori(url)
 				.catch(() => fetchBestdori(url.replace("jp", "en")))
+				.catch(() => fetchBestdori(url.replace("jp", "cn")))
+				.catch(() => fetchBestdori(url.replace("jp", "tw")))
 				.then(compress);
 		}
 
@@ -30,6 +32,8 @@ export const card = async (
 			const url = `assets/jp/characters/resourceset/${data.resourceId}_rip/card_${type}.png`;
 			return fetchBestdori(url)
 				.catch(() => fetchBestdori(url.replace("jp", "en")))
+				.catch(() => fetchBestdori(url.replace("jp", "cn")))
+				.catch(() => fetchBestdori(url.replace("jp", "tw")))
 				.then(compress);
 		}
 	}
