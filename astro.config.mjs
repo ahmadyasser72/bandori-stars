@@ -16,6 +16,7 @@ export default defineConfig({
 	vite: {
 		plugins: [tailwindcss()],
 		server: { hmr: false },
+		ssr: { external: ["node:fs", "node:path", "sharp"] },
 
 		build: {
 			rollupOptions: {

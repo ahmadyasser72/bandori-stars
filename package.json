@@ -13,7 +13,6 @@
 	},
 	"dependencies": {
 		"@astrojs/cloudflare": "^12.6.10",
-		"@astrojs/netlify": "^6.6.0",
 		"@tailwindcss/vite": "^4.1.16",
 		"astro": "^5.15.2",
 		"astro-icon": "^1.1.5",
@@ -22,7 +21,6 @@
 		"dayjs": "^1.11.19",
 		"flexsearch": "^0.8.212",
 		"p-limit": "^7.2.0",
-		"sharp": "^0.34.4",
 		"tailwindcss": "^4.1.16",
 		"unpoly": "^3.12.0"
 	},
@@ -37,6 +35,7 @@
 		"prettier": "^3.6.2",
 		"prettier-plugin-astro": "^0.14.1",
 		"prettier-plugin-tailwindcss": "^0.7.1",
+		"sharp": "^0.34.4",
 		"typescript": "^5.9.3",
 		"wrangler": "^4.45.4",
 		"zod": "^4.1.12"

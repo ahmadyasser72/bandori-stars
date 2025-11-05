@@ -30,4 +30,4 @@ pnpm-debug.log*
 /bestdori/compressed/*
 !/bestdori/compressed/.gitkeep
 
-/.contents/raw-data.js
+/.contents/data.js

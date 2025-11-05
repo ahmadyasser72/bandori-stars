@@ -2,6 +2,7 @@ name: Deploy to Netlify
 
 on:
   push:
+    branches: [main]
   workflow_dispatch:
   schedule:
     - cron: "30 6 * * *"
@@ -25,7 +26,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: bestdori/compressed/
-          key: compressed-bestdori-asset-
+          key: compressed-bestdori-asset-${{ hashFiles('src/lib/bestdori/compress.ts') }}-
 
       - name: Build site
         run: bun run build
