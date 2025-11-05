@@ -43,7 +43,7 @@ export const gachaBanner = async (data: Entry<"gacha_map">) => {
 	if (cached !== undefined) return cached;
 
 	const compress = compressImage(filename);
-	fetchBestdoriWithRegionFallbacks(
+	return fetchBestdoriWithRegionFallbacks(
 		`assets/jp/homebanner_rip/${data.bannerAssetBundleName}.png`,
 	).then(compress);
 };

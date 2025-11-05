@@ -14,6 +14,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      BESTDORI_CACHE: bestdori-cache
 
     steps:
       - uses: actions/checkout@v4
@@ -23,39 +25,44 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: |
-            bestdori/*.json
-            bestdori/*.png
+            ${{ env.BESTDORI_CACHE }}/*.json
+            ${{ env.BESTDORI_CACHE }}/*.png
           key: bestdori-response-
       - name: Restore compressed assets
         uses: actions/cache/restore@v4
         with:
-          path: bestdori/compressed/
+          path: ${{ env.BESTDORI_CACHE }}/compressed/
           key: compressed-bestdori-asset-${{ hashFiles('src/lib/bestdori/compress.ts') }}-
 
       - name: Build site
         run: bun run build
+      - name: Upload site build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site
+          include-hidden-files: true
+          path: dist/
 
       - name: Save bestdori responses cache
         if: always()
         uses: actions/cache/save@v4
         with:
           path: |
-            bestdori/*.json
-            bestdori/*.png
+            ${{ env.BESTDORI_CACHE }}/*.json
+            ${{ env.BESTDORI_CACHE }}/*.png
           key: bestdori-response-${{ github.run_id }}-${{ github.run_number }}
       - name: Save compressed assets cache
         if: always()
         uses: actions/cache/save@v4
         with:
-          path: bestdori/compressed/
+          path: ${{ env.BESTDORI_CACHE }}/compressed/
           key: compressed-bestdori-asset-${{ hashFiles('src/lib/bestdori/compress.ts') }}-${{ github.run_id }}-${{ github.run_number }}
 
-      - name: Upload build artifact
+      - name: Upload compressed assets
         uses: actions/upload-artifact@v4
         with:
-          name: site
-          include-hidden-files: true
-          path: dist/
+          name: assets-${{ hashFiles('src/lib/bestdori/compress.ts') }}-${{ github.run_id }}
+          path: ${{ env.BESTDORI_CACHE }}/compressed/
 
   deploy:
     needs: build
