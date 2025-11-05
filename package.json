@@ -7,7 +7,7 @@
 		"dev": "astro dev",
 		"generate-content": "bun run scripts/generate-content.ts",
 		"build": "bun generate-content && astro check && astro build",
-		"deploy": "netlify deploy --dir dist --prod --no-build",
+		"deploy": "wrangler deploy",
 		"astro": "astro",
 		"format": "prettier . --write"
 	},
