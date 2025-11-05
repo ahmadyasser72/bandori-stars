@@ -1,8 +1,6 @@
 import { existsSync, readFileSync } from "fs";
 import { join as joinPath } from "node:path";
 
-import sharp from "sharp";
-
 import { BESTDORI_CACHE_DIR, IMAGE_FORMAT, MAX_IMAGE_WIDTH } from "./client";
 
 export const compressImage = (name: string) => {
@@ -14,6 +12,7 @@ export const compressImage = (name: string) => {
 
 	return async (response: Response) => {
 		if (!existsSync(path)) {
+			const { default: sharp } = await import("sharp");
 			const buffer = await response.arrayBuffer();
 
 			await sharp(buffer)
