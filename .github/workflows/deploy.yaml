@@ -15,25 +15,36 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
 
-      - name: Cache bestdori responses
-        uses: actions/cache@v4
+      - name: Restore bestdori responses
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            bestdori/*.json
+            bestdori/*.png
+          key: bestdori-response-
+      - name: Restore compressed assets
+        uses: actions/cache/restore@v4
+        with:
+          path: bestdori/compressed/
+          key: compressed-bestdori-asset-${{ hashFiles('src/lib/bestdori/compress.ts') }}-
+
+      - name: Build site
+        run: bun run build
+
+      - name: Save bestdori responses cache
+        if: always()
+        uses: actions/cache/save@v4
         with:
           path: |
             bestdori/*.json
             bestdori/*.png
           key: bestdori-response-${{ github.run_id }}
-          restore-keys: bestdori-response-
-
-      - name: Cache compressed assets
-        uses: actions/cache@v4
+      - name: Save compressed assets cache
+        if: always()
+        uses: actions/cache/save@v4
         with:
           path: bestdori/compressed/
           key: compressed-bestdori-asset-${{ hashFiles('src/lib/bestdori/compress.ts') }}-${{ github.run_id }}
-          restore-keys: |
-            compressed-bestdori-asset-${{ hashFiles('src/lib/bestdori/compress.ts') }}-
-
-      - name: Build site
-        run: bun run build
 
       - name: Upload bestdori responses
         uses: actions/upload-artifact@v4
