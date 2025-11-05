@@ -1,4 +1,4 @@
-name: Deploy to Netlify
+name: Deploy to Cloudflare Workers
 
 on:
   push:
@@ -49,19 +49,13 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: netlify-site
+          name: site
           include-hidden-files: true
-          path: |
-            .netlify/
-            dist/
+          path: dist/
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
-
-    environment:
-      name: netlify-site
-      url: ${{ steps.netlify_deployment.outputs.url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -70,13 +64,11 @@ jobs:
       - name: Download build artifact
         uses: actions/download-artifact@v5
         with:
-          name: netlify-site
+          name: site
+          path: dist/
 
-      - name: Deploy to Netlify
-        id: netlify_deployment
-        run: |
-          url=$(bun run deploy --json | jq -r .url)
-          echo "url=$url" >> $GITHUB_OUTPUT
+      - name: Deploy to Cloudflare Workers
+        run: bun run deploy
         env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
