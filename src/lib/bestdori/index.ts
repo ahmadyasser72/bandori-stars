@@ -1,6 +1,6 @@
-import { client, limit } from "./client";
+import { fetchBestdori } from "./client";
 
-export const bestdori = <T>(pathname: string) =>
-	limit(() => client.get<T>(pathname).json());
+export const bestdori = <T>(pathname: string): Promise<T> =>
+	fetchBestdori(pathname).then((response) => response.json());
 
 export * as bestdoriAsset from "./asset";

@@ -12,17 +12,19 @@ export const compressImage = (name: string) => {
 		`${name}.${IMAGE_FORMAT}`,
 	);
 
-	return async (buffer: ArrayBuffer) => {
-		if (existsSync(path)) return readFileSync(path);
+	return async (response: Response) => {
+		if (!existsSync(path)) {
+			const buffer = await response.arrayBuffer();
 
-		await sharp(buffer)
-			.resize({
-				width: MAX_IMAGE_WIDTH,
-				withoutEnlargement: true,
-				kernel: "mks2021",
-			})
-			[IMAGE_FORMAT]({ effort: 2 })
-			.toFile(path);
+			await sharp(buffer)
+				.resize({
+					width: MAX_IMAGE_WIDTH,
+					withoutEnlargement: true,
+					kernel: "mks2021",
+				})
+				[IMAGE_FORMAT]({ effort: 2 })
+				.toFile(path);
+		}
 
 		return readFileSync(path);
 	};

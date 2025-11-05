@@ -1,6 +1,6 @@
 import type { Entry } from "@/contents/data";
 
-import { client, limit } from "./client";
+import { fetchBestdori } from "./client";
 import { compressImage } from "./compress";
 
 const hasNoPreTrained = ({ name, type }: Entry<"card_map">) =>
@@ -20,30 +20,22 @@ export const card = async (
 				.toString()
 				.padStart(5, "0");
 
-			return limit(() =>
-				client
-					.get(
-						`assets/jp/thumb/chara/card${chunkId}_rip/${data.resourceId}_${type}.png`,
-					)
-					.arrayBuffer(),
-			).then(compress);
+			const url = `assets/jp/thumb/chara/card${chunkId}_rip/${data.resourceId}_${type}.png`;
+			return fetchBestdori(url)
+				.catch(() => fetchBestdori(url.replace("jp", "en")))
+				.then(compress);
 		}
 
 		case "full": {
-			return limit(() =>
-				client
-					.get(
-						`assets/jp/characters/resourceset/${data.resourceId}_rip/card_${type}.png`,
-					)
-					.arrayBuffer(),
-			).then(compress);
+			const url = `assets/jp/characters/resourceset/${data.resourceId}_rip/card_${type}.png`;
+			return fetchBestdori(url)
+				.catch(() => fetchBestdori(url.replace("jp", "en")))
+				.then(compress);
 		}
 	}
 };
 
 export const gachaBanner = async (data: Entry<"gacha_map">) =>
-	limit(() =>
-		client
-			.get(`assets/jp/homebanner_rip/${data.bannerAssetBundleName}.png`)
-			.arrayBuffer(),
+	fetchBestdori(
+		`assets/jp/homebanner_rip/${data.bannerAssetBundleName}.png`,
 	).then(compressImage(`gacha_${data.id}_banner`));
