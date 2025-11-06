@@ -84,7 +84,10 @@ export const gacha = {
 			detailsTuple.map((details, tupleId) =>
 				details
 					? Object.entries(details)
-							.filter(([, { pickup }]) => pickup)
+							.filter(
+								([, { pickup, rarityIndex }]) =>
+									pickup && Number(rarityIndex) >= 4,
+							)
 							.map(([card, { rarityIndex: rarity, weight }]) => {
 								const { rate, weightTotal } = ratesTuple[tupleId]![rarity];
 								const weightedRate = (weight / weightTotal) * rate;
