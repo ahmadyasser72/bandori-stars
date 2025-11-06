@@ -5,7 +5,7 @@ export type Characters = Record<
 	CharacterId,
 	{
 		characterName: RegionTuple<string>;
-		nickname: RegionTuple<string>;
+		nickname: RegionTuple<string | null>;
 		bandId: BandId;
 	}
 >;

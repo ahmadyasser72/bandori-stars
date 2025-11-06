@@ -6,12 +6,10 @@ import { parser, schema } from ".";
 export const band = async () => {
 	const bands = await bestdori<Bandori.Bands>("api/bands/main.1.json");
 
-	const entries = await Promise.all(
-		Object.entries(bands).map(([id, { bandName }]) => ({
-			id,
-			name: parser.regionTuple(bandName),
-		})),
-	);
+	const entries = Object.entries(bands).map(([id, { bandName }]) => ({
+		id,
+		name: parser.regionTuple(bandName),
+	}));
 
 	return entries.map((entry) => schema.band.parse(entry));
 };
@@ -21,12 +19,18 @@ export const character = async () => {
 		"api/characters/main.3.json",
 	);
 
-	const entries = await Promise.all(
-		Object.entries(characters).map(([id, { characterName, bandId }]) => ({
-			id,
-			band: bandId.toString(),
-			name: parser.regionTuple(characterName),
-		})),
+	const entries = Object.entries(characters).map(
+		([id, { characterName, bandId, nickname }]) => {
+			const nick = parser.regionTuple(nickname);
+
+			return {
+				id,
+				band: bandId.toString(),
+				name: Object.values(nick).every((it) => it === null)
+					? parser.regionTuple(characterName)
+					: nick,
+			};
+		},
 	);
 
 	return entries.map((entry) => schema.character.parse(entry));
