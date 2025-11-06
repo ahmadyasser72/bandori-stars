@@ -1,17 +1,3 @@
-const textEncoder = new TextEncoder();
-export const toJsonResponse = <T extends object>(o: T) => {
-	const json = JSON.stringify(
-		o instanceof Map ? Object.fromEntries(o.entries()) : o,
-	);
-
-	return new Response(json, {
-		headers: {
-			"content-type": "application/json",
-			"content-length": textEncoder.encode(json).byteLength.toString(),
-		},
-	});
-};
-
 export const emptyObjectIsNull = <T extends object>(o: T | {}): T | null =>
 	Object.keys(o).length === 0 ? null : (o as T);
 
