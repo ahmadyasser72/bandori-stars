@@ -10,16 +10,19 @@ if (!card) {
 	return new Response("Card not found.", { status: 404 });
 }
 
-const gachaList = regionValue
-	.unwrap(card.rateUpGacha)
-	?.map(({ rateUp, ...entry }) => ({
-		gacha: entry,
-		rate: regionValue.unwrap(rateUp)?.find((it) => it.card.id === card.id)!
-			.rate,
-	}));
+const gachaList = regionValue.unwrap(
+	regionValue.map(card.rateUpGacha, (items) =>
+		items.map(({ rateUp, ...entry }) => ({
+			gacha: { ...entry, rateUp },
+			rate: regionValue.unwrap(rateUp)?.find((it) => it.card.id === card.id)!
+				.rate,
+		})),
+	),
+);
+const { options } = (await Astro.session!.get("card_search"))!;
 ---
 
-<main>
+<div id="select-gacha">
 	<h1
 		data-scroll-here="start"
 		class="scroll-here mb-4 scroll-mt-4 text-center text-2xl font-semibold"
@@ -33,7 +36,10 @@ const gachaList = regionValue
 				No rate-up gacha available.
 			</p>
 		) : (
-			<GachaCardGrid {gachaList} />
+			<GachaCardGrid
+				{gachaList}
+				options={options as Required<App.SearchOptions>}
+			/>
 		)
 	}
-</main>
+</div>

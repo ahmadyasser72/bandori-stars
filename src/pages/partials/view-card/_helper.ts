@@ -1,0 +1,17 @@
+import type { Entry } from "@/contents/data";
+
+type Options = Partial<
+	Record<"show_trained" | "auto_scroll" | "show_gacha_list", boolean>
+>;
+
+export const showFullCardModalOnClick = (
+	card: Pick<Entry<"card_map">, "id">,
+	options: Options,
+) => ({
+	href: `/partials/view-card/${card.id}`,
+	"up-layer": "new",
+	"up-size": "large",
+	"up-params": JSON.stringify(options),
+	"up-on-opened": "__unpoly_animateShowFullCard(this, layer.element)",
+	"up-on-dismissed": "__unpoly_animateShowFullCard(this, layer.element, true)",
+});

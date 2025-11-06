@@ -1,0 +1,76 @@
+---
+import { card_map } from "@/contents/data";
+import { getCardAssetUrl } from "~/lib/assets";
+import { randomInt } from "~/lib/utilities";
+
+export const partial = true;
+
+const card = card_map.get(Astro.params.card_id!);
+if (!card) {
+	return new Response("Card not found.", { status: 404 });
+}
+
+const name = `${card.character.name} - ${card.name}`;
+const tabName = `full_image_${randomInt(0, 1000)}`;
+
+const params = Astro.url.searchParams;
+const showTrained = params.get("show_trained") === "true";
+const autoScroll = params.get("auto_scroll") === "true";
+const showGachaList = params.get("show_gacha_list") === "true";
+---
+
+<main>
+	<div data-band-id={card.band.id} class="grid gap-4">
+		<h1 class="text-xl font-semibold">{name}</h1>
+
+		<div class="flex flex-col gap-4 sm:flex-col-reverse">
+			<div class="tabs tabs-box max-sm:tabs-bottom max-sm:pb-4">
+				{
+					[false, true].map((trained) => {
+						const active = showTrained ? trained : !trained;
+
+						return (
+							<>
+								<input
+									type="radio"
+									name={tabName}
+									class="tab checked:text-bandori-band-content flex-1 font-medium [--tab-bg:var(--band-color)] hover:[--tab-bg:var(--band-color-alt)] max-sm:mt-2"
+									aria-label={trained ? "Trained" : "Normal"}
+									checked={active}
+								/>
+								<div class="tab-content shadow-bandori-band px-2 py-1 shadow-sm">
+									<img
+										src={getCardAssetUrl("full", trained, card.id)}
+										alt={trained ? "Trained " : "" + name}
+										class:list={[
+											active && "hidden",
+											active && autoScroll && "scroll-here",
+											"rounded-box border-base-300 aspect-4/3 w-full border",
+										]}
+										data-scroll-here="center"
+									/>
+								</div>
+							</>
+						);
+					})
+				}
+			</div>
+
+			{
+				showGachaList && (
+					<div id="select-gacha">
+						<a
+							up-target="#select-gacha"
+							href={`/partials/select-gacha/${card.id}`}
+							up-follow
+							up-scroll="false"
+							class="scroll-here btn bg-bandori-band hover:bg-bandori-band-alt text-bandori-band-content sm:absolute-center-x sm:btn-wide scroll-mb-8 max-sm:w-full sm:absolute sm:bottom-20"
+						>
+							Show Gacha List
+						</a>
+					</div>
+				)
+			}
+		</div>
+	</div>
+</main>
