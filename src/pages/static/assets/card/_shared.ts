@@ -5,15 +5,19 @@ import type {
 	InferGetStaticPropsType,
 } from "astro";
 
+import { shuffle } from "fast-shuffle";
+
 import { card_map } from "@/contents/data";
 import { IMAGE_FORMAT } from "~/lib/bestdori/client";
 
 export const getStaticPaths = (() =>
-	[...card_map.values()].flatMap((data) =>
-		(["icon", "full"] as const).map((type) => ({
-			params: { id: data.id, type, ext: IMAGE_FORMAT },
-			props: { data },
-		})),
+	shuffle(
+		[...card_map.values()].flatMap((data) =>
+			(["icon", "full"] as const).map((type) => ({
+				params: { id: data.id, type, ext: IMAGE_FORMAT },
+				props: { data },
+			})),
+		),
 	)) satisfies GetStaticPaths;
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;

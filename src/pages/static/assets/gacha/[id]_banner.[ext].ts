@@ -5,6 +5,8 @@ import type {
 	InferGetStaticPropsType,
 } from "astro";
 
+import { shuffle } from "fast-shuffle";
+
 import { gacha_map } from "@/contents/data";
 import { bestdoriAsset } from "~/lib/bestdori";
 import { IMAGE_FORMAT } from "~/lib/bestdori/client";
@@ -15,10 +17,12 @@ export const GET: APIRoute<Props, Params> = async ({ props }) =>
 	bestdoriAsset.gachaBanner(props.data).then((data) => new Response(data));
 
 export const getStaticPaths = (() =>
-	[...gacha_map.values()].map((data) => ({
-		params: { id: data.id, ext: IMAGE_FORMAT },
-		props: { data },
-	}))) satisfies GetStaticPaths;
+	shuffle(
+		[...gacha_map.values()].map((data) => ({
+			params: { id: data.id, ext: IMAGE_FORMAT },
+			props: { data },
+		})),
+	)) satisfies GetStaticPaths;
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 type Params = InferGetStaticParamsType<typeof getStaticPaths>;

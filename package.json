@@ -19,6 +19,7 @@
 		"clsx": "^2.1.1",
 		"daisyui": "^5.3.10",
 		"dayjs": "^1.11.19",
+		"fast-shuffle": "^6.1.1",
 		"flexsearch": "^0.8.212",
 		"p-limit": "^7.2.0",
 		"tailwindcss": "^4.1.16",
