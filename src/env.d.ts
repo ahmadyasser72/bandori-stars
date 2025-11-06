@@ -1,7 +1,9 @@
 type NetlifyLocals = import("@astrojs/netlify").NetlifyLocals;
 
 declare namespace App {
-	interface Locals extends NetlifyLocals {}
+	interface Locals extends NetlifyLocals {
+		search_options: Required<SearchOptions>;
+	}
 
 	type SearchOptions = Partial<
 		Record<"oldest_first" | "show_trained", boolean>

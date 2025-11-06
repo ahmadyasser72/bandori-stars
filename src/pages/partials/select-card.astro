@@ -23,10 +23,7 @@ const { results, filterMap, options, page } = await search({
 });
 
 const showFullCardOnClick = (id: string) =>
-	showFullCardModalOnClick(
-		{ id },
-		{ show_trained: options.show_trained, show_gacha_list: true },
-	);
+	showFullCardModalOnClick({ id }, { show_gacha_list: true });
 ---
 
 <main class="flex flex-col items-center gap-y-4">

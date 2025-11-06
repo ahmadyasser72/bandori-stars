@@ -44,8 +44,8 @@ export const search = async <
 	searchFn,
 }: Search<T, S>) => {
 	const params = context.url.searchParams;
+	const options = context.locals.search_options;
 	const sessionFilters = await context.session!.get(sessionKey);
-	const sessionOptions = await context.session!.get("search_options");
 
 	const pageQuery = Number(params.get("page") ?? NaN);
 	const currentPage = Math.max(1, Number.isNaN(pageQuery) ? 1 : pageQuery);
@@ -67,13 +67,6 @@ export const search = async <
 			),
 		]),
 	);
-
-	const getOption = (name: keyof App.SearchOptions) =>
-		params.size > 0 ? params.get(name) === "true" : !!sessionOptions?.[name];
-	const options = {
-		oldest_first: getOption("oldest_first"),
-		show_trained: getOption("show_trained"),
-	};
 
 	const query = params.get("query")?.toLowerCase();
 	const items = (() => {
@@ -100,8 +93,6 @@ export const search = async <
 		.slice(offset, offset + pageSize);
 
 	context.session!.set(sessionKey, filterMap as never);
-	context.session!.set("search_options", options);
-
 	return {
 		results,
 		filterMap,

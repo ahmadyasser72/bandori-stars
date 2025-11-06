@@ -8,11 +8,12 @@ import { showFullCardModalOnClick } from "~/pages/partials/view-card/_helper";
 
 export interface Props {
 	gacha: Entry<"gacha_map">;
-	options: Required<App.SearchOptions>;
 	rate?: number;
 }
 
-const { gacha, options, rate } = Astro.props;
+const { gacha, rate } = Astro.props;
+
+const showTrained = Astro.locals.search_options.show_trained;
 ---
 
 <div class="group card bg-base-100 hover:shadow-bandori-band shadow-sm">
@@ -70,14 +71,9 @@ const { gacha, options, rate } = Astro.props;
 					.slice(0, 5)
 					.map(({ card }) => (
 						<li>
-							<a
-								{...showFullCardModalOnClick(card, {
-									show_trained: options.show_trained,
-									auto_scroll: true,
-								})}
-							>
+							<a {...showFullCardModalOnClick(card, { auto_scroll: true })}>
 								<img
-									src={getCardAssetUrl("icon", options.show_trained, card.id)}
+									src={getCardAssetUrl("icon", showTrained, card.id)}
 									class="size-10"
 								/>
 							</a>

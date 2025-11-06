@@ -3,17 +3,16 @@ import Item, { type Props as ItemProps } from "./gacha-card-grid-item.astro";
 
 interface Props {
 	gachaList: Omit<ItemProps, "options">[];
-	options: Required<App.SearchOptions>;
 }
 
-const { gachaList, options } = Astro.props;
+const { gachaList } = Astro.props;
 ---
 
 <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 	{
 		gachaList.map((props) => (
 			<li class="contents">
-				<Item {...props} {options} />
+				<Item {...props} />
 			</li>
 		))
 	}

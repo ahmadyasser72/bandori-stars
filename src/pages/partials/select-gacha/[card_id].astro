@@ -19,7 +19,6 @@ const gachaList = regionValue.unwrap(
 		})),
 	),
 );
-const { options } = (await Astro.session!.get("card_search"))!;
 ---
 
 <div id="select-gacha">
@@ -36,10 +35,7 @@ const { options } = (await Astro.session!.get("card_search"))!;
 				No rate-up gacha available.
 			</p>
 		) : (
-			<GachaCardGrid
-				{gachaList}
-				options={options as Required<App.SearchOptions>}
-			/>
+			<GachaCardGrid {gachaList} />
 		)
 	}
 </div>
