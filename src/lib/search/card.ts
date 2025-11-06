@@ -2,7 +2,6 @@ import clsx from "clsx";
 import { Document } from "flexsearch";
 
 import { band_map, card_map, type Entry } from "@/contents/data";
-
 import { constants } from "~/lib/content";
 import { documentOptions, doSearch, type Filter } from ".";
 

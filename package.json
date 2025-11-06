@@ -3,10 +3,10 @@
 	"type": "module",
 	"version": "0.0.1",
 	"scripts": {
-		"check": "astro check",
+		"check": "prettier . --check && astro check",
 		"dev": "astro dev",
 		"generate-content": "bun run scripts/generate-content.ts",
-		"build": "bun generate-content && astro check && astro build",
+		"build": "bun generate-content && bun check && astro build",
 		"deploy": "wrangler deploy",
 		"astro": "astro",
 		"format": "prettier . --write"

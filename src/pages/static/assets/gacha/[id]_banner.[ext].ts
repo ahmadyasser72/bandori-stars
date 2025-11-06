@@ -8,7 +8,6 @@ import type {
 import { shuffle } from "fast-shuffle";
 
 import { gacha_map } from "@/contents/data";
-
 import { bestdori } from "~/lib/bestdori";
 import { IMAGE_FORMAT } from "~/lib/bestdori/client";
 
