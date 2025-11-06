@@ -8,13 +8,14 @@ import type {
 import { shuffle } from "fast-shuffle";
 
 import { gacha_map } from "@/contents/data";
-import { bestdoriAsset } from "~/lib/bestdori";
+
+import { bestdori } from "~/lib/bestdori";
 import { IMAGE_FORMAT } from "~/lib/bestdori/client";
 
 export const prerender = true;
 
 export const GET: APIRoute<Props, Params> = async ({ props }) =>
-	bestdoriAsset.gachaBanner(props.data).then((data) => new Response(data));
+	bestdori.asset.gachaBanner(props.data).then((data) => new Response(data));
 
 export const getStaticPaths = (() =>
 	shuffle(
