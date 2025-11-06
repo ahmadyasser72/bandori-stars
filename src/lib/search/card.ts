@@ -1,30 +1,27 @@
 import clsx from "clsx";
-import { Document, type DocumentOptions } from "flexsearch";
+import { Document } from "flexsearch";
 
 import { band_map, card_map, type Entry } from "@/contents/data";
+
 import { constants } from "~/lib/content";
+import { documentOptions, doSearch, type Filter } from ".";
 
-type CardName = Record<"character" | "name", string>;
-export const config: DocumentOptions<CardName> = {
-	tokenize: "tolerant",
-	cache: false,
-	store: false,
-
-	document: { id: "card_names", index: ["character", "name"] },
-};
-
-export const createIndex = (oldestFirst: boolean) => {
-	const index = new Document(config);
+type Data = Record<"character" | "name", string>;
+export const searchCard = (query: string, oldestFirst: boolean) => {
+	const document = new Document<Data>({
+		...documentOptions,
+		document: { id: "card_names", index: ["character", "name"] },
+	});
 
 	const entries = [...card_map.entries()];
 	if (!oldestFirst) entries.reverse();
 	for (const [id, data] of entries)
-		index.add(Number(id), {
+		document.add(Number(id), {
 			name: data.name,
 			character: data.character.name,
 		});
 
-	return index;
+	return doSearch(document, query);
 };
 
 export const filterList = [
@@ -41,7 +38,7 @@ export const filterList = [
 			"aria-label": name,
 			value: id,
 		})),
-		getValue: (entry: Entry<"card_map">) => entry.band.id,
+		getValue: (entry) => entry.band.id,
 	},
 	{
 		label: "Type",
@@ -53,8 +50,7 @@ export const filterList = [
 			"aria-label": type.toUpperCase(),
 			value: idx.toString(),
 		})),
-		getValue: (entry: Entry<"card_map">) =>
-			constants.cardTypes.indexOf(entry.type).toString(),
+		getValue: (entry) => constants.cardTypes.indexOf(entry.type).toString(),
 	},
 	{
 		label: "Attribute",
@@ -69,12 +65,7 @@ export const filterList = [
 			"aria-label": attribute.toUpperCase(),
 			value: idx.toString(),
 		})),
-		getValue: (entry: Entry<"card_map">) =>
+		getValue: (entry) =>
 			constants.attributes.indexOf(entry.attribute).toString(),
 	},
-] satisfies {
-	label: string;
-	props: { name: string } & Record<string, string>;
-	options: ({ value: string } & Record<string, string>)[];
-	getValue: (entry: Entry<"card_map">) => string;
-}[];
+] satisfies Filter<Entry<"card_map">>[];

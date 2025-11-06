@@ -25,6 +25,21 @@ type UnwrappedRegionValue<Entry, K extends keyof Entry> = {
 type Simplify<T> = { [K in keyof T]: T[K] } & {};
 
 export const regionValue = {
+	map: <T, Result>(
+		{ en, jp }: RegionValue<T>,
+		mapper: (value: NonNullable<T>, region: "jp" | "en") => Result,
+	): { jp: T extends null ? Result | null : Result; en: Result | null } => {
+		const wrapper = (value: T | null, region: "jp" | "en") => {
+			if (!value) return null;
+			const out = mapper(value, region);
+			return Array.isArray(out) && out.length === 0 ? null : out;
+		};
+
+		return {
+			jp: wrapper(jp, "jp") as Result,
+			en: wrapper(en, "en"),
+		};
+	},
 	unwrap: <T>({ en, jp }: RegionValue<T>) => en ?? jp,
 	mapUnwrap:
 		<Entry, K extends keyof Entry>(...keys: K[]) =>

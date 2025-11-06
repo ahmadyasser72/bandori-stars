@@ -1,0 +1,66 @@
+---
+import { Icon } from "astro-icon/components";
+
+import type { Entry } from "@/contents/data";
+
+import { getGachaBannerUrl } from "~/lib/assets";
+
+export interface Props {
+	gacha: Pick<Entry<"gacha_map">, "id" | "name" | "type" | "startAt" | "endAt">;
+	rate?: number;
+}
+
+const { gacha, rate } = Astro.props;
+---
+
+<a
+	href="/to/be/defined"
+	up-follow
+	class="group card bg-base-100 hover:shadow-bandori-band shadow-sm"
+>
+	<figure>
+		<img
+			src={getGachaBannerUrl(gacha.id)}
+			alt={`Banner of ${gacha.name}`}
+			class="aspect-3/1 w-full"
+		/>
+	</figure>
+	<div class="card-body items-center justify-center text-center">
+		<h2 class="card-title group-hover:link">{gacha.name}</h2>
+
+		<div class="flex flex-wrap justify-center gap-1.5 *:gap-1">
+			{
+				rate && (
+					<div class="badge badge-primary font-medium">
+						<Icon class="size-4" name="lucide:percent" />
+						{rate}
+					</div>
+				)
+			}
+
+			<div class="badge badge-secondary font-medium">
+				{gacha.type.toUpperCase()}
+			</div>
+
+			<div class="badge not-dark:badge-soft badge-neutral">
+				<Icon
+					class="size-6 rounded-full border border-current"
+					name="emojione:flag-for-japan"
+				/>
+				{gacha.startAt.jp.format("DD/MM/YYYY")} ({gacha.startAt.jp.fromNow()})
+			</div>
+			{
+				gacha.startAt.en && (
+					<div class="badge not-dark:badge-soft badge-neutral">
+						<Icon
+							class="size-6 rounded-full border border-current"
+							name="emojione:flag-for-united-states"
+						/>
+						{gacha.startAt.en.format("DD/MM/YYYY")} (
+						{gacha.startAt.en.fromNow()})
+					</div>
+				)
+			}
+		</div>
+	</div>
+</a>

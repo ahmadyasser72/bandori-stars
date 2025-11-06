@@ -2,69 +2,25 @@
 import { Icon } from "astro-icon/components";
 
 import { card_map, character_map } from "@/contents/data";
+
 import { getCardAssetUrl } from "~/lib/assets";
-import { createIndex, filterList } from "~/lib/search/card";
+import { search } from "~/lib/search";
+import { filterList, searchCard } from "~/lib/search/card";
+import FilterListForm from "~/lib/search/components/filter-list-form.astro";
+import NextPageButton from "~/lib/search/components/next-page-button.astro";
+import OptionsDropdown from "~/lib/search/components/options-dropdown.astro";
 import { randomInt } from "~/lib/utilities";
 
 export const partial = true;
 
-const params = Astro.url.searchParams;
-
-const pageSize = 25;
-const pageQuery = Number(params.get("page") ?? NaN);
-const currentPage = Math.max(1, Number.isNaN(pageQuery) ? 1 : pageQuery);
-const offset = pageSize * (currentPage - 1);
-
-const nextPage = new URL(Astro.url);
-nextPage.searchParams.set("page", `${currentPage + 1}`);
-
-const query = params.get("query")?.toLowerCase();
-
-const sessionFilters = await Astro.session?.get("card_search_filters");
-const filters = filterList.map(({ props: { name }, getValue }) => ({
-	name,
-	getValue,
-	values: params.get(name),
-}));
-
-const filterMap = Object.fromEntries(
-	filters.map(({ name, values }) => [
-		name,
-		(values?.split("|") ?? sessionFilters?.[name] ?? []).filter(Boolean),
-	]),
-);
-Astro.session?.set("card_search_filters", filterMap);
-
-const sessionOptions = await Astro.session?.get("card_search_options");
-const getOption = (name: keyof App.SessionData["card_search_options"]) =>
-	params.size > 0 ? params.get(name) === "true" : !!sessionOptions?.[name];
-
-const options = {
-	oldest_first: getOption("oldest_first"),
-	show_trained: getOption("show_trained"),
-};
-Astro.session?.set("card_search_options", options);
-
-const items = (() => {
-	if (query) {
-		return createIndex(options.oldest_first)
-			.search({ query, suggest: true })
-			.flatMap((entries) => entries.result.map((id) => id.toString()));
-	}
-
-	const keys = [...card_map.keys()];
-	return options.oldest_first ? keys : keys.reverse();
-})().map((id) => card_map.get(id)!);
-
-const filtered = filters
-	.reduce(
-		(items, { name, getValue }) =>
-			items.filter((entry) =>
-				filterMap[name].every((value) => value !== getValue(entry)),
-			),
-		items,
-	)
-	.slice(offset, offset + pageSize);
+const { results, filterMap, options, page } = await search({
+	context: Astro,
+	sessionKey: "card_search",
+	data_map: card_map,
+	pageSize: 25,
+	filterList,
+	searchFn: searchCard,
+});
 ---
 
 <main class="flex flex-col items-center gap-y-4">
@@ -103,165 +59,72 @@ const filtered = filters
 			</datalist>
 		</label>
 
-		<div id="filter-list">
-			{
-				filterList.map(({ props: { name } }) => (
-					<input
-						type="hidden"
-						{name}
-						value={filterMap[name].join("|") || undefined}
-					/>
-				))
-			}
-
-			<a
-				up-layer="new"
-				up-fragment="#filter-list-form"
-				up-on-accepted="applyFormValueToSiblings(this, value); up.submit(this)"
-				class="btn btn-square join-item"
-			>
-				<Icon name="lucide:filter" />
-
-				<template id="filter-list-form">
-					<form up-accept class="mx-0.5 flex flex-col gap-1 py-4">
-						{
-							filterList.map(
-								({ label, options, props: { class: className, ...props } }) => (
-									<fieldset class="radio-group fieldset bg-base-100 border-base-300 rounded-box border p-2 pt-1 text-sm">
-										<legend class="fieldset-legend">{label}</legend>
-										<div class="flex flex-wrap gap-1">
-											{options.map((option) => (
-												<input
-													type="checkbox"
-													{...props}
-													class:list={[
-														"btn btn-sm checked:text-base-content checked:hover:bg-base-300 checked:bg-transparent",
-														className,
-													]}
-													{...option}
-													checked={filterMap[props.name].includes(option.value)}
-												/>
-											))}
-
-											<input
-												type="checkbox"
-												{...props}
-												class="btn btn-sm btn-neutral checked:text-base-content checked:hover:bg-base-300 checked:bg-transparent"
-												aria-label="All"
-												value=""
-												checked={filterMap[props.name].length > 0}
-											/>
-										</div>
-									</fieldset>
-								),
-							)
-						}
-
-						<div class="mt-2 flex w-full gap-2 max-sm:flex-col">
-							<button type="submit" class="btn btn-primary sm:flex-1"
-								>Apply</button
-							>
-							<button type="reset" class="btn btn-outline sm:flex-1"
-								>Reset</button
-							>
-						</div>
-					</form>
-				</template>
-			</a>
-		</div>
-
-		<div class="dropdown dropdown-end">
-			<div tabindex="0" role="button" class="btn btn-square join-item">
-				<Icon name="lucide:ellipsis-vertical" />
-			</div>
-			<div
-				tabindex="-1"
-				class="dropdown-content bg-base-100 rounded-box z-1 mt-2 p-4 pb-3 shadow-sm"
-			>
-				<label class="label text-sm">
-					<input
-						up-watch-delay="0"
-						type="checkbox"
-						class="checkbox checkbox-sm"
-						name="show_trained"
-						value="true"
-						checked={options.show_trained}
-					/>
-					Show trained
-				</label>
-
-				<label class="label text-sm">
-					<input
-						up-watch-delay="0"
-						type="checkbox"
-						class="checkbox checkbox-sm"
-						name="oldest_first"
-						value="true"
-						checked={options.oldest_first}
-					/>
-					Oldest first
-				</label>
-			</div>
-		</div>
+		<FilterListForm {filterList} {filterMap} />
+		<OptionsDropdown {options} />
 	</form>
 
-	<ul id="card-list" class="list w-full">
-		{
-			filtered.map(({ id, name, character, band, attribute, rarity, type }) => {
-				const showFullCardOnClick = {
-					"up-layer": "new",
-					"up-size": "large",
-					"up-fragment": "#show-full-card",
-					"up-use-data": JSON.stringify({
-						id,
-						band: band.id,
-						name: `${character.name} - ${name}`,
-					}),
-					"up-on-opened": "animateShowFullCard(this, layer.element)",
-					"up-on-dismissed": "animateShowFullCard(this, layer.element, true)",
-				};
+	<div id="card-list" class="contents">
+		<ul class="list w-full">
+			{
+				results.map(
+					({ id, name, character, band, attribute, rarity, type }) => {
+						const showFullCardOnClick = {
+							"up-layer": "new",
+							"up-size": "large",
+							"up-fragment": "#show-full-card",
+							"up-use-data": JSON.stringify({
+								id,
+								band: band.id,
+								name: `${character.name} - ${name}`,
+							}),
+							"up-on-opened": "animateShowFullCard(this, layer.element)",
+							"up-on-dismissed":
+								"animateShowFullCard(this, layer.element, true)",
+						};
 
-				return (
-					<li
-						data-attribute={attribute}
-						data-band-id={band.id}
-						class="group list-row hover:bg-bandori-band hover:text-bandori-band-content select-none"
-					>
-						<div>
-							<a {...showFullCardOnClick}>
-								<img
-									class="rounded-box size-12"
-									src={getCardAssetUrl("icon", options.show_trained, id)}
-									loading="lazy"
-								/>
-							</a>
-						</div>
-
-						<div class="flex flex-col items-start gap-1">
-							<a
-								{...showFullCardOnClick}
-								class="text-start text-sm font-semibold group-hover:font-medium group-hover:underline"
+						return (
+							<li
+								data-attribute={attribute}
+								data-band-id={band.id}
+								class="group list-row hover:bg-bandori-band hover:text-bandori-band-content select-none"
 							>
-								{name}
-							</a>
+								<div>
+									<a {...showFullCardOnClick}>
+										<img
+											class="rounded-box size-12"
+											src={getCardAssetUrl("icon", options.show_trained, id)}
+											loading="lazy"
+										/>
+									</a>
+								</div>
 
-							<div class="inline-flex flex-wrap gap-1">
-								<span class="badge badge-sm bg-bandori-band text-bandori-band-content group-hover:bg-bandori-band-alt line-clamp-1 border border-current font-medium">
-									{band.name} &bullet; {character.name}
-								</span>
+								<div class="flex flex-col items-start gap-1">
+									<a
+										{...showFullCardOnClick}
+										class="text-start text-sm font-semibold group-hover:font-medium group-hover:underline"
+									>
+										{name}
+									</a>
 
-								<span class="badge badge-sm bg-bandori-attribute text-bandori-attribute-content group-hover:bg-bandori-attribute-alt border border-white font-medium">
-									{type.toUpperCase()} &bullet; {attribute.toUpperCase()}{" "}
-									&starf;
-									{rarity}
-								</span>
-							</div>
-						</div>
-					</li>
-				);
-			})
-		}
-	</ul>
+									<div class="inline-flex flex-wrap gap-1">
+										<span class="badge badge-sm bg-bandori-band text-bandori-band-content group-hover:bg-bandori-band-alt line-clamp-1 border border-current font-medium">
+											{band.name} &bullet; {character.name}
+										</span>
+
+										<span class="badge badge-sm bg-bandori-attribute text-bandori-attribute-content group-hover:bg-bandori-attribute-alt border border-white font-medium">
+											{type.toUpperCase()} &bullet; {attribute.toUpperCase()}{" "}
+											&starf;
+											{rarity}
+										</span>
+									</div>
+								</div>
+							</li>
+						);
+					},
+				)
+			}
+		</ul>
+	</div>
 
 	<template id="card-list-placeholder">
 		<ul class="list w-full">
@@ -340,23 +203,5 @@ const filtered = filters
 		</div>
 	</template>
 
-	{
-		filtered.length === pageSize ? (
-			<a
-				id="next-page"
-				href={nextPage.href}
-				up-defer="reveal"
-				up-target="#next-page, #card-list:after"
-				class="btn btn-wide"
-			>
-				Next page
-			</a>
-		) : (
-			<div id="next-page" class="text-base-content/50 text-sm font-semibold">
-				{filtered.length === 0 && currentPage === 1
-					? "No cards found."
-					: currentPage > 1 && "No more cards."}
-			</div>
-		)
-	}
+	<NextPageButton {page} item={{ length: results.length, name: "card" }} />
 </main>

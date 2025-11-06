@@ -1,0 +1,43 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	options: Required<App.SearchOptions>;
+}
+
+const { options } = Astro.props;
+---
+
+<div class="dropdown dropdown-end">
+	<div tabindex="0" role="button" class="btn btn-square join-item">
+		<Icon name="lucide:ellipsis-vertical" />
+	</div>
+	<div
+		tabindex="-1"
+		class="dropdown-content bg-base-100 rounded-box z-1 mt-2 p-4 pb-3 shadow-sm"
+	>
+		<label class="label text-sm">
+			<input
+				up-watch-delay="0"
+				type="checkbox"
+				class="checkbox checkbox-sm"
+				name="show_trained"
+				value="true"
+				checked={options.show_trained}
+			/>
+			Show trained
+		</label>
+
+		<label class="label text-sm">
+			<input
+				up-watch-delay="0"
+				type="checkbox"
+				class="checkbox checkbox-sm"
+				name="oldest_first"
+				value="true"
+				checked={options.oldest_first}
+			/>
+			Oldest first
+		</label>
+	</div>
+</div>

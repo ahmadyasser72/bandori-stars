@@ -1,8 +1,7 @@
 ---
-import { Icon } from "astro-icon/components";
-
 import { card_map } from "@/contents/data";
-import { getGachaBannerUrl } from "~/lib/assets";
+
+import GachaCardGrid from "~/components/gacha-card-grid.astro";
 import { regionValue } from "~/lib/utilities";
 
 export const partial = true;
@@ -13,10 +12,11 @@ if (!card) {
 }
 
 const gachaList = regionValue
-	.unwrap(card.rateUp)
+	.unwrap(card.rateUpGacha)
 	?.map(({ rateUp, ...entry }) => ({
-		...entry,
-		rate: regionValue.unwrap(rateUp).find((it) => it.card === card.id)!.rate,
+		gacha: entry,
+		rate: regionValue.unwrap(rateUp)?.find((it) => it.card.id === card.id)!
+			.rate,
 	}));
 ---
 
@@ -29,57 +29,12 @@ const gachaList = regionValue
 	</h1>
 
 	{
-		(gachaList?.length ?? 0) === 0 ? (
+		!gachaList || (gachaList?.length ?? 0) === 0 ? (
 			<p class="text-base-content/50 text-center">
 				No rate-up gacha available.
 			</p>
 		) : (
-			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-				{gachaList!.map(({ id, name, type, rate, startAt }) => (
-					<a
-						href="/to/be/defined"
-						up-follow
-						class="group card bg-base-100 hover:shadow-bandori-band shadow-sm"
-					>
-						<figure>
-							<img
-								src={getGachaBannerUrl(id)}
-								alt={`Banner of ${name}`}
-								class="aspect-3/1 w-full"
-							/>
-						</figure>
-						<div class="card-body items-center text-center">
-							<h2 class="card-title group-hover:link">{name}</h2>
-
-							<div class="flex flex-wrap justify-center gap-1.5 *:gap-1">
-								<div class="badge badge-primary font-medium">
-									<Icon class="size-4" name="lucide:percent" /> {rate}
-								</div>
-								<div class="badge badge-secondary font-medium">
-									{type.toUpperCase()}
-								</div>
-
-								<div class="badge not-dark:badge-soft badge-neutral">
-									<Icon
-										class="size-6 rounded-full border border-current"
-										name="emojione:flag-for-japan"
-									/>
-									{startAt.jp.format("DD/MM/YYYY")} ({startAt.jp.fromNow()})
-								</div>
-								{startAt.en && (
-									<div class="badge not-dark:badge-soft badge-neutral">
-										<Icon
-											class="size-6 rounded-full border border-current"
-											name="emojione:flag-for-united-states"
-										/>
-										{startAt.en.format("DD/MM/YYYY")} ({startAt.en.fromNow()})
-									</div>
-								)}
-							</div>
-						</div>
-					</a>
-				))}
-			</div>
+			<GachaCardGrid {gachaList} />
 		)
 	}
 </main>

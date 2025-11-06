@@ -1,0 +1,75 @@
+---
+import { Icon } from "astro-icon/components";
+
+import type { Filter } from "..";
+
+interface Props {
+	filterList: Filter<any>[];
+	filterMap: Record<string, string[]>;
+}
+
+const { filterList, filterMap } = Astro.props;
+---
+
+<div id="filter-list">
+	{
+		filterList.map(({ props: { name } }) => (
+			<input
+				type="hidden"
+				{name}
+				value={filterMap[name].join("|") || undefined}
+			/>
+		))
+	}
+
+	<a
+		up-layer="new"
+		up-fragment="#filter-list-form"
+		up-on-accepted="applyFormValueToSiblings(this, value); up.submit(this)"
+		class="btn btn-square join-item"
+	>
+		<Icon name="lucide:filter" />
+
+		<template id="filter-list-form">
+			<form up-accept class="mx-0.5 flex flex-col gap-1 py-4">
+				{
+					filterList.map(
+						({ label, options, props: { class: className, ...props } }) => (
+							<fieldset class="radio-group fieldset bg-base-100 border-base-300 rounded-box border p-2 pt-1 text-sm">
+								<legend class="fieldset-legend">{label}</legend>
+								<div class="flex flex-wrap gap-1">
+									{options.map((option) => (
+										<input
+											type="checkbox"
+											{...props}
+											class:list={[
+												"btn btn-sm checked:text-base-content checked:hover:bg-base-300 checked:bg-transparent",
+												className,
+											]}
+											{...option}
+											checked={filterMap[props.name].includes(option.value)}
+										/>
+									))}
+
+									<input
+										type="checkbox"
+										{...props}
+										class="btn btn-sm btn-neutral checked:text-base-content checked:hover:bg-base-300 checked:bg-transparent"
+										aria-label="All"
+										value=""
+										checked={filterMap[props.name].length > 0}
+									/>
+								</div>
+							</fieldset>
+						),
+					)
+				}
+
+				<div class="mt-2 flex w-full gap-2 max-sm:flex-col">
+					<button type="submit" class="btn btn-primary sm:flex-1">Apply</button>
+					<button type="reset" class="btn btn-outline sm:flex-1">Reset</button>
+				</div>
+			</form>
+		</template>
+	</a>
+</div>

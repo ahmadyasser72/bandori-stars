@@ -1,0 +1,70 @@
+---
+import { Icon } from "astro-icon/components";
+
+import { character_map, gacha_map } from "@/contents/data";
+
+import GachaCardGrid from "~/components/gacha-card-grid.astro";
+import { search } from "~/lib/search";
+import FilterListForm from "~/lib/search/components/filter-list-form.astro";
+import NextPageButton from "~/lib/search/components/next-page-button.astro";
+import OptionsDropdown from "~/lib/search/components/options-dropdown.astro";
+import { filterList, searchGacha } from "~/lib/search/gacha";
+
+const { results, filterMap, options, page } = await search({
+	context: Astro,
+	sessionKey: "gacha_search",
+	data_map: gacha_map,
+	pageSize: 10,
+	filterList,
+	searchFn: searchGacha,
+});
+---
+
+<main class="flex flex-col items-center gap-y-4">
+	<form
+		up-target="#gacha-list, #next-page, #filter-list"
+		up-autosubmit
+		up-disable
+		up-placeholder="#gacha-list-placeholder"
+		up-watch-delay="500"
+		up-watch-disable
+		up-watch-placeholder="#gacha-list-placeholder"
+		class="join w-full px-4 pt-2"
+	>
+		<input type="hidden" name="page" value="1" />
+
+		<label class="input join-item flex-1">
+			<Icon name="lucide:search" />
+			<input
+				type="search"
+				name="query"
+				placeholder="Search gacha..."
+				list="suggestions"
+				autofocus
+			/>
+
+			<datalist id="suggestions">
+				{
+					[...character_map.values()].map(({ name: value }) => (
+						<option {value} />
+					))
+				}
+			</datalist>
+		</label>
+
+		<FilterListForm {filterList} {filterMap} />
+		<OptionsDropdown {options} />
+	</form>
+
+	<div id="gacha-list" class="contents">
+		<GachaCardGrid gachaList={results.map((gacha) => ({ gacha }))} />
+	</div>
+
+	<template id="gacha-list-placeholder">
+		<ul class="grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			{Array.from({ length: 10 }, () => <li class="skeleton h-60 w-full" />)}
+		</ul>
+	</template>
+
+	<NextPageButton {page} item={{ length: results.length, name: "gacha" }} />
+</main>

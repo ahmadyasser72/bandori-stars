@@ -3,7 +3,7 @@ import BaseLayout from "~/layouts/base-layout.astro";
 ---
 
 <BaseLayout>
-	<div class="absolute-center absolute">
+	<div class="absolute-center absolute flex flex-col gap-2">
 		<a
 			href="/partials/select-card"
 			up-layer="new"
@@ -12,6 +12,17 @@ import BaseLayout from "~/layouts/base-layout.astro";
 			class="btn btn-accent"
 		>
 			Select card
+		</a>
+
+		<a
+			href="/partials/select-gacha"
+			up-layer="new"
+			up-size="large"
+			up-history="false"
+			up-evict-cache="/partials/select-gacha"
+			class="btn btn-accent"
+		>
+			Select gacha
 		</a>
 	</div>
 </BaseLayout>
