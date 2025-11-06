@@ -1,10 +1,11 @@
-export const siblings = (el: HTMLElement) =>
+import "unpoly";
+import "./minimustache";
+import "./compiler";
+
+const siblings = (el: HTMLElement) =>
 	[...el.parentNode!.children].filter((it) => it !== el);
 
-export const applyFormValueToSiblings = (
-	el: HTMLElement,
-	{ entries }: { entries: Record<"name" | "value", string>[] },
-) => {
+window.__unpoly_applyFormValueToSiblingInputs = (el, entries) => {
 	for (const sibling of siblings(el)) {
 		if (sibling instanceof HTMLInputElement) {
 			const values = entries.filter((entry) => entry.name === sibling.name);
@@ -18,11 +19,8 @@ export const applyFormValueToSiblings = (
 		}
 	}
 };
-export const animateShowFullCard = (
-	el: HTMLElement,
-	layerElement: HTMLElement,
-	reverse: boolean = false,
-) => {
+
+window.__unpoly_animateShowFullCard = (el, layerElement, reverse = false) => {
 	const iconImage = el.closest("li")!.querySelector("img")!;
 	const fullImage = layerElement
 		.querySelector("input:checked")

@@ -77,9 +77,10 @@ const { results, filterMap, options, page } = await search({
 								band: band.id,
 								name: `${character.name} - ${name}`,
 							}),
-							"up-on-opened": "animateShowFullCard(this, layer.element)",
+							"up-on-opened":
+								"__unpoly_animateShowFullCard(this, layer.element)",
 							"up-on-dismissed":
-								"animateShowFullCard(this, layer.element, true)",
+								"__unpoly_animateShowFullCard(this, layer.element, true)",
 						};
 
 						return (

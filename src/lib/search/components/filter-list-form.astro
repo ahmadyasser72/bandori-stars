@@ -25,7 +25,7 @@ const { filterList, filterMap } = Astro.props;
 	<a
 		up-layer="new"
 		up-fragment="#filter-list-form"
-		up-on-accepted="applyFormValueToSiblings(this, value); up.submit(this)"
+		up-on-accepted="__unpoly_applyFormValueToSiblingInputs(this, value.entries); up.submit(this)"
 		class="btn btn-square join-item"
 	>
 		<Icon name="lucide:filter" />
