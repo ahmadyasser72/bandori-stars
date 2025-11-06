@@ -6,7 +6,6 @@ import type {
 } from "astro";
 
 import { card_map } from "@/contents/data";
-
 import { IMAGE_FORMAT } from "~/lib/bestdori/client";
 
 export const getStaticPaths = (() =>

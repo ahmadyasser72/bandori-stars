@@ -6,7 +6,6 @@ import type {
 } from "astro";
 
 import { gacha_map } from "@/contents/data";
-
 import { bestdoriAsset } from "~/lib/bestdori";
 import { IMAGE_FORMAT } from "~/lib/bestdori/client";
 

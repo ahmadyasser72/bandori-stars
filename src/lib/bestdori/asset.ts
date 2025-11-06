@@ -1,5 +1,4 @@
 import type { Entry } from "@/contents/data";
-
 import { fetchBestdori } from "./client";
 import { compressImage, getCachedCompressedImage } from "./compress";
 

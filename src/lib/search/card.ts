@@ -2,7 +2,6 @@ import clsx from "clsx";
 import { Document, type DocumentOptions } from "flexsearch";
 
 import { band_map, card_map, type Entry } from "@/contents/data";
-
 import { constants } from "~/lib/content";
 
 type CardName = Record<"character" | "name", string>;

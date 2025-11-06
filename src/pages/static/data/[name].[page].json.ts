@@ -6,7 +6,6 @@ import type {
 } from "astro";
 
 import * as data from "@/contents/data";
-
 import { toJsonResponse } from "~/lib/utilities";
 
 export const prerender = true;

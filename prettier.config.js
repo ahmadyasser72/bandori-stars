@@ -21,7 +21,6 @@ const config = {
 		"<THIRD_PARTY_MODULES>",
 		"",
 		"^@/(contents|scripts)/",
-		"",
 		"^~/(.*)$",
 		"^[./]",
 	],
