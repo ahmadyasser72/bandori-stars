@@ -1,7 +1,6 @@
 export const siblings = (el: HTMLElement) =>
 	[...el.parentNode!.children].filter((it) => it !== el);
 
-// select-card.astro
 export const applyFormValueToSiblings = (
 	el: HTMLElement,
 	{ entries }: { entries: Record<"name" | "value", string>[] },
@@ -25,21 +24,23 @@ export const animateShowFullCard = (
 	reverse: boolean = false,
 ) => {
 	const iconImage = el.closest("li")!.querySelector("img")!;
-	const activeImage = [...layerElement.querySelectorAll("img")].at(
-		[...layerElement.querySelectorAll("input")].findIndex(
-			(input) => input.checked,
-		),
-	)!;
+	const fullImage = layerElement
+		.querySelector("input:checked")
+		?.nextElementSibling?.querySelector("img")!;
 
-	const [from, to] = reverse
-		? [activeImage, iconImage]
-		: [iconImage, activeImage];
+	const [from, to] = reverse ? [fullImage, iconImage] : [iconImage, fullImage];
 
 	if (!reverse && !to.complete) {
-		// show placeholder if image is not yet loaded
+		layerElement
+			.querySelectorAll("input")
+			.forEach((input) => (input.disabled = true));
 		to.classList.add("skeleton");
+
 		to.addEventListener("load", () => {
 			to.classList.remove("skeleton");
+			layerElement
+				.querySelectorAll("input")
+				.forEach((input) => (input.disabled = false));
 		});
 	}
 
