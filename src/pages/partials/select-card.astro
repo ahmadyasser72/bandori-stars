@@ -37,9 +37,8 @@ Astro.session?.set("card_search_filters", filterMap);
 
 const sessionOptions = await Astro.session?.get("card_search_options");
 const getOption = (name: keyof App.SessionData["card_search_options"]) =>
-	params.get(name) !== null
-		? params.get(name) === "true"
-		: sessionOptions?.[name] === true;
+	params.size > 0 ? params.get(name) === "true" : !!sessionOptions?.[name];
+
 const options = {
 	oldest_first: getOption("oldest_first"),
 	show_trained: getOption("show_trained"),
