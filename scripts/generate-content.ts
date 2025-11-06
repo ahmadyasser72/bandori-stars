@@ -62,7 +62,7 @@ const gachaMap = await timed(
 							gacha.startAt.isBetween(event.startAt, event.endAt) ||
 							gacha.endAt.isBetween(event.startAt, event.endAt)),
 				)
-				.map(({ id }) => id);
+				.map(({ id }) => eventMap.get(id)!);
 
 			return results.length > 0 ? results : null;
 		};
@@ -86,11 +86,9 @@ const gachaMap = await timed(
 const cardMap = await timed(
 	"fetch card_map",
 	(async () => {
-		type Card = Schema<"card">;
 		const getCardRateUp = (
-			card: Card["id"],
 			region: "en" | "jp",
-			gacha: Card["gacha"],
+			{ id, gacha }: Pick<Schema<"card">, "id" | "gacha">,
 		) => {
 			const items = gacha[region];
 			if (!items) return null;
@@ -99,9 +97,8 @@ const cardMap = await timed(
 				.filter((id) => gachaMap.has(id))
 				.map((id) => gachaMap.get(id)!)
 				.filter(({ rateUp }) =>
-					rateUp[region]!.some((rateUp) => rateUp.card === card),
-				)
-				.map(({ id }) => id);
+					rateUp[region]!.some((rateUp) => rateUp.card === id),
+				);
 
 			return filtered.length > 0 ? filtered : null;
 		};
@@ -116,8 +113,8 @@ const cardMap = await timed(
 						band,
 						character,
 						rateUp: {
-							jp: getCardRateUp(entry.id, "jp", gacha),
-							en: getCardRateUp(entry.id, "en", gacha),
+							jp: getCardRateUp("jp", { id: entry.id, gacha }),
+							en: getCardRateUp("en", { id: entry.id, gacha }),
 						},
 						...entry,
 					};

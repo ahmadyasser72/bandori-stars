@@ -1,7 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 
-import { card_map, gacha_map } from "@/contents/data";
+import { card_map } from "@/contents/data";
 
 import { getGachaBannerUrl } from "~/lib/assets";
 import { regionValue } from "~/lib/utilities";
@@ -15,8 +15,7 @@ if (!card) {
 
 const gachaList = regionValue
 	.unwrap(card.rateUp)
-	?.map((id) => gacha_map.get(id)!)
-	.map(({ rateUp, ...entry }) => ({
+	?.map(({ rateUp, ...entry }) => ({
 		...entry,
 		rate: regionValue.unwrap(rateUp).find((it) => it.card === card.id)!.rate,
 	}));
