@@ -4,7 +4,7 @@ import { fetchBestdori } from "./client";
 import { compressImage, getCachedCompressedImage } from "./compress";
 
 const hasNoPreTrained = ({ name, type }: Entry<"card_map">) =>
-	name.en === "Graduation" || ["kirafes", "birthday"].includes(type);
+	name === "Graduation" || ["kirafes", "birthday"].includes(type);
 
 export const card = async (
 	kind: "icon" | "full",

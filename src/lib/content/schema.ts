@@ -81,4 +81,5 @@ export const schema = {
 	}),
 };
 
-export type Schema<K extends keyof typeof schema> = z.infer<(typeof schema)[K]>;
+export type SchemaKeys = keyof typeof schema;
+export type Schema<K extends SchemaKeys> = z.infer<(typeof schema)[K]>;

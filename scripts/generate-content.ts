@@ -5,25 +5,37 @@ import { save, timed, toMap } from "./helpers";
 
 console.time("everything");
 
-const bandMap = await timed("fetch band_map", loader.band().then(toMap));
+const bandMap = await timed(
+	"fetch band_map",
+	loader.band().then(regionValue.mapUnwrap("name")).then(toMap),
+);
 const characterMap = await timed(
 	"fetch character_map",
 	loader
 		.character()
 		.then((entries) =>
-			entries.map((character) => {
-				const band = bandMap.get(character.band)!;
-
-				return {
-					...character,
-					band: { id: band.id, name: regionValue.unwrap(band.name) },
-				};
-			}),
+			entries.map(({ band, ...entry }) => ({
+				...entry,
+				band: bandMap.get(band)!,
+			})),
 		)
+		.then(regionValue.mapUnwrap("name"))
 		.then(toMap),
 );
 
-const eventMap = await timed("fetch event_map", loader.event().then(toMap));
+const eventMap = await timed(
+	"fetch event_map",
+	loader
+		.event()
+		.then((entries) =>
+			entries.map(({ characters, ...entry }) => ({
+				...entry,
+				characters: characters.map((character) => characterMap.get(character)!),
+			})),
+		)
+		.then(regionValue.mapUnwrap("name", "pointRewards", "rankingRewards"))
+		.then(toMap),
+);
 
 const gachaMap = await timed(
 	"fetch gacha_map",
@@ -66,6 +78,7 @@ const gachaMap = await timed(
 					},
 				})),
 			)
+			.then(regionValue.mapUnwrap("name"))
 			.then(toMap);
 	})(),
 );
@@ -73,44 +86,44 @@ const gachaMap = await timed(
 const cardMap = await timed(
 	"fetch card_map",
 	(async () => {
+		type Card = Schema<"card">;
 		const getCardRateUp = (
+			card: Card["id"],
 			region: "en" | "jp",
-			card: Pick<Schema<"card">, "id" | "gacha">,
+			gacha: Card["gacha"],
 		) => {
-			const items = card.gacha[region];
+			const items = gacha[region];
 			if (!items) return null;
 
 			const filtered = items
 				.filter((id) => gachaMap.has(id))
 				.map((id) => gachaMap.get(id)!)
 				.filter(({ rateUp }) =>
-					rateUp[region]!.some((rateUp) => rateUp.card === card.id),
+					rateUp[region]!.some((rateUp) => rateUp.card === card),
 				)
 				.map(({ id }) => id);
 
-			return filtered.length === 0 ? null : filtered;
+			return filtered.length > 0 ? filtered : null;
 		};
 
 		return loader
 			.card()
 			.then((entries) =>
-				entries.map(({ character: characterId, ...entry }) => {
-					const character = characterMap.get(characterId)!;
+				entries.map(({ character: characterId, gacha, ...entry }) => {
+					const { band, ...character } = characterMap.get(characterId)!;
 
 					return {
-						band: character.band,
-						character: {
-							id: character.id,
-							name: regionValue.unwrap(character.name),
-						},
+						band,
+						character,
 						rateUp: {
-							jp: getCardRateUp("jp", entry),
-							en: getCardRateUp("en", entry),
+							jp: getCardRateUp(entry.id, "jp", gacha),
+							en: getCardRateUp(entry.id, "en", gacha),
 						},
 						...entry,
 					};
 				}),
 			)
+			.then(regionValue.mapUnwrap("name"))
 			.then(toMap);
 	})(),
 );
@@ -122,6 +135,7 @@ const data = {
 	event_map: eventMap,
 	gacha_map: gachaMap,
 };
+
 await timed(
 	`save data [${Object.entries(data)
 		.map(([key, map]) => `${key} (${[...map.keys()].length})`)

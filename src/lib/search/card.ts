@@ -4,7 +4,6 @@ import { Document, type DocumentOptions } from "flexsearch";
 import { band_map, card_map, type Entry } from "@/contents/data";
 
 import { constants } from "~/lib/content";
-import { regionValue } from "~/lib/utilities";
 
 type CardName = Record<"character" | "name", string>;
 export const config: DocumentOptions<CardName> = {
@@ -22,7 +21,7 @@ export const createIndex = (oldestFirst: boolean) => {
 	if (!oldestFirst) entries.reverse();
 	for (const [id, data] of entries)
 		index.add(Number(id), {
-			name: regionValue.unwrap(data.name),
+			name: data.name,
 			character: data.character.name,
 		});
 
@@ -40,7 +39,7 @@ export const filterList = [
 		},
 		options: [...band_map.values()].map(({ id, name }) => ({
 			"data-band-id": id,
-			"aria-label": regionValue.unwrap(name),
+			"aria-label": name,
 			value: id,
 		})),
 		getValue: (entry: Entry<"card_map">) => entry.band.id,

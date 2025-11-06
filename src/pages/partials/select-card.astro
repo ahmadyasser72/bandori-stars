@@ -5,7 +5,7 @@ import { card_map, character_map } from "@/contents/data";
 
 import { getCardAssetUrl } from "~/lib/assets";
 import { createIndex, filterList } from "~/lib/search/card";
-import { randomInt, regionValue } from "~/lib/utilities";
+import { randomInt } from "~/lib/utilities";
 
 export const partial = true;
 
@@ -100,7 +100,7 @@ const filtered = filters
 								filterMap.band.length === 0 ||
 								!filterMap.band.includes(band.id),
 						)
-						.map(({ name }) => <option value={regionValue.unwrap(name)} />)
+						.map(({ name: value }) => <option {value} />)
 				}
 			</datalist>
 		</label>
@@ -217,7 +217,7 @@ const filtered = filters
 					"up-use-data": JSON.stringify({
 						id,
 						band: band.id,
-						name: `${character.name} - ${regionValue.unwrap(name)}`,
+						name: `${character.name} - ${name}`,
 					}),
 					"up-on-opened": "animateShowFullCard(this, layer.element)",
 					"up-on-dismissed": "animateShowFullCard(this, layer.element, true)",
@@ -244,7 +244,7 @@ const filtered = filters
 								{...showFullCardOnClick}
 								class="text-start text-sm font-semibold group-hover:font-medium group-hover:underline"
 							>
-								{regionValue.unwrap(name)}
+								{name}
 							</a>
 
 							<div class="inline-flex flex-wrap gap-1">
