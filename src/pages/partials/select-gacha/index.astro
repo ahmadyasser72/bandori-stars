@@ -11,7 +11,7 @@ import { filterList, searchGacha } from "~/lib/search/gacha";
 
 const { results, filterMap, options, page } = await search({
 	context: Astro,
-	sessionKey: "gacha_search",
+	sessionKey: "gacha_filters",
 	data_map: gacha_map,
 	pageSize: 10,
 	filterList,

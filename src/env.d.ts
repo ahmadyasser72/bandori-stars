@@ -7,13 +7,8 @@ declare namespace App {
 		Record<"oldest_first" | "show_trained", boolean>
 	>;
 	interface SessionData {
-		card_search: {
-			filters: Partial<Record<"band" | "type" | "attribute", string[]>>;
-			options: SearchOptions;
-		};
-		gacha_search: {
-			filters: Partial<Record<"character" | "type", string[]>>;
-			options: SearchOptions;
-		};
+		card_filters: Partial<Record<"band" | "type" | "attribute", string[]>>;
+		gacha_filters: Partial<Record<"character" | "type", string[]>>;
+		search_options: SearchOptions;
 	}
 }
