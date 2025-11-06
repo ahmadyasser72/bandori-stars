@@ -2,7 +2,7 @@
 import Item, { type Props as ItemProps } from "./gacha-card-grid-item.astro";
 
 interface Props {
-	gachaList: Omit<ItemProps, "options">[];
+	gachaList: ItemProps[];
 }
 
 const { gachaList } = Astro.props;

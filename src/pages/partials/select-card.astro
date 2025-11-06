@@ -28,7 +28,7 @@ const showFullCardOnClick = (id: string) =>
 
 <main class="flex flex-col items-center gap-y-4">
 	<form
-		up-target="#card-list, #next-page, #suggestions, #filter-list, #show-full-card"
+		up-target="#card-list, #next-page, #suggestions, #filter-list"
 		up-autosubmit
 		up-disable
 		up-placeholder="#card-list-placeholder"
@@ -63,7 +63,7 @@ const showFullCardOnClick = (id: string) =>
 		</label>
 
 		<FilterListForm {filterList} {filterMap} />
-		<OptionsDropdown {options} />
+		<OptionsDropdown />
 	</form>
 
 	<div id="card-list" class="contents">

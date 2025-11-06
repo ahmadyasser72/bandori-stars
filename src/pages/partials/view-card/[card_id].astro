@@ -28,6 +28,8 @@ const showGachaList = params.get("show_gacha_list") === "true";
 				{
 					[false, true].map((trained) => {
 						const active = showTrained ? trained : !trained;
+						const imageUrl = getCardAssetUrl("full", trained, card.id);
+						const imageAlt = trained ? `Trained ${name}` : name;
 
 						return (
 							<>
@@ -40,10 +42,9 @@ const showGachaList = params.get("show_gacha_list") === "true";
 								/>
 								<div class="tab-content shadow-bandori-band px-2 py-1 shadow-sm">
 									<img
-										src={getCardAssetUrl("full", trained, card.id)}
-										alt={trained ? "Trained " : "" + name}
+										src={imageUrl}
+										alt={imageAlt}
 										class:list={[
-											active && "hidden",
 											active && autoScroll && "scroll-here",
 											"rounded-box border-base-300 aspect-4/3 w-full border",
 										]}
