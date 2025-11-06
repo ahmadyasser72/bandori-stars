@@ -15,7 +15,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      BESTDORI_CACHE: bestdori-cache
+      BESTDORI_CACHE: ./.bestdori-cache
 
     steps:
       - uses: actions/checkout@v4
@@ -49,6 +49,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: assets-${{ hashFiles('src/lib/bestdori/compress.ts') }}-${{ github.run_id }}
+          include-hidden-files: true
           path: ${{ env.BESTDORI_CACHE }}/compressed/
 
   deploy:

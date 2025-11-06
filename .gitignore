@@ -24,10 +24,10 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-/bestdori-cache/*
-!/bestdori-cache/.gitkeep
-!/bestdori-cache/**/
-/bestdori-cache/compressed/*
-!/bestdori-cache/compressed/.gitkeep
+/.bestdori-cache/*
+!/.bestdori-cache/.gitkeep
+!/.bestdori-cache/**/
+/.bestdori-cache/compressed/*
+!/.bestdori-cache/compressed/.gitkeep
 
 /.contents/data.js
