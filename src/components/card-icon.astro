@@ -7,7 +7,7 @@ import {
 } from "~/pages/partials/view-card/_helper";
 
 interface Props {
-	card: Pick<Entry<"card_map">, "id" | "character" | "name">;
+	card: Pick<Entry<"card_map">, "id" | "band" | "character" | "name">;
 	options: FullCardModalOptions;
 }
 
@@ -17,10 +17,10 @@ const imageAlt = options.show_trained
 	: `${card.character.name} - ${card.name}`;
 ---
 
-<a {...showFullCardModalOnClick(card, options)}>
+<a {...showFullCardModalOnClick(card, options)} data-band-id={card.band.id}>
 	<img
 		src={getCardAssetUrl("icon", !!options.show_trained, card.id)}
-		class="rounded-box size-12"
+		class="rounded-box shadow-bandori-band size-12 hover:shadow-md"
 		alt={`${imageAlt} icon`}
 		decoding="async"
 		loading="lazy"
