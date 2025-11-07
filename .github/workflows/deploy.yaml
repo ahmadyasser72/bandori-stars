@@ -28,12 +28,14 @@ jobs:
             ${{ env.BESTDORI_CACHE }}/*.png
           key: bestdori-response-${{ github.run_id }}
           restore-keys: bestdori-response-
-      - name: Cache compressed assets
+      - name: Cache processed assets
         uses: actions/cache@v4
         with:
-          path: ${{ env.BESTDORI_CACHE }}/compressed/
-          key: compressed-bestdori-asset-${{ hashFiles('src/lib/bestdori/compress.ts') }}-${{ github.run_id }}
-          restore-keys: compressed-bestdori-asset-${{ hashFiles('src/lib/bestdori/compress.ts') }}-
+          path: |
+            ${{ env.BESTDORI_CACHE }}/blurhash/
+            ${{ env.BESTDORI_CACHE }}/compressed/
+          key: bestdori-asset-${{ hashFiles('src/lib/bestdori/process/*.ts') }}-${{ github.run_id }}
+          restore-keys: bestdori-asset-${{ hashFiles('src/lib/bestdori/process/*.ts') }}-
 
       - name: Build site
         run: bun run build
@@ -44,12 +46,14 @@ jobs:
           include-hidden-files: true
           path: dist/
 
-      - name: Upload compressed assets
+      - name: Upload processed assets
         uses: actions/upload-artifact@v4
         with:
-          name: assets-${{ hashFiles('src/lib/bestdori/compress.ts') }}-${{ github.run_id }}
+          name: assets-${{ hashFiles('src/lib/bestdori/process/*.ts') }}-${{ github.run_id }}
           include-hidden-files: true
-          path: ${{ env.BESTDORI_CACHE }}/compressed/
+          path: |
+            ${{ env.BESTDORI_CACHE }}/blurhash/
+            ${{ env.BESTDORI_CACHE }}/compressed/
 
   deploy:
     needs: build
