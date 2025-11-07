@@ -1,0 +1,24 @@
+---
+import type { Entry } from "@/contents/data";
+import { getCardAssetUrl } from "~/lib/assets";
+import {
+	showFullCardModalOnClick,
+	type FullCardModalOptions,
+} from "~/pages/partials/view-card/_helper";
+
+interface Props {
+	card: Pick<Entry<"card_map">, "id">;
+	options: FullCardModalOptions;
+}
+
+const { card, options } = Astro.props;
+---
+
+<a {...showFullCardModalOnClick(card, options)}>
+	<img
+		src={getCardAssetUrl("icon", !!options.show_trained, card.id)}
+		class="rounded-box size-12"
+		decoding="async"
+		loading="lazy"
+	/>
+</a>

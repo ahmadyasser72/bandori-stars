@@ -1,12 +1,12 @@
 import type { Entry } from "@/contents/data";
 
-type ModalOptions = Partial<
+export type FullCardModalOptions = Partial<
 	Record<"auto_scroll" | "show_trained" | "show_gacha_list", boolean>
 >;
 
 export const showFullCardModalOnClick = (
 	card: Pick<Entry<"card_map">, "id">,
-	options: ModalOptions,
+	options: FullCardModalOptions,
 ) => ({
 	href: `/partials/view-card/${card.id}`,
 	"up-layer": "new",

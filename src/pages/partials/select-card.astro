@@ -2,14 +2,17 @@
 import { Icon } from "astro-icon/components";
 
 import { card_map, character_map } from "@/contents/data";
-import { getCardAssetUrl } from "~/lib/assets";
+import CardIcon from "~/components/card-icon.astro";
 import { search } from "~/lib/search";
 import { filterList, searchCard } from "~/lib/search/card";
 import FilterListForm from "~/lib/search/components/filter-list-form.astro";
 import NextPageButton from "~/lib/search/components/next-page-button.astro";
 import OptionsDropdown from "~/lib/search/components/options-dropdown.astro";
 import { randomInt } from "~/lib/utilities";
-import { showFullCardModalOnClick } from "./view-card/_helper";
+import {
+	showFullCardModalOnClick,
+	type FullCardModalOptions,
+} from "./view-card/_helper";
 
 export const partial = true;
 
@@ -22,11 +25,10 @@ const { results, filterMap, options, page } = await search({
 	searchFn: searchCard,
 });
 
-const showFullCardOnClick = (id: string) =>
-	showFullCardModalOnClick(
-		{ id },
-		{ show_gacha_list: true, show_trained: options.show_trained },
-	);
+const fullCardModalOptions = {
+	show_gacha_list: true,
+	show_trained: options.show_trained,
+} satisfies FullCardModalOptions;
 ---
 
 <main class="flex flex-col items-center gap-y-4">
@@ -79,18 +81,12 @@ const showFullCardOnClick = (id: string) =>
 						class="group list-row hover:bg-bandori-band hover:text-bandori-band-content select-none"
 					>
 						<div>
-							<a {...showFullCardOnClick(card.id)}>
-								<img
-									class="rounded-box size-12"
-									src={getCardAssetUrl("icon", options.show_trained, card.id)}
-									loading="lazy"
-								/>
-							</a>
+							<CardIcon {card} options={fullCardModalOptions} />
 						</div>
 
 						<div class="flex flex-col items-start gap-1">
 							<a
-								{...showFullCardOnClick(card.id)}
+								{...showFullCardModalOnClick(card, fullCardModalOptions)}
 								class="text-start text-sm font-semibold group-hover:font-medium group-hover:underline"
 							>
 								{card.name}

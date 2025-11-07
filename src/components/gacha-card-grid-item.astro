@@ -2,9 +2,9 @@
 import { Icon } from "astro-icon/components";
 
 import type { Entry } from "@/contents/data";
-import { getCardAssetUrl, getGachaBannerUrl } from "~/lib/assets";
+import { getGachaBannerUrl } from "~/lib/assets";
 import { regionValue } from "~/lib/utilities";
-import { showFullCardModalOnClick } from "~/pages/partials/view-card/_helper";
+import CardIcon from "./card-icon.astro";
 
 export interface Props {
 	gacha: Entry<"gacha_map">;
@@ -16,12 +16,6 @@ const { gacha, rate } = Astro.props;
 const options = Astro.locals.search_options;
 const rateUpList = regionValue.unwrap(gacha.rateUp).slice();
 if (!options.oldest_first) rateUpList.reverse();
-
-const showFullCardOnClick = (id: string) =>
-	showFullCardModalOnClick(
-		{ id },
-		{ auto_scroll: true, show_trained: options.show_trained },
-	);
 ---
 
 <div class="group card bg-base-100 hover:shadow-bandori-band shadow-sm">
@@ -75,12 +69,13 @@ const showFullCardOnClick = (id: string) =>
 			{
 				rateUpList.slice(0, rateUpList.length > 5 ? 4 : 5).map(({ card }) => (
 					<li>
-						<a {...showFullCardOnClick(card.id)}>
-							<img
-								src={getCardAssetUrl("icon", options.show_trained, card.id)}
-								class="rounded-box size-12"
-							/>
-						</a>
+						<CardIcon
+							{card}
+							options={{
+								show_trained: options.show_trained,
+								auto_scroll: true,
+							}}
+						/>
 					</li>
 				))
 			}
@@ -97,16 +92,13 @@ const showFullCardOnClick = (id: string) =>
 									<ul class="flex flex-row-reverse flex-wrap-reverse justify-center gap-1">
 										{rateUpList.slice(5).map(({ card }) => (
 											<li>
-												<a {...showFullCardOnClick(card.id)}>
-													<img
-														src={getCardAssetUrl(
-															"icon",
-															options.show_trained,
-															card.id,
-														)}
-														class="rounded-box size-12"
-													/>
-												</a>
+												<CardIcon
+													{card}
+													options={{
+														show_trained: options.show_trained,
+														auto_scroll: true,
+													}}
+												/>
 											</li>
 										))}
 									</ul>
