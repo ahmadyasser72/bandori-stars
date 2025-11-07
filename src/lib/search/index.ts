@@ -32,7 +32,10 @@ interface Search<T, S> {
 	searchFn: (query: string, oldestFirst: boolean) => string[];
 }
 
-export const search = async <T, S extends keyof App.SessionData>({
+export const search = async <
+	T,
+	S extends keyof Pick<App.SessionData, "card_filters" | "gacha_filters">,
+>({
 	context,
 	sessionKey,
 	data_map,
@@ -41,7 +44,8 @@ export const search = async <T, S extends keyof App.SessionData>({
 	searchFn,
 }: Search<T, S>) => {
 	const params = context.url.searchParams;
-	const sessionData = await context.session!.get(sessionKey);
+	const options = context.locals.search_options;
+	const sessionFilters = await context.session!.get(sessionKey);
 
 	const pageQuery = Number(params.get("page") ?? NaN);
 	const currentPage = Math.max(1, Number.isNaN(pageQuery) ? 1 : pageQuery);
@@ -58,20 +62,11 @@ export const search = async <T, S extends keyof App.SessionData>({
 	const filterMap = Object.fromEntries(
 		filters.map(({ name, values }) => [
 			name,
-			(values?.split("|") ?? sessionData?.filters[name as never] ?? []).filter(
+			(values?.split("|") ?? sessionFilters?.[name as never] ?? []).filter(
 				Boolean,
 			),
 		]),
 	);
-
-	const getOption = (name: string) =>
-		params.size > 0
-			? params.get(name) === "true"
-			: !!sessionData?.options[name as never];
-	const options = {
-		oldest_first: getOption("oldest_first"),
-		show_trained: getOption("show_trained"),
-	};
 
 	const query = params.get("query")?.toLowerCase();
 	const items = (() => {
@@ -97,7 +92,7 @@ export const search = async <T, S extends keyof App.SessionData>({
 		}, items)
 		.slice(offset, offset + pageSize);
 
-	context.session!.set(sessionKey, { filters: filterMap, options } as never);
+	context.session!.set(sessionKey, filterMap as never);
 	return {
 		results,
 		filterMap,

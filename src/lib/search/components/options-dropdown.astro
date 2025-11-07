@@ -1,11 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 
-interface Props {
-	options: Required<App.SearchOptions>;
-}
-
-const { options } = Astro.props;
+const options = Astro.locals.search_options;
 ---
 
 <div class="dropdown dropdown-end">

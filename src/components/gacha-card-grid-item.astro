@@ -3,20 +3,34 @@ import { Icon } from "astro-icon/components";
 
 import type { Entry } from "@/contents/data";
 import { getGachaBannerUrl } from "~/lib/assets";
+import { regionValue } from "~/lib/utilities";
+import CardIcon from "./card-icon.astro";
 
 export interface Props {
-	gacha: Pick<Entry<"gacha_map">, "id" | "name" | "type" | "startAt" | "endAt">;
+	gacha: Entry<"gacha_map">;
 	rate?: number;
 }
 
 const { gacha, rate } = Astro.props;
+
+const options = Astro.locals.search_options;
+const rateUpList = regionValue
+	.unwrap(gacha.rateUp)
+	.slice()
+	.sort(
+		({ card: a }, { card: b }) =>
+			b.rarity - a.rarity ||
+			(options.oldest_first
+				? Number(a.id) - Number(b.id)
+				: Number(b.id) - Number(a.id)),
+	)
+	.sort(
+		({ card: a }, { card: b }) =>
+			Number(b.type === "birthday") - Number(a.type === "birthday"),
+	);
 ---
 
-<a
-	href="/to/be/defined"
-	up-follow
-	class="group card bg-base-100 hover:shadow-bandori-band shadow-sm"
->
+<div class="group card bg-base-100 hover:shadow-bandori-band shadow-sm">
 	<figure>
 		<img
 			src={getGachaBannerUrl(gacha.id)}
@@ -24,10 +38,11 @@ const { gacha, rate } = Astro.props;
 			class="aspect-3/1 w-full"
 		/>
 	</figure>
-	<div class="card-body items-center justify-center text-center">
-		<h2 class="card-title group-hover:link">{gacha.name}</h2>
+	<div class="card-body items-center justify-between gap-4 text-center">
+		<a href="#" class="card-title group-hover:link line-clamp-2">{gacha.name}</a
+		>
 
-		<div class="flex flex-wrap justify-center gap-1.5 *:gap-1">
+		<div class="flex flex-col items-center gap-1.5 *:gap-1">
 			{
 				rate && (
 					<div class="badge badge-primary font-medium">
@@ -61,5 +76,50 @@ const { gacha, rate } = Astro.props;
 				)
 			}
 		</div>
+
+		<ul class="flex gap-1">
+			{
+				rateUpList.slice(0, rateUpList.length > 5 ? 4 : 5).map(({ card }) => (
+					<li>
+						<CardIcon
+							{card}
+							options={{
+								show_trained: options.show_trained,
+								auto_scroll: true,
+							}}
+						/>
+					</li>
+				))
+			}
+
+			{
+				rateUpList.length > 5 && (
+					<li>
+						<details class="dropdown dropdown-end dropdown-top">
+							<summary class="btn btn-square rounded-box btn-neutral btn-outline size-12">
+								<Icon name="lucide:chevron-up" />
+							</summary>
+							<div class="dropdown-content card card-sm bg-base-100 border-base-300 z-1 mb-2 w-64 border shadow-sm">
+								<div class="card-body">
+									<ul class="flex flex-row-reverse flex-wrap-reverse justify-center gap-1">
+										{rateUpList.slice(5).map(({ card }) => (
+											<li>
+												<CardIcon
+													{card}
+													options={{
+														show_trained: options.show_trained,
+														auto_scroll: true,
+													}}
+												/>
+											</li>
+										))}
+									</ul>
+								</div>
+							</div>
+						</details>
+					</li>
+				)
+			}
+		</ul>
 	</div>
-</a>
+</div>

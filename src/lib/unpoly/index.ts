@@ -42,17 +42,13 @@ window.__unpoly_animateShowFullCard = (el, layerElement, reverse = false) => {
 		});
 	}
 
-	if (!document.startViewTransition) {
-		to.classList.toggle("hidden", false);
-		return;
-	}
+	if (!document.startViewTransition) return;
 
 	const transitionName = "animate-full-card";
 	from.style.viewTransitionName = transitionName;
 	const transition = document.startViewTransition(() => {
 		from.style.viewTransitionName = "";
 		to.style.viewTransitionName = transitionName;
-		to.classList.toggle("hidden", false);
 	});
 
 	transition.finished.finally(() => {
