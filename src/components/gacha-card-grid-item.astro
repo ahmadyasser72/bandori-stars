@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 
 import type { Entry } from "@/contents/data";
-import { getGachaBannerUrl } from "~/lib/assets";
+import { getGachaBanner } from "~/lib/assets";
 import { regionValue } from "~/lib/utilities";
 import CardIcon from "./card-icon.astro";
 
@@ -32,11 +32,7 @@ const rateUpList = regionValue
 
 <div class="group card bg-base-100 hover:shadow-bandori-band shadow-sm">
 	<figure>
-		<img
-			src={getGachaBannerUrl(gacha.id)}
-			alt={`Banner of ${gacha.name}`}
-			class="aspect-3/1 w-full"
-		/>
+		<img {...getGachaBanner(gacha)} class="aspect-3/1 w-full" />
 	</figure>
 	<div class="card-body items-center justify-between gap-4 text-center">
 		<a href="#" class="card-title group-hover:link line-clamp-2">{gacha.name}</a

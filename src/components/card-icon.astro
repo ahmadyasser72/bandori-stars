@@ -1,28 +1,22 @@
 ---
 import type { Entry } from "@/contents/data";
-import { getCardAssetUrl } from "~/lib/assets";
+import { getCardAsset } from "~/lib/assets";
 import {
 	showFullCardModalOnClick,
 	type FullCardModalOptions,
 } from "~/pages/partials/view-card/_helper";
 
 interface Props {
-	card: Pick<Entry<"card_map">, "id" | "band" | "character" | "name">;
+	card: Entry<"card_map">;
 	options: FullCardModalOptions;
 }
 
 const { card, options } = Astro.props;
-const imageAlt = options.show_trained
-	? `Trained ${card.character.name} - ${card.name}`
-	: `${card.character.name} - ${card.name}`;
 ---
 
 <a {...showFullCardModalOnClick(card, options)} data-band-id={card.band.id}>
 	<img
-		src={getCardAssetUrl("icon", !!options.show_trained, card.id)}
+		{...getCardAsset("icon", !!options.show_trained, card)}
 		class="rounded-box shadow-bandori-band size-12 hover:shadow-md"
-		alt={`${imageAlt} icon`}
-		decoding="async"
-		loading="lazy"
 	/>
 </a>

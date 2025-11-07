@@ -1,6 +1,7 @@
 ---
 import { card_map } from "@/contents/data";
-import { getCardAssetUrl } from "~/lib/assets";
+import { getCardAsset } from "~/lib/assets";
+import { hasNoPreTrained } from "~/lib/bestdori/asset";
 import { randomInt } from "~/lib/utilities";
 
 export const partial = true;
@@ -12,6 +13,7 @@ if (!card) {
 
 const name = `${card.character.name} - ${card.name}`;
 const tabName = `full_image_${randomInt(0, 1000)}`;
+const noPreTrained = hasNoPreTrained(card);
 
 const params = Astro.url.searchParams;
 const showTrained = params.get("show_trained") === "true";
@@ -26,24 +28,28 @@ const showGachaList = params.get("show_gacha_list") === "true";
 		<div class="flex flex-col gap-4 sm:flex-col-reverse">
 			<div class="tabs tabs-box max-sm:tabs-bottom max-sm:pb-4">
 				{
-					[false, true].map((trained) => {
+					(noPreTrained ? [true] : [false, true]).map((trained) => {
 						const active = showTrained ? trained : !trained;
-						const imageUrl = getCardAssetUrl("full", trained, card.id);
-						const imageAlt = trained ? `Trained ${name}` : name;
 
 						return (
 							<>
-								<input
-									type="radio"
-									name={tabName}
-									class="tab checked:text-bandori-band-content flex-1 font-medium [--tab-bg:var(--band-color)] hover:[--tab-bg:var(--band-color-alt)] max-sm:mt-2"
-									aria-label={trained ? "Trained" : "Normal"}
-									checked={active}
-								/>
-								<div class="tab-content shadow-bandori-band px-2 py-1 shadow-sm">
+								{!noPreTrained && (
+									<input
+										type="radio"
+										name={tabName}
+										class="tab checked:text-bandori-band-content flex-1 font-medium [--tab-bg:var(--band-color)] hover:[--tab-bg:var(--band-color-alt)] max-sm:mt-2"
+										aria-label={trained ? "Trained" : "Normal"}
+										checked={active}
+									/>
+								)}
+								<div
+									class:list={[
+										!noPreTrained && "tab-content",
+										"shadow-bandori-band rounded-box w-full px-2 py-1 shadow-sm",
+									]}
+								>
 									<img
-										src={imageUrl}
-										alt={imageAlt}
+										{...getCardAsset("full", trained, card)}
 										class:list={[
 											active && autoScroll && "scroll-here",
 											"rounded-box border-base-300 aspect-4/3 w-full border",

@@ -2,7 +2,7 @@ import type { Entry } from "@/contents/data";
 import { fetchBestdori } from "./client";
 import { compressImage, getCachedCompressedImage } from "./compress";
 
-const hasNoPreTrained = ({ name, type }: Entry<"card_map">) =>
+export const hasNoPreTrained = ({ name, type }: Entry<"card_map">) =>
 	name === "Graduation" || ["kirafes", "birthday"].includes(type);
 
 export const card = async (
@@ -10,8 +10,9 @@ export const card = async (
 	trained: boolean,
 	data: Entry<"card_map">,
 ) => {
-	const type = trained || hasNoPreTrained(data) ? "after_training" : "normal";
+	if (!trained && hasNoPreTrained(data)) return;
 
+	const type = trained ? "after_training" : "normal";
 	const filename = ["card", data.id, kind, type].join("_");
 	const cached = getCachedCompressedImage(filename);
 	if (cached !== undefined) return cached;
