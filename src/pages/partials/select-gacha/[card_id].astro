@@ -1,5 +1,5 @@
 ---
-import { card_map } from "@/contents/data";
+import { card_map, gacha_map } from "@/contents/data";
 import GachaCardGrid from "~/components/gacha-card-grid.astro";
 import { regionValue } from "~/lib/utilities";
 
@@ -12,11 +12,13 @@ if (!card) {
 
 const gachaList = regionValue.unwrap(
 	regionValue.map(card.rateUpGacha, (items) =>
-		items.map(({ rateUp, ...entry }) => ({
-			gacha: { ...entry, rateUp },
-			rate: regionValue.unwrap(rateUp)?.find((it) => it.card.id === card.id)!
-				.rate,
-		})),
+		items
+			.map(({ id }) => gacha_map.get(id)!)
+			.map(({ rateUp, ...entry }) => ({
+				gacha: { ...entry, rateUp },
+				rate: regionValue.unwrap(rateUp)?.find((it) => it.card.id === card.id)!
+					.rate,
+			})),
 	),
 );
 ---

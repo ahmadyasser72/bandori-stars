@@ -98,7 +98,7 @@ const cardMap = await timed(
 							.filter(({ rateUp }) =>
 								rateUp[region]!.some((rateUp) => rateUp.card === entry.id),
 							)
-							.map(({ id }) => id),
+							.map(({ id }) => ({ id })),
 					),
 				};
 			}),
@@ -111,18 +111,7 @@ const gacha_map = toMap(
 	[...gachaMap.values()].map(({ rateUp, ...entry }) => ({
 		...entry,
 		rateUp: regionValue.map(rateUp, (items) =>
-			items.map(({ card, rate }) => ({
-				card: cardMap.get(card)!,
-				rate,
-			})),
-		),
-	})),
-);
-const card_map = toMap(
-	[...cardMap.values()].map(({ rateUpGacha, ...entry }) => ({
-		...entry,
-		rateUpGacha: regionValue.map(rateUpGacha, (items) =>
-			items.map((id) => gacha_map.get(id)!),
+			items.map(({ card, rate }) => ({ card: cardMap.get(card)!, rate })),
 		),
 	})),
 );
@@ -131,8 +120,8 @@ const data = {
 	band_map: bandMap,
 	character_map: characterMap,
 	event_map: eventMap,
+	card_map: cardMap,
 	gacha_map,
-	card_map,
 } satisfies Record<string, Map<string, any>>;
 
 await timed(
