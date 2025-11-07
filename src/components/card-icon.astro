@@ -7,17 +7,21 @@ import {
 } from "~/pages/partials/view-card/_helper";
 
 interface Props {
-	card: Pick<Entry<"card_map">, "id">;
+	card: Pick<Entry<"card_map">, "id" | "character" | "name">;
 	options: FullCardModalOptions;
 }
 
 const { card, options } = Astro.props;
+const imageAlt = options.show_trained
+	? `Trained ${card.character.name} - ${card.name}`
+	: `${card.character.name} - ${card.name}`;
 ---
 
 <a {...showFullCardModalOnClick(card, options)}>
 	<img
 		src={getCardAssetUrl("icon", !!options.show_trained, card.id)}
 		class="rounded-box size-12"
+		alt={`${imageAlt} icon`}
 		decoding="async"
 		loading="lazy"
 	/>

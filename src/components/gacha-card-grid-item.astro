@@ -17,10 +17,12 @@ const options = Astro.locals.search_options;
 const rateUpList = regionValue
 	.unwrap(gacha.rateUp)
 	.slice()
-	.sort(({ card: a }, { card: b }) =>
-		a.rarity - b.rarity || options.oldest_first
-			? Number(a.id) - Number(b.id)
-			: Number(b.id) - Number(a.id),
+	.sort(
+		({ card: a }, { card: b }) =>
+			a.rarity - b.rarity ||
+			(options.oldest_first
+				? Number(a.id) - Number(b.id)
+				: Number(b.id) - Number(a.id)),
 	)
 	.sort(
 		({ card: a }, { card: b }) =>
