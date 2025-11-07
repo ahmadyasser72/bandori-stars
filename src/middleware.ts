@@ -7,9 +7,7 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 	const sessionOptions = await context.session?.get("search_options");
 
 	const getOption = (name: keyof App.SearchOptions) =>
-		params.has(name)
-			? params.getAll(name).includes("true")
-			: !!sessionOptions?.[name];
+		params.has("page") ? params.get(name) === "true" : !!sessionOptions?.[name];
 	context.locals.search_options = {
 		oldest_first: getOption("oldest_first"),
 		show_trained: getOption("show_trained"),
