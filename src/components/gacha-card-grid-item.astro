@@ -36,7 +36,7 @@ const showFullCardOnClick = (id: string) =>
 		<a href="#" class="card-title group-hover:link line-clamp-2">{gacha.name}</a
 		>
 
-		<div class="flex flex-wrap justify-center gap-1.5 *:gap-1">
+		<div class="flex flex-col items-center gap-1.5 *:gap-1">
 			{
 				rate && (
 					<div class="badge badge-primary font-medium">
@@ -71,25 +71,50 @@ const showFullCardOnClick = (id: string) =>
 			}
 		</div>
 
-		<ul class="flex flex-wrap gap-1">
+		<ul class="flex gap-1">
 			{
-				regionValue
-					.unwrap(gacha.rateUp)
-					.reverse()
-					.slice(0, 5)
-					.map(({ card }) => (
-						<li>
-							<a
-								{...showFullCardOnClick(card.id)}
-								class:list={[idx > 0 && idx < rateUpList.length && "join-item"]}
-							>
-								<img
-									src={getCardAssetUrl("icon", options.show_trained, card.id)}
-									class="size-10"
-								/>
-							</a>
-						</li>
-					))
+				rateUpList.slice(0, rateUpList.length > 5 ? 4 : 5).map(({ card }) => (
+					<li>
+						<a {...showFullCardOnClick(card.id)}>
+							<img
+								src={getCardAssetUrl("icon", options.show_trained, card.id)}
+								class="rounded-box size-12"
+							/>
+						</a>
+					</li>
+				))
+			}
+
+			{
+				rateUpList.length > 5 && (
+					<li>
+						<details class="dropdown dropdown-end dropdown-top">
+							<summary class="btn btn-square rounded-box btn-neutral btn-outline size-12">
+								<Icon name="lucide:chevron-up" />
+							</summary>
+							<div class="dropdown-content card card-sm bg-base-100 border-base-300 z-1 mb-2 w-64 border shadow-sm">
+								<div class="card-body">
+									<ul class="flex flex-row-reverse flex-wrap-reverse justify-center gap-1">
+										{rateUpList.slice(5).map(({ card }) => (
+											<li>
+												<a {...showFullCardOnClick(card.id)}>
+													<img
+														src={getCardAssetUrl(
+															"icon",
+															options.show_trained,
+															card.id,
+														)}
+														class="rounded-box size-12"
+													/>
+												</a>
+											</li>
+										))}
+									</ul>
+								</div>
+							</div>
+						</details>
+					</li>
+				)
 			}
 		</ul>
 	</div>
