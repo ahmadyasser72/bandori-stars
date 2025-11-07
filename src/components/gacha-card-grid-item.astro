@@ -19,7 +19,7 @@ const rateUpList = regionValue
 	.slice()
 	.sort(
 		({ card: a }, { card: b }) =>
-			a.rarity - b.rarity ||
+			b.rarity - a.rarity ||
 			(options.oldest_first
 				? Number(a.id) - Number(b.id)
 				: Number(b.id) - Number(a.id)),
