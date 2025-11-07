@@ -1,6 +1,8 @@
 import type { Entry } from "@/contents/data";
 
-type ModalOptions = Partial<Record<"auto_scroll" | "show_gacha_list", boolean>>;
+type ModalOptions = Partial<
+	Record<"auto_scroll" | "show_trained" | "show_gacha_list", boolean>
+>;
 
 export const showFullCardModalOnClick = (
 	card: Pick<Entry<"card_map">, "id">,

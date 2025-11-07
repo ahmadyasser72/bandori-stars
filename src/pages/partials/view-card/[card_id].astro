@@ -14,7 +14,7 @@ const name = `${card.character.name} - ${card.name}`;
 const tabName = `full_image_${randomInt(0, 1000)}`;
 
 const params = Astro.url.searchParams;
-const showTrained = Astro.locals.search_options.show_trained;
+const showTrained = params.get("show_trained") === "true";
 const autoScroll = params.get("auto_scroll") === "true";
 const showGachaList = params.get("show_gacha_list") === "true";
 ---
