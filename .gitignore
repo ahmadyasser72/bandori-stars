@@ -27,6 +27,8 @@ pnpm-debug.log*
 /.bestdori-cache/*
 !/.bestdori-cache/.gitkeep
 !/.bestdori-cache/**/
+/.bestdori-cache/blurhash/*
+!/.bestdori-cache/blurhash/.gitkeep
 /.bestdori-cache/compressed/*
 !/.bestdori-cache/compressed/.gitkeep
 

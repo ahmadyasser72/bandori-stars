@@ -1,55 +1,65 @@
 import type { Entry } from "@/contents/data";
 import { fetchBestdori } from "./client";
-import { compressImage, getCachedCompressedImage } from "./compress";
+import { getBlurhashImage } from "./process/blurhash";
+import { compressImage } from "./process/compress";
 
 export const hasNoPreTrained = ({ name, type }: Entry<"card_map">) =>
 	name === "Graduation" || ["kirafes", "birthday"].includes(type);
 
-export const card = async (
-	kind: "icon" | "full",
-	trained: boolean,
-	data: Entry<"card_map">,
-) => {
-	if (!trained && hasNoPreTrained(data)) return;
+interface AssetCardParameters {
+	card: Entry<"card_map">;
+	kind: "icon" | "full";
+	trained: boolean;
+	blurhash: boolean;
+}
+
+export const card = async ({
+	card,
+	kind,
+	trained,
+	blurhash,
+}: AssetCardParameters) => {
+	if (!trained && hasNoPreTrained(card)) return;
 
 	const type = trained ? "after_training" : "normal";
-	const filename = ["card", data.id, kind, type].join("_");
-	const cached = getCachedCompressedImage(filename);
-	if (cached !== undefined) return cached;
+	const name = ["card", card.id, kind, type].join("_");
 
-	const compress = compressImage(filename);
+	let buffer: Buffer;
 	switch (kind) {
 		case "icon": {
-			const chunkId = Math.floor(Number(data.id) / 50)
+			const chunkId = Math.floor(Number(card.id) / 50)
 				.toString()
 				.padStart(5, "0");
 
-			return fetchBestdoriWithRegionFallbacks(
-				`assets/jp/thumb/chara/card${chunkId}_rip/${data.resourceId}_${type}.png`,
-			).then(compress);
+			buffer = await fetchBestdoriWithRegionFallbacks(
+				`assets/jp/thumb/chara/card${chunkId}_rip/${card.resourceId}_${type}.png`,
+			);
+			break;
 		}
 
 		case "full": {
-			return fetchBestdoriWithRegionFallbacks(
-				`assets/jp/characters/resourceset/${data.resourceId}_rip/card_${type}.png`,
-			).then(compress);
+			buffer = await fetchBestdoriWithRegionFallbacks(
+				`assets/jp/characters/resourceset/${card.resourceId}_rip/card_${type}.png`,
+			);
+			break;
 		}
 	}
+
+	return (blurhash ? getBlurhashImage : compressImage)(name, buffer);
 };
 
 export const gachaBanner = async (data: Entry<"gacha_map">) => {
-	const filename = `gacha_${data.id}_banner`;
-	const cached = getCachedCompressedImage(filename);
-	if (cached !== undefined) return cached;
+	const name = `gacha_${data.id}_banner`;
 
-	const compress = compressImage(filename);
 	return fetchBestdoriWithRegionFallbacks(
 		`assets/jp/homebanner_rip/${data.bannerAssetBundleName}.png`,
-	).then(compress);
+	).then((buffer) => compressImage(name, buffer));
 };
 
 const fetchBestdoriWithRegionFallbacks = (jpUrl: string) =>
 	fetchBestdori(jpUrl)
 		.catch(() => fetchBestdori(jpUrl.replace("jp", "en")))
 		.catch(() => fetchBestdori(jpUrl.replace("jp", "cn")))
-		.catch(() => fetchBestdori(jpUrl.replace("jp", "tw")));
+		.catch(() => fetchBestdori(jpUrl.replace("jp", "tw")))
+		.then((response) => response.arrayBuffer())
+		.then(Buffer.from);

@@ -1,3 +1,34 @@
+import { IMAGE_FORMAT } from "~/lib/bestdori/constants";
+
+up.compiler("[data-blurhash]", (el) => {
+	if (!(el instanceof HTMLImageElement)) return;
+
+	const loadImage = () => {
+		const img = new Image();
+		img.src = el.src.replace(`blurhash.${IMAGE_FORMAT}`, IMAGE_FORMAT);
+		const done = () => (el.src = img.src);
+
+		if (img.complete) done();
+		else img.addEventListener("load", done);
+	};
+
+	if (el.height > 0) {
+		loadImage();
+	} else {
+		const observer = new IntersectionObserver((entries) =>
+			entries.forEach(({ isIntersecting }) => {
+				if (el.complete) observer.unobserve(el);
+				else if (isIntersecting) {
+					loadImage();
+					observer.unobserve(el);
+				}
+			}),
+		);
+
+		observer.observe(el);
+	}
+});
+
 up.compiler(".radio-group", (fieldset) => {
 	const isToggleAll = (el: HTMLInputElement) => el.ariaLabel === "All";
 

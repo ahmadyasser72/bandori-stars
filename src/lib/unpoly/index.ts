@@ -21,6 +21,8 @@ window.__unpoly_applyFormValueToSiblingInputs = (el, entries) => {
 };
 
 window.__unpoly_animateShowFullCard = (el, layerElement, reverse = false) => {
+	if (!document.startViewTransition) return;
+
 	const iconImage = el.closest("li")!.querySelector("img")!;
 	const fullImage =
 		layerElement
@@ -29,22 +31,6 @@ window.__unpoly_animateShowFullCard = (el, layerElement, reverse = false) => {
 		layerElement.querySelector("img")!;
 
 	const [from, to] = reverse ? [fullImage, iconImage] : [iconImage, fullImage];
-
-	if (!reverse && !to.complete) {
-		layerElement
-			.querySelectorAll("input")
-			.forEach((input) => (input.disabled = true));
-		to.classList.add("skeleton");
-
-		to.addEventListener("load", () => {
-			to.classList.remove("skeleton");
-			layerElement
-				.querySelectorAll("input")
-				.forEach((input) => (input.disabled = false));
-		});
-	}
-
-	if (!document.startViewTransition) return;
 
 	const transitionName = "animate-full-card";
 	from.style.viewTransitionName = transitionName;

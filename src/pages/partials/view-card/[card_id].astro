@@ -49,7 +49,12 @@ const showGachaList = params.get("show_gacha_list") === "true";
 									]}
 								>
 									<img
-										{...getCardAsset("full", trained, card)}
+										{...getCardAsset({
+											card,
+											kind: "full",
+											trained,
+											blurhash: true,
+										})}
 										class:list={[
 											active && autoScroll && "scroll-here",
 											"rounded-box border-base-300 aspect-4/3 w-full border",

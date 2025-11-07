@@ -6,10 +6,10 @@
       "dependencies": {
         "@astrojs/cloudflare": "^12.6.10",
         "@tailwindcss/vite": "^4.1.16",
-        "astro": "^5.15.2",
+        "astro": "^5.15.3",
         "astro-icon": "^1.1.5",
         "clsx": "^2.1.1",
-        "daisyui": "^5.3.10",
+        "daisyui": "^5.4.5",
         "dayjs": "^1.11.19",
         "fast-shuffle": "^6.1.1",
         "flexsearch": "^0.8.212",
@@ -21,8 +21,9 @@
         "@astrojs/check": "^0.9.5",
         "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
         "@iconify-json/emojione": "^1.2.3",
-        "@iconify-json/lucide": "^1.2.71",
-        "@types/node": "^24.9.2",
+        "@iconify-json/lucide": "^1.2.72",
+        "@types/node": "^24.10.0",
+        "blurhash": "^2.0.5",
         "devalue": "^5.4.2",
         "prettier": "^3.6.2",
         "prettier-plugin-astro": "^0.14.1",
@@ -456,6 +457,8 @@
     "base64-js": ["base64-js@1.5.1", "", {}, "sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA=="],
 
     "blake3-wasm": ["blake3-wasm@2.1.5", "", {}, "sha512-F1+K8EbfOZE49dtoPtmxUQrpXaBIl3ICvasLh+nJta0xkz+9kF/7uet9fLnwKqhDrmj6g+6K3Tw9yQPUg2ka5g=="],
+
+    "blurhash": ["blurhash@2.0.5", "", {}, "sha512-cRygWd7kGBQO3VEhPiTgq4Wc43ctsM+o46urrmPOiuAe+07fzlSB9OJVdpgDL0jPqXUVQ9ht7aq7kxOeJHRK+w=="],
 
     "boolbase": ["boolbase@1.0.0", "", {}, "sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww=="],
 
