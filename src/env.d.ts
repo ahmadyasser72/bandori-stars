@@ -1,7 +1,7 @@
-type NetlifyLocals = import("@astrojs/netlify").NetlifyLocals;
+type Runtime = import("@astrojs/cloudflare").Runtime<CloudflareBindings>;
 
 declare namespace App {
-	interface Locals extends NetlifyLocals {
+	interface Locals extends Runtime {
 		search_options: Required<SearchOptions>;
 	}
 
