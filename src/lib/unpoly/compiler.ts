@@ -18,7 +18,7 @@ up.compiler("[data-blurhash]", (el) => {
 					img.src = original;
 					const done = () => (el.src = original);
 					if (img.complete) done();
-					img.addEventListener("load", done);
+					else img.addEventListener("load", done, { once: true });
 				});
 			},
 			{ threshold: 0.67 },
@@ -26,7 +26,7 @@ up.compiler("[data-blurhash]", (el) => {
 		observer.observe(el);
 	}, 200);
 
-	el.addEventListener("load", () => clearTimeout(timeout));
+	el.addEventListener("load", () => clearTimeout(timeout), { once: true });
 });
 
 up.compiler(".radio-group", (fieldset) => {
