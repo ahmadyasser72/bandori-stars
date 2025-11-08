@@ -1,5 +1,7 @@
 import type { APIRoute } from "astro";
 
+import { shuffle } from "fast-shuffle";
+
 import { bestdori } from "~/lib/bestdori";
 import * as card from "./card/[id]_[type].[ext]";
 import * as gacha from "./gacha/[id]_banner.[ext]";
@@ -20,7 +22,7 @@ export const GET: APIRoute = async () => {
 				`/static/assets/gacha/${params.id}_banner.${params.ext}`,
 				await bestdori.asset.gachaBanner({ ...props, blurhash: true }),
 			]),
-	]);
+	]).then(shuffle);
 
 	return new Response(JSON.stringify(Object.fromEntries(assets)));
 };

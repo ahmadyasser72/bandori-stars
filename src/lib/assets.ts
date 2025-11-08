@@ -6,7 +6,9 @@ import type { bestdori } from "./bestdori";
 import { hasNoPreTrained } from "./bestdori/asset";
 
 const blurhashMap = new Map<string, string>();
-export const getBlurhash = async (context: APIContext, pathname: string) => {
+const getBlurhash = async (context: APIContext, pathname: string) => {
+	// return hardcoded blurhash on development since blurhash.json
+	// needs all asset images to be downlaoded
 	if (import.meta.env.DEV) return "UZOf75~pJC%M?Gs*pJt7yEW=xvNH?INGRjWY";
 
 	if (blurhashMap.size === 0) {
@@ -14,43 +16,54 @@ export const getBlurhash = async (context: APIContext, pathname: string) => {
 			new URL("/static/assets/blurhash.json", context.url),
 		).then((response) => response.json<Record<string, string>>());
 
-		for (const [key, value] of Object.entries(json))
+		for (const [key, value] of Object.entries(json)) {
 			blurhashMap.set(key, value);
+		}
 	}
 
 	return blurhashMap.get(pathname)!;
 };
 
-const defaultImageProps = {
+const imageAttributes = {
 	loading: "lazy",
 	decoding: "async",
 } satisfies JSX.ImgHTMLAttributes;
 
-export const getCardAsset = (({ card, kind, trained }) => {
+export const getCardAsset = (async (context, { card, kind, trained }) => {
 	trained ||= hasNoPreTrained(card);
 
 	const parts = [card.id, kind];
 	if (trained) parts.push("trained");
 
 	const filename = parts.join("_");
+	const src = `/static/assets/card/${filename}.${IMAGE_FORMAT}`;
+
 	return {
-		...defaultImageProps,
-		src: `/static/assets/card/${filename}.${IMAGE_FORMAT}`,
+		...imageAttributes,
+		src,
 		alt: trained
 			? `Trained ${card.character.name} - ${card.name}`
 			: `${card.character.name} - ${card.name}`,
+		"data-blurhash": await getBlurhash(context, src),
 	};
 }) satisfies (
+	context: APIContext,
 	arg: Pick<
 		Parameters<typeof bestdori.asset.card>[0],
 		"card" | "kind" | "trained"
 	>,
-) => Record<"src" | "alt", string> & JSX.ImgHTMLAttributes;
+) => Promise<Record<"src" | "alt", string> & JSX.ImgHTMLAttributes>;
 
-export const getGachaBanner = (({ gacha }) => ({
-	...defaultImageProps,
-	src: `/static/assets/gacha/${gacha.id}_banner.${IMAGE_FORMAT}`,
-	alt: `Banner of ${gacha.name}`,
-})) satisfies (
+export const getGachaBanner = (async (context, { gacha }) => {
+	const src = `/static/assets/gacha/${gacha.id}_banner.${IMAGE_FORMAT}`;
+
+	return {
+		...imageAttributes,
+		src,
+		alt: `Banner of ${gacha.name}`,
+		"data-blurhash": await getBlurhash(context, src),
+	};
+}) satisfies (
+	context: APIContext,
 	arg: Pick<Parameters<typeof bestdori.asset.gachaBanner>[0], "gacha">,
-) => Record<"src" | "alt", string> & JSX.ImgHTMLAttributes;
+) => Promise<Record<"src" | "alt", string> & JSX.ImgHTMLAttributes>;

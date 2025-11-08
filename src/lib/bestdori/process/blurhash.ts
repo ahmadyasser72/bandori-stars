@@ -4,27 +4,21 @@ import { join as joinPath } from "node:path";
 import { encode } from "blurhash";
 
 import { BESTDORI_CACHE_DIR, BLURHASH_SIZE } from "~/lib/bestdori/constants";
-import { resizeOptions } from "./shared";
 
-export const getBlurhashImage = async (name: string, buffer: Buffer) => {
+export const generateBlurhash = async (name: string, buffer: Buffer) => {
 	const path = getPath(name);
 	if (!existsSync(path)) {
 		const { default: sharp } = await import("sharp");
 
 		const image = await sharp(buffer)
-			.resize({ ...resizeOptions, width: BLURHASH_SIZE, height: BLURHASH_SIZE })
+			.resize({ width: BLURHASH_SIZE, height: BLURHASH_SIZE })
 			.raw()
 			.ensureAlpha()
 			.toBuffer({ resolveWithObject: true });
-		const hash = encode(
-			new Uint8ClampedArray(image.data),
-			BLURHASH_SIZE,
-			BLURHASH_SIZE,
-			4,
-			4,
-		);
 
-		writeFileSync(path, hash);
+		const data = new Uint8ClampedArray(image.data);
+		const hash = encode(data, BLURHASH_SIZE, BLURHASH_SIZE, 4, 4);
+		writeFileSync(path, hash, { encoding: "utf-8" });
 	}
 
 	return readFileSync(path, "utf-8");

@@ -1,6 +1,6 @@
 ---
 import type { Entry } from "@/contents/data";
-import { getBlurhash, getCardAsset } from "~/lib/assets";
+import { getCardAsset } from "~/lib/assets";
 import {
 	showFullCardModalOnClick,
 	type FullCardModalOptions,
@@ -12,19 +12,15 @@ interface Props {
 }
 
 const { card, options } = Astro.props;
-
-const image = getCardAsset({
-	card: card,
-	kind: "icon",
-	trained: !!options.show_trained,
-});
-const blurhash = await getBlurhash(Astro, image.src);
 ---
 
 <a {...showFullCardModalOnClick(card, options)} data-band-id={card.band.id}>
 	<img
-		{...image}
-		data-blurhash={blurhash}
+		{...await getCardAsset(Astro, {
+			card,
+			kind: "icon",
+			trained: !!options.show_trained,
+		})}
 		class="rounded-box shadow-bandori-band size-12 hover:shadow-md"
 	/>
 </a>

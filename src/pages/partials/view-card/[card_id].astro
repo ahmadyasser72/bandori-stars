@@ -1,6 +1,6 @@
 ---
 import { card_map } from "@/contents/data";
-import { getBlurhash, getCardAsset } from "~/lib/assets";
+import { getCardAsset } from "~/lib/assets";
 import { hasNoPreTrained } from "~/lib/bestdori/asset";
 import { randomInt } from "~/lib/utilities";
 
@@ -30,8 +30,6 @@ const showGachaList = params.get("show_gacha_list") === "true";
 				{
 					(noPreTrained ? [true] : [false, true]).map(async (trained) => {
 						const active = showTrained ? trained : !trained;
-						const image = getCardAsset({ card, kind: "full", trained });
-						const blurhash = await getBlurhash(Astro, image.src);
 
 						return (
 							<>
@@ -51,12 +49,15 @@ const showGachaList = params.get("show_gacha_list") === "true";
 									]}
 								>
 									<img
-										{...image}
+										{...await getCardAsset(Astro, {
+											card,
+											kind: "full",
+											trained,
+										})}
 										class:list={[
 											active && autoScroll && "scroll-here",
-											"rounded-box border-base-300 relative aspect-4/3 w-full border",
+											"rounded-box border-base-300 aspect-4/3 w-full border",
 										]}
-										data-blurhash={blurhash}
 										data-scroll-here="center"
 									/>
 								</div>

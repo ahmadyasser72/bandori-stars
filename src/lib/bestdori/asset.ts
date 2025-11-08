@@ -1,6 +1,6 @@
 import type { Entry } from "@/contents/data";
 import { fetchBestdori } from "./client";
-import { getBlurhashImage } from "./process/blurhash";
+import { generateBlurhash } from "./process/blurhash";
 import { compressImage } from "./process/compress";
 
 export const hasNoPreTrained = ({ name, type }: Entry<"card_map">) =>
@@ -45,7 +45,7 @@ export const card = async ({
 		}
 	}
 
-	return (blurhash ? getBlurhashImage : compressImage)(name, buffer);
+	return (blurhash ? generateBlurhash : compressImage)(name, buffer);
 };
 
 interface AssetGachaBannerParameters {
@@ -62,7 +62,7 @@ export const gachaBanner = async ({
 		`assets/jp/homebanner_rip/${gacha.bannerAssetBundleName}.png`,
 	);
 
-	return (blurhash ? getBlurhashImage : compressImage)(name, buffer);
+	return (blurhash ? generateBlurhash : compressImage)(name, buffer);
 };
 
 const fetchBestdoriWithRegionFallbacks = (jpUrl: string) =>
