@@ -3,26 +3,30 @@ import { BLURHASH_IMAGE_FORMAT, IMAGE_FORMAT } from "~/lib/bestdori/constants";
 up.compiler("[data-blurhash]", (el) => {
 	if (!(el instanceof HTMLImageElement) || el.complete) return;
 
-	const original = el.src;
-	el.src = el.src.replace(IMAGE_FORMAT, BLURHASH_IMAGE_FORMAT);
-	el.loading = "eager";
+	const timeout = setTimeout(() => {
+		const original = el.src;
+		el.src = el.src.replace(IMAGE_FORMAT, BLURHASH_IMAGE_FORMAT);
+		el.loading = "eager";
 
-	const observer = new IntersectionObserver(
-		(entries) => {
-			entries.forEach(({ isIntersecting }) => {
-				if (!isIntersecting) return;
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach(({ isIntersecting }) => {
+					if (!isIntersecting) return;
 
-				observer.disconnect();
-				const img = new Image();
-				img.src = original;
-				const done = () => (el.src = original);
-				if (img.complete) done();
-				img.addEventListener("load", done);
-			});
-		},
-		{ threshold: 0.67 },
-	);
-	observer.observe(el);
+					observer.disconnect();
+					const img = new Image();
+					img.src = original;
+					const done = () => (el.src = original);
+					if (img.complete) done();
+					img.addEventListener("load", done);
+				});
+			},
+			{ threshold: 0.67 },
+		);
+		observer.observe(el);
+	}, 200);
+
+	el.addEventListener("load", () => clearTimeout(timeout));
 });
 
 up.compiler(".radio-group", (fieldset) => {
