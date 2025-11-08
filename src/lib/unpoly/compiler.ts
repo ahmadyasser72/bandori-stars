@@ -1,32 +1,38 @@
-import { BLURHASH_IMAGE_FORMAT, IMAGE_FORMAT } from "~/lib/bestdori/constants";
+import { decode } from "blurhash";
+
+import { BLURHASH_SIZE } from "../bestdori/constants";
 
 up.compiler("[data-blurhash]", (el) => {
 	if (!(el instanceof HTMLImageElement) || el.complete) return;
 
-	const timeout = setTimeout(() => {
-		const original = el.src;
-		el.src = el.src.replace(IMAGE_FORMAT, BLURHASH_IMAGE_FORMAT);
-		el.loading = "eager";
+	const pixels = decode(el.dataset.blurhash!, BLURHASH_SIZE, BLURHASH_SIZE);
+	const canvas = document.createElement("canvas");
+	canvas.width = canvas.height = BLURHASH_SIZE;
+	const ctx = canvas.getContext("2d")!;
+	const imageData = ctx.createImageData(BLURHASH_SIZE, BLURHASH_SIZE);
+	imageData.data.set(pixels);
+	ctx.putImageData(imageData, 0, 0);
 
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach(({ isIntersecting }) => {
-					if (!isIntersecting) return;
+	const original = el.src;
+	el.src = canvas.toDataURL();
 
-					observer.disconnect();
-					const img = new Image();
-					img.src = original;
-					const done = () => (el.src = original);
-					if (img.complete) done();
-					else img.addEventListener("load", done, { once: true });
-				});
-			},
-			{ threshold: 0.67 },
-		);
-		observer.observe(el);
-	}, 200);
+	const observer = new IntersectionObserver(
+		(entries) => {
+			entries.forEach(({ isIntersecting }) => {
+				if (!isIntersecting) return;
+				else observer.disconnect();
 
-	el.addEventListener("load", () => clearTimeout(timeout), { once: true });
+				const img = new Image();
+				img.src = original;
+
+				const done = () => (el.src = original);
+				if (img.complete) done();
+				else img.addEventListener("load", done, { once: true });
+			});
+		},
+		{ threshold: 0.67 },
+	);
+	observer.observe(el);
 });
 
 up.compiler(".radio-group", (fieldset) => {

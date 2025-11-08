@@ -1,11 +1,12 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join as joinPath } from "node:path";
 
-import { decode, encode } from "blurhash";
+import { encode } from "blurhash";
 
 import {
 	BESTDORI_CACHE_DIR,
-	BLURHASH_IMAGE_FORMAT,
+	BLURHASH_FORMAT,
+	BLURHASH_SIZE,
 } from "~/lib/bestdori/constants";
 import { resizeOptions } from "./shared";
 
@@ -15,24 +16,23 @@ export const getBlurhashImage = async (name: string, buffer: Buffer) => {
 		const { default: sharp } = await import("sharp");
 
 		const image = await sharp(buffer)
-			.resize({ ...resizeOptions, width: 32 })
+			.resize({ ...resizeOptions, width: BLURHASH_SIZE, height: BLURHASH_SIZE })
 			.raw()
 			.ensureAlpha()
 			.toBuffer({ resolveWithObject: true });
 		const hash = encode(
 			new Uint8ClampedArray(image.data),
-			image.info.width,
-			image.info.height,
-			2,
-			2,
+			BLURHASH_SIZE,
+			BLURHASH_SIZE,
+			4,
+			4,
 		);
 
-		const blurhashImage = decode(hash, image.info.width, image.info.height);
-		await sharp(blurhashImage, { raw: image.info }).webp().toFile(path);
+		writeFileSync(path, hash);
 	}
 
 	return readFileSync(path);
 };
 
 const getPath = (name: string) =>
-	joinPath(BESTDORI_CACHE_DIR, "blurhash", `${name}.${BLURHASH_IMAGE_FORMAT}`);
+	joinPath(BESTDORI_CACHE_DIR, "blurhash", `${name}.${BLURHASH_FORMAT}`);

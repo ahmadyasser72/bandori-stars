@@ -1,15 +1,26 @@
+import type { APIContext } from "astro";
 import type { JSX } from "astro/jsx-runtime";
 
-import { IMAGE_FORMAT } from "~/lib/bestdori/constants";
+import { BLURHASH_FORMAT, IMAGE_FORMAT } from "~/lib/bestdori/constants";
 import type { bestdori } from "./bestdori";
 import { hasNoPreTrained } from "./bestdori/asset";
+
+export const getBlurhash = async (context: APIContext, imageUrl: string) => {
+	const fetch = import.meta.env.PROD
+		? context.locals.runtime.env.ASSETS.fetch
+		: globalThis.fetch;
+
+	return fetch(
+		new URL(imageUrl.replace(IMAGE_FORMAT, BLURHASH_FORMAT), context.url),
+	).then((response) => response.text());
+};
 
 const defaultImageProps = {
 	loading: "lazy",
 	decoding: "async",
 } satisfies JSX.ImgHTMLAttributes;
 
-export const getCardAsset = (({ card, kind, trained, blurhash }) => {
+export const getCardAsset = (({ card, kind, trained }) => {
 	trained ||= hasNoPreTrained(card);
 
 	const parts = [card.id, kind];
@@ -22,13 +33,12 @@ export const getCardAsset = (({ card, kind, trained, blurhash }) => {
 		alt: trained
 			? `Trained ${card.character.name} - ${card.name}`
 			: `${card.character.name} - ${card.name}`,
-		"data-blurhash": blurhash,
 	};
 }) satisfies (
 	arg: Pick<
 		Parameters<typeof bestdori.asset.card>[0],
 		"card" | "kind" | "trained"
-	> & { blurhash?: boolean },
+	>,
 ) => Record<"src" | "alt", string> & JSX.ImgHTMLAttributes;
 
 export const getGachaBanner = ((data) => ({

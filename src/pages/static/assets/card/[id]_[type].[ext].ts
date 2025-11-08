@@ -9,7 +9,7 @@ import { shuffle } from "fast-shuffle";
 
 import { card_map } from "@/contents/data";
 import { bestdori } from "~/lib/bestdori";
-import { BLURHASH_IMAGE_FORMAT, IMAGE_FORMAT } from "~/lib/bestdori/constants";
+import { BLURHASH_FORMAT, IMAGE_FORMAT } from "~/lib/bestdori/constants";
 
 export const prerender = true;
 
@@ -31,7 +31,7 @@ export const getStaticPaths = (() => {
 					params: {
 						id: card.id,
 						type: trained ? `${kind}_trained` : kind,
-						ext: blurhash ? BLURHASH_IMAGE_FORMAT : IMAGE_FORMAT,
+						ext: blurhash ? BLURHASH_FORMAT : IMAGE_FORMAT,
 					},
 					props: { card, kind, trained, blurhash },
 				}));
