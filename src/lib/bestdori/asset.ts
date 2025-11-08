@@ -48,12 +48,21 @@ export const card = async ({
 	return (blurhash ? getBlurhashImage : compressImage)(name, buffer);
 };
 
-export const gachaBanner = async (data: Entry<"gacha_map">) => {
-	const name = `gacha_${data.id}_banner`;
+interface AssetGachaBannerParameters {
+	gacha: Entry<"gacha_map">;
+	blurhash: boolean;
+}
 
-	return fetchBestdoriWithRegionFallbacks(
-		`assets/jp/homebanner_rip/${data.bannerAssetBundleName}.png`,
-	).then((buffer) => compressImage(name, buffer));
+export const gachaBanner = async ({
+	gacha,
+	blurhash,
+}: AssetGachaBannerParameters) => {
+	const name = `gacha_${gacha.id}_banner`;
+	const buffer = await fetchBestdoriWithRegionFallbacks(
+		`assets/jp/homebanner_rip/${gacha.bannerAssetBundleName}.png`,
+	);
+
+	return (blurhash ? getBlurhashImage : compressImage)(name, buffer);
 };
 
 const fetchBestdoriWithRegionFallbacks = (jpUrl: string) =>

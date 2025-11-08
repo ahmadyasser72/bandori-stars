@@ -42,10 +42,10 @@ export const getCardAsset = (({ card, kind, trained }) => {
 	>,
 ) => Record<"src" | "alt", string> & JSX.ImgHTMLAttributes;
 
-export const getGachaBanner = ((data) => ({
+export const getGachaBanner = (({ gacha }) => ({
 	...defaultImageProps,
-	src: `/static/assets/gacha/${data.id}_banner.${IMAGE_FORMAT}`,
-	alt: `Banner of ${data.name}`,
+	src: `/static/assets/gacha/${gacha.id}_banner.${IMAGE_FORMAT}`,
+	alt: `Banner of ${gacha.name}`,
 })) satisfies (
-	...args: Parameters<typeof bestdori.asset.gachaBanner>
+	arg: Pick<Parameters<typeof bestdori.asset.gachaBanner>[0], "gacha">,
 ) => Record<"src" | "alt", string> & JSX.ImgHTMLAttributes;

@@ -20,22 +20,20 @@ export const getStaticPaths = (() => {
 	const allCards = [...card_map.values()];
 
 	const kinds = ["icon", "full"] as const;
-	const trainedVariant = [true, false];
+	const trueFalse = [true, false];
 
 	const results = allCards.flatMap((card) =>
-		trainedVariant.flatMap((trained) =>
-			kinds.flatMap((kind) => {
-				const blurhashOptions = kind === "full" ? [true, false] : [false];
-
-				return blurhashOptions.map((blurhash) => ({
+		kinds.flatMap((kind) =>
+			trueFalse.flatMap((trained) =>
+				trueFalse.map((blurhash) => ({
 					params: {
 						id: card.id,
 						type: trained ? `${kind}_trained` : kind,
 						ext: blurhash ? BLURHASH_FORMAT : IMAGE_FORMAT,
 					},
 					props: { card, kind, trained, blurhash },
-				}));
-			}),
+				})),
+			),
 		),
 	);
 
