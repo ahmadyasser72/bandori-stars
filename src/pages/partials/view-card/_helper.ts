@@ -12,6 +12,7 @@ export const showFullCardModalOnClick = (
 	"up-layer": "new",
 	"up-size": "large",
 	"up-scroll": "false",
+	"up-history": "false",
 	"up-params": JSON.stringify(options),
 	"up-on-opened": "__unpoly_animateShowFullCard(this, layer.element)",
 	"up-on-dismissed": "__unpoly_animateShowFullCard(this, layer.element, true)",

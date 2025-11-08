@@ -9,9 +9,10 @@ import CardIcon from "./card-icon.astro";
 export interface Props {
 	gacha: Entry<"gacha_map">;
 	rate?: number;
+	class?: string;
 }
 
-const { gacha, rate } = Astro.props;
+const { gacha, rate, class: className } = Astro.props;
 
 const options = Astro.locals.search_options;
 const rateUpList = regionValue
@@ -30,7 +31,12 @@ const rateUpList = regionValue
 	);
 ---
 
-<div class="group card bg-base-100 hover:shadow-bandori-band shadow-sm">
+<div
+	class:list={[
+		"group card bg-base-100 hover:shadow-bandori-band shadow-sm",
+		className,
+	]}
+>
 	<figure>
 		<img
 			{...await getGachaBanner(Astro, { gacha })}
@@ -38,7 +44,9 @@ const rateUpList = regionValue
 		/>
 	</figure>
 	<div class="card-body items-center justify-between gap-4 text-center">
-		<a href="#" class="card-title group-hover:link line-clamp-2">{gacha.name}</a
+		<a
+			href={`/calculate/gacha/${gacha.id}`}
+			class="card-title group-hover:link line-clamp-2">{gacha.name}</a
 		>
 
 		<div class="flex flex-col items-center gap-1.5 *:gap-1">

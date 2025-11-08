@@ -1,0 +1,152 @@
+---
+import { gacha_map } from "@/contents/data";
+import GachaCardGridItem from "~/components/gacha-card-grid-item.astro";
+import BaseLayout from "~/layouts/base-layout.astro";
+import { sum } from "~/lib/math";
+import { regionValue } from "~/lib/utilities";
+
+const gacha = gacha_map.get(Astro.params.gacha_id!);
+if (!gacha) {
+	return new Response("Gacha not found.", { status: 404 });
+}
+
+const events = regionValue.unwrap(gacha.events)!;
+const params = Astro.url.searchParams;
+const freeStars = (() => {
+	const getNumber = (name: string) => {
+		const value = params.get(name);
+		const number = Number(value ?? NaN);
+		return Number.isNaN(number) || number <= 0 ? 0 : number;
+	};
+
+	const targets = {
+		point: getNumber("target_point"),
+		rank: getNumber("target_rank") || Number.POSITIVE_INFINITY,
+		readStories: params.get("read_stories") === "true",
+	};
+
+	const source = {
+		point: sum(
+			events.map(
+				({ pointRewards }) =>
+					pointRewards
+						.slice()
+						.reverse()
+						.find(({ point }) => point <= targets.point)?.stars ?? 0,
+			),
+		),
+		rank: sum(
+			events.map(
+				({ rankingRewards }) =>
+					rankingRewards.find(({ rank }) => rank >= targets.rank)?.stars ?? 0,
+			),
+		),
+		stories: targets.readStories
+			? sum(events.map(({ storyRewards }) => storyRewards))
+			: 0,
+	};
+
+	return { source, total: sum(Object.values(source)) };
+})();
+
+const suggestions = events.reduce(
+	(acc, { pointRewards, rankingRewards }) => {
+		for (const { point } of pointRewards) acc.points.add(point);
+		for (const { rank } of rankingRewards) acc.rankings.add(rank);
+		return acc;
+	},
+	{ points: new Set<number>(), rankings: new Set<number>() },
+);
+---
+
+<BaseLayout>
+	<div
+		class="container mx-auto grid max-w-xs gap-4 py-8 sm:max-w-sm md:max-w-2xl md:grid-cols-2"
+	>
+		<GachaCardGridItem {gacha} class="md:order-2" />
+
+		<form
+			up-target="#free-stars"
+			up-autosubmit
+			class="md:order-1 md:row-span-2"
+		>
+			<fieldset
+				class="fieldset bg-base-200 border-base-300 rounded-box h-full border p-4"
+			>
+				<legend class="fieldset-legend">Define your target</legend>
+
+				<label class="label">Event points</label>
+				<input
+					name="target_point"
+					type="number"
+					min="0"
+					class="input"
+					list="point-suggestions"
+				/>
+				<datalist id="point-suggestions">
+					{
+						[...suggestions.points]
+							.sort((a, b) => b - a)
+							.map((point) => <option value={point} />)
+					}
+				</datalist>
+
+				<label class="label">Event rank</label>
+				<input
+					name="target_rank"
+					type="number"
+					min="0"
+					class="input"
+					list="rank-suggestions"
+				/>
+				<datalist id="rank-suggestions">
+					{
+						[...suggestions.rankings]
+							.sort((a, b) => a - b)
+							.map((rank) => <option value={rank} />)
+					}
+				</datalist>
+
+				<fieldset
+					class="fieldset bg-base-100 border-base-300 rounded-box border p-4 pt-2"
+				>
+					<legend class="fieldset-legend">Options</legend>
+					<label class="label">
+						<input
+							name="read_stories"
+							type="checkbox"
+							class="checkbox"
+							value="true"
+						/>
+						Read all event stories
+					</label>
+				</fieldset>
+
+				<button type="submit" class="btn">Submit</button>
+			</fieldset>
+		</form>
+
+		<div id="free-stars" class="card bg-base-100 shadow-sm md:order-3">
+			<div class="card-body items-center text-center">
+				<h2 class="card-title">Free stars</h2>
+
+				<div class="flex w-full items-center justify-evenly">
+					<div class="grid grid-cols-2 gap-1 text-start">
+						<span>Point</span>
+						<span>{freeStars.source.point}</span>
+						<span>Rank</span>
+						<span>{freeStars.source.rank}</span>
+						<span>Stories</span>
+						<span>{freeStars.source.stories}</span>
+					</div>
+
+					<div class="grid flex-1 gap-0.5">
+						<span>Total</span>
+						<span>{freeStars.total}</span>
+						<span>{Math.floor(freeStars.total / 250)} pull(s)</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</BaseLayout>
