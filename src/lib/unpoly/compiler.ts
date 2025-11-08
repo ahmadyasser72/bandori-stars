@@ -1,9 +1,14 @@
-import { decode } from "blurhash";
+import { decode, isBlurhashValid } from "blurhash";
 
-import { BLURHASH_SIZE } from "../bestdori/constants";
+import { BLURHASH_SIZE } from "~/lib/bestdori/constants";
 
 up.compiler("[data-blurhash]", (el) => {
-	if (!(el instanceof HTMLImageElement) || el.complete) return;
+	if (
+		!(el instanceof HTMLImageElement) ||
+		!isBlurhashValid(el.dataset.blurhash!).result ||
+		el.complete
+	)
+		return;
 
 	const pixels = decode(el.dataset.blurhash!, BLURHASH_SIZE, BLURHASH_SIZE);
 	const canvas = document.createElement("canvas");
