@@ -13,17 +13,17 @@
 	},
 	"dependencies": {
 		"@astrojs/cloudflare": "^12.6.10",
-		"@tailwindcss/vite": "^4.1.16",
-		"astro": "^5.15.3",
+		"@tailwindcss/vite": "^4.1.17",
+		"astro": "^5.15.4",
 		"astro-icon": "^1.1.5",
 		"blurhash": "^2.0.5",
 		"clsx": "^2.1.1",
-		"daisyui": "^5.4.5",
+		"daisyui": "^5.4.7",
 		"dayjs": "^1.11.19",
 		"fast-shuffle": "^6.1.1",
 		"flexsearch": "^0.8.212",
 		"p-limit": "^7.2.0",
-		"tailwindcss": "^4.1.16",
+		"tailwindcss": "^4.1.17",
 		"unpoly": "^3.12.0"
 	},
 	"devDependencies": {
@@ -36,9 +36,9 @@
 		"prettier": "^3.6.2",
 		"prettier-plugin-astro": "^0.14.1",
 		"prettier-plugin-tailwindcss": "^0.7.1",
-		"sharp": "^0.34.4",
+		"sharp": "^0.34.5",
 		"typescript": "^5.9.3",
-		"wrangler": "^4.45.4",
+		"wrangler": "^4.46.0",
 		"zod": "^4.1.12"
 	}
 }
