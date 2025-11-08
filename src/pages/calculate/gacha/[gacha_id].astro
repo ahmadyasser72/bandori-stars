@@ -2,7 +2,7 @@
 import { gacha_map } from "@/contents/data";
 import GachaCardGridItem from "~/components/gacha-card-grid-item.astro";
 import BaseLayout from "~/layouts/base-layout.astro";
-import { sum } from "~/lib/math";
+import { formatNumber, sum } from "~/lib/math";
 import { regionValue } from "~/lib/utilities";
 
 const gacha = gacha_map.get(Astro.params.gacha_id!);
@@ -71,7 +71,7 @@ const suggestions = events.reduce(
 			class="md:order-1 md:row-span-2"
 		>
 			<fieldset
-				class="fieldset bg-base-200 border-base-300 rounded-box border p-4"
+				class="fieldset bg-base-200 border-base-300 rounded-box h-full border p-4"
 			>
 				<label class="label">Event points</label>
 				<select name="target_point" class="select">
@@ -79,7 +79,9 @@ const suggestions = events.reduce(
 					{
 						[...suggestions.points]
 							.sort((a, b) => b - a)
-							.map((point) => <option value={point}>{point}</option>)
+							.map((point) => (
+								<option value={point}>{formatNumber(point)}</option>
+							))
 					}
 				</select>
 
@@ -108,7 +110,7 @@ const suggestions = events.reduce(
 					</label>
 				</fieldset>
 
-				<button type="submit" class="btn">Submit</button>
+				<button type="submit" class="btn btn-primary mt-4">Submit</button>
 			</fieldset>
 		</form>
 
@@ -119,16 +121,16 @@ const suggestions = events.reduce(
 				<div class="flex w-full items-center justify-evenly">
 					<div class="grid grid-cols-2 gap-1 text-start">
 						<span>Point</span>
-						<span>{freeStars.source.point}</span>
+						<span>{formatNumber(freeStars.source.point)}</span>
 						<span>Rank</span>
-						<span>{freeStars.source.rank}</span>
+						<span>{formatNumber(freeStars.source.rank)}</span>
 						<span>Stories</span>
-						<span>{freeStars.source.stories}</span>
+						<span>{formatNumber(freeStars.source.stories)}</span>
 					</div>
 
 					<div class="grid flex-1 gap-0.5">
 						<span>Total</span>
-						<span>{freeStars.total}</span>
+						<span>{formatNumber(freeStars.total)}</span>
 						<span>{Math.floor(freeStars.total / 250)} pull(s)</span>
 					</div>
 				</div>
