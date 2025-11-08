@@ -71,41 +71,29 @@ const suggestions = events.reduce(
 			class="md:order-1 md:row-span-2"
 		>
 			<fieldset
-				class="fieldset bg-base-200 border-base-300 rounded-box h-full border p-4"
+				class="fieldset bg-base-200 border-base-300 rounded-box border p-4"
 			>
 				<legend class="fieldset-legend">Define your target</legend>
 
 				<label class="label">Event points</label>
-				<input
-					name="target_point"
-					type="number"
-					min="0"
-					class="input"
-					list="point-suggestions"
-				/>
-				<datalist id="point-suggestions">
+				<select name="target_point" class="select">
+					<option value="" disabled selected>Pick a point</option>
 					{
 						[...suggestions.points]
 							.sort((a, b) => b - a)
-							.map((point) => <option value={point} />)
+							.map((point) => <option value={point}>{point}</option>)
 					}
-				</datalist>
+				</select>
 
 				<label class="label">Event rank</label>
-				<input
-					name="target_rank"
-					type="number"
-					min="0"
-					class="input"
-					list="rank-suggestions"
-				/>
-				<datalist id="rank-suggestions">
+				<select name="target_rank" class="select">
+					<option value="" disabled selected>Pick a rank</option>
 					{
 						[...suggestions.rankings]
 							.sort((a, b) => a - b)
-							.map((rank) => <option value={rank} />)
+							.map((rank) => <option value={rank}>T{rank}</option>)
 					}
-				</datalist>
+				</select>
 
 				<fieldset
 					class="fieldset bg-base-100 border-base-300 rounded-box border p-4 pt-2"
