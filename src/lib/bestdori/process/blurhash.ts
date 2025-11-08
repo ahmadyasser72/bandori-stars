@@ -3,11 +3,7 @@ import { join as joinPath } from "node:path";
 
 import { encode } from "blurhash";
 
-import {
-	BESTDORI_CACHE_DIR,
-	BLURHASH_FORMAT,
-	BLURHASH_SIZE,
-} from "~/lib/bestdori/constants";
+import { BESTDORI_CACHE_DIR, BLURHASH_SIZE } from "~/lib/bestdori/constants";
 import { resizeOptions } from "./shared";
 
 export const getBlurhashImage = async (name: string, buffer: Buffer) => {
@@ -31,8 +27,8 @@ export const getBlurhashImage = async (name: string, buffer: Buffer) => {
 		writeFileSync(path, hash);
 	}
 
-	return readFileSync(path);
+	return readFileSync(path, "utf-8");
 };
 
 const getPath = (name: string) =>
-	joinPath(BESTDORI_CACHE_DIR, "blurhash", `${name}.${BLURHASH_FORMAT}`);
+	joinPath(BESTDORI_CACHE_DIR, "blurhash", `${name}.blurhash.txt`);

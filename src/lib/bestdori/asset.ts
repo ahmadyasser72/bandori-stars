@@ -10,14 +10,14 @@ interface AssetCardParameters {
 	card: Entry<"card_map">;
 	kind: "icon" | "full";
 	trained: boolean;
-	blurhash: boolean;
+	blurhash?: boolean;
 }
 
 export const card = async ({
 	card,
 	kind,
 	trained,
-	blurhash,
+	blurhash = false,
 }: AssetCardParameters) => {
 	if (!trained && hasNoPreTrained(card)) return;
 
@@ -50,12 +50,12 @@ export const card = async ({
 
 interface AssetGachaBannerParameters {
 	gacha: Entry<"gacha_map">;
-	blurhash: boolean;
+	blurhash?: boolean;
 }
 
 export const gachaBanner = async ({
 	gacha,
-	blurhash,
+	blurhash = false,
 }: AssetGachaBannerParameters) => {
 	const name = `gacha_${gacha.id}_banner`;
 	const buffer = await fetchBestdoriWithRegionFallbacks(

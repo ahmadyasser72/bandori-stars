@@ -9,7 +9,7 @@ import { shuffle } from "fast-shuffle";
 
 import { gacha_map } from "@/contents/data";
 import { bestdori } from "~/lib/bestdori";
-import { BLURHASH_FORMAT, IMAGE_FORMAT } from "~/lib/bestdori/constants";
+import { IMAGE_FORMAT } from "~/lib/bestdori/constants";
 
 export const prerender = true;
 
@@ -18,15 +18,13 @@ export const GET: APIRoute<Props, Params> = async ({ props }) =>
 
 export const getStaticPaths = (() =>
 	shuffle(
-		[...gacha_map.values()].flatMap((gacha) =>
-			[true, false].map((blurhash) => ({
-				params: {
-					id: gacha.id,
-					ext: blurhash ? BLURHASH_FORMAT : IMAGE_FORMAT,
-				},
-				props: { gacha, blurhash },
-			})),
-		),
+		[...gacha_map.values()].map((gacha) => ({
+			params: {
+				id: gacha.id,
+				ext: IMAGE_FORMAT,
+			},
+			props: { gacha },
+		})),
 	)) satisfies GetStaticPaths;
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;

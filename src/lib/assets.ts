@@ -1,19 +1,18 @@
 import type { APIContext } from "astro";
 import type { JSX } from "astro/jsx-runtime";
 
-import { BLURHASH_FORMAT, IMAGE_FORMAT } from "~/lib/bestdori/constants";
+import { IMAGE_FORMAT } from "~/lib/bestdori/constants";
 import type { bestdori } from "./bestdori";
 import { hasNoPreTrained } from "./bestdori/asset";
 
-export const getBlurhash = async (context: APIContext, imageUrl: string) => {
-	const { ASSETS } = context.locals.runtime.env;
-	const fetch = import.meta.env.PROD
-		? ASSETS.fetch.bind(ASSETS)
-		: globalThis.fetch;
+export const getBlurhash = async (context: APIContext, pathname: string) => {
+	if (import.meta.env.DEV) return "UZOf75~pJC%M?Gs*pJt7yEW=xvNH?INGRjWY";
 
-	return fetch(
-		new URL(imageUrl.replace(IMAGE_FORMAT, BLURHASH_FORMAT), context.url),
-	).then((response) => response.text());
+	return context.locals.runtime.env.ASSETS.fetch(
+		new URL("/static/assets/blurhash.json", context.url),
+	)
+		.then((response) => response.json<any>())
+		.then((json) => json[pathname] as string);
 };
 
 const defaultImageProps = {
