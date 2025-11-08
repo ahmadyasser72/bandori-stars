@@ -6,8 +6,9 @@ import type { bestdori } from "./bestdori";
 import { hasNoPreTrained } from "./bestdori/asset";
 
 export const getBlurhash = async (context: APIContext, imageUrl: string) => {
+	const { ASSETS } = context.locals.runtime.env;
 	const fetch = import.meta.env.PROD
-		? context.locals.runtime.env.ASSETS.fetch
+		? ASSETS.fetch.bind(ASSETS)
 		: globalThis.fetch;
 
 	return fetch(
