@@ -5,14 +5,20 @@ import { IMAGE_FORMAT } from "~/lib/bestdori/constants";
 import type { bestdori } from "./bestdori";
 import { hasNoPreTrained } from "./bestdori/asset";
 
+const blurhashMap = new Map<string, string>();
 export const getBlurhash = async (context: APIContext, pathname: string) => {
 	if (import.meta.env.DEV) return "UZOf75~pJC%M?Gs*pJt7yEW=xvNH?INGRjWY";
 
-	return context.locals.runtime.env.ASSETS.fetch(
-		new URL("/static/assets/blurhash.json", context.url),
-	)
-		.then((response) => response.json<any>())
-		.then((json) => json[pathname] as string);
+	if (blurhashMap.size === 0) {
+		const json = await context.locals.runtime.env.ASSETS.fetch(
+			new URL("/static/assets/blurhash.json", context.url),
+		).then((response) => response.json<Record<string, string>>());
+
+		for (const [key, value] of Object.entries(json))
+			blurhashMap.set(key, value);
+	}
+
+	return blurhashMap.get(pathname)!;
 };
 
 const defaultImageProps = {
