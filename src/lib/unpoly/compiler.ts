@@ -3,12 +3,26 @@ import { BLURHASH_IMAGE_FORMAT, IMAGE_FORMAT } from "~/lib/bestdori/constants";
 up.compiler("[data-blurhash]", (el) => {
 	if (!(el instanceof HTMLImageElement) || el.complete) return;
 
-	const blurhashImage = new Image();
-	blurhashImage.src = el.src.replace(IMAGE_FORMAT, BLURHASH_IMAGE_FORMAT);
+	const original = el.src;
+	el.src = el.src.replace(IMAGE_FORMAT, BLURHASH_IMAGE_FORMAT);
+	el.loading = "eager";
 
-	el.style.zIndex = "1";
-	el.className = blurhashImage.className = "absolute w-full";
-	el.insertAdjacentElement("afterend", blurhashImage);
+	const observer = new IntersectionObserver(
+		(entries) => {
+			entries.forEach(({ isIntersecting }) => {
+				if (!isIntersecting) return;
+
+				observer.disconnect();
+				const img = new Image();
+				img.src = original;
+				const done = () => (el.src = original);
+				if (img.complete) done();
+				img.addEventListener("load", done);
+			});
+		},
+		{ threshold: 0.67 },
+	);
+	observer.observe(el);
 });
 
 up.compiler(".radio-group", (fieldset) => {

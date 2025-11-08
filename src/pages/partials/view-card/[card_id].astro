@@ -48,22 +48,19 @@ const showGachaList = params.get("show_gacha_list") === "true";
 										"shadow-bandori-band rounded-box w-full px-2 py-1 shadow-sm",
 									]}
 								>
-									<div
+									<img
+										{...getCardAsset({
+											card,
+											kind: "full",
+											trained,
+											blurhash: true,
+										})}
 										class:list={[
 											active && autoScroll && "scroll-here",
-											"rounded-box *:rounded-box border-base-300 relative aspect-4/3 w-full border",
+											"rounded-box border-base-300 relative aspect-4/3 w-full border",
 										]}
-									>
-										<img
-											{...getCardAsset({
-												card,
-												kind: "full",
-												trained,
-												blurhash: true,
-											})}
-											data-scroll-here="center"
-										/>
-									</div>
+										data-scroll-here="center"
+									/>
 								</div>
 							</>
 						);
