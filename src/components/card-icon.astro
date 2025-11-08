@@ -16,7 +16,11 @@ const { card, options } = Astro.props;
 
 <a {...showFullCardModalOnClick(card, options)} data-band-id={card.band.id}>
 	<img
-		{...getCardAsset("icon", !!options.show_trained, card)}
+		{...await getCardAsset(Astro, {
+			card,
+			kind: "icon",
+			trained: !!options.show_trained,
+		})}
 		class="rounded-box shadow-bandori-band size-12 hover:shadow-md"
 	/>
 </a>

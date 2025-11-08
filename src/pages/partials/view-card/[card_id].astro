@@ -28,7 +28,7 @@ const showGachaList = params.get("show_gacha_list") === "true";
 		<div class="flex flex-col gap-4 sm:flex-col-reverse">
 			<div class="tabs tabs-box max-sm:tabs-bottom max-sm:pb-4">
 				{
-					(noPreTrained ? [true] : [false, true]).map((trained) => {
+					(noPreTrained ? [true] : [false, true]).map(async (trained) => {
 						const active = showTrained ? trained : !trained;
 
 						return (
@@ -49,7 +49,11 @@ const showGachaList = params.get("show_gacha_list") === "true";
 									]}
 								>
 									<img
-										{...getCardAsset("full", trained, card)}
+										{...await getCardAsset(Astro, {
+											card,
+											kind: "full",
+											trained,
+										})}
 										class:list={[
 											active && autoScroll && "scroll-here",
 											"rounded-box border-base-300 aspect-4/3 w-full border",

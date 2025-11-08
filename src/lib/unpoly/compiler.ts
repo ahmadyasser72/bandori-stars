@@ -1,3 +1,45 @@
+import { decode, isBlurhashValid } from "blurhash";
+
+import { BLURHASH_SIZE } from "~/lib/bestdori/constants";
+
+up.compiler("[data-blurhash]", (el) => {
+	if (
+		!(el instanceof HTMLImageElement) ||
+		!isBlurhashValid(el.dataset.blurhash!).result ||
+		el.complete
+	)
+		return;
+
+	const pixels = decode(el.dataset.blurhash!, BLURHASH_SIZE, BLURHASH_SIZE);
+	const canvas = document.createElement("canvas");
+	canvas.width = canvas.height = BLURHASH_SIZE;
+	const ctx = canvas.getContext("2d")!;
+	const imageData = ctx.createImageData(BLURHASH_SIZE, BLURHASH_SIZE);
+	imageData.data.set(pixels);
+	ctx.putImageData(imageData, 0, 0);
+
+	const original = el.src;
+	el.src = canvas.toDataURL();
+
+	const observer = new IntersectionObserver(
+		(entries) => {
+			entries.forEach(({ isIntersecting }) => {
+				if (!isIntersecting) return;
+				else observer.disconnect();
+
+				const img = new Image();
+				img.src = original;
+
+				const done = () => (el.src = original);
+				if (img.complete) done();
+				else img.addEventListener("load", done, { once: true });
+			});
+		},
+		{ threshold: 0.67 },
+	);
+	observer.observe(el);
+});
+
 up.compiler(".radio-group", (fieldset) => {
 	const isToggleAll = (el: HTMLInputElement) => el.ariaLabel === "All";
 
