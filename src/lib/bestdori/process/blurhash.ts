@@ -3,7 +3,10 @@ import { join as joinPath } from "node:path";
 
 import { decode, encode } from "blurhash";
 
-import { BESTDORI_CACHE_DIR, IMAGE_FORMAT } from "~/lib/bestdori/constants";
+import {
+	BESTDORI_CACHE_DIR,
+	BLURHASH_IMAGE_FORMAT,
+} from "~/lib/bestdori/constants";
 import { resizeOptions } from "./shared";
 
 export const getBlurhashImage = async (name: string, buffer: Buffer) => {
@@ -12,6 +15,7 @@ export const getBlurhashImage = async (name: string, buffer: Buffer) => {
 		const { default: sharp } = await import("sharp");
 
 		const image = await sharp(buffer)
+			.resize({ ...resizeOptions, width: 32 })
 			.raw()
 			.ensureAlpha()
 			.toBuffer({ resolveWithObject: true });
@@ -19,19 +23,16 @@ export const getBlurhashImage = async (name: string, buffer: Buffer) => {
 			new Uint8ClampedArray(image.data),
 			image.info.width,
 			image.info.height,
-			4,
-			4,
+			2,
+			2,
 		);
 
 		const blurhashImage = decode(hash, image.info.width, image.info.height);
-		await sharp(blurhashImage, { raw: image.info })
-			.resize(resizeOptions)
-			[IMAGE_FORMAT]({ effort: 1 })
-			.toFile(path);
+		await sharp(blurhashImage, { raw: image.info }).webp().toFile(path);
 	}
 
 	return readFileSync(path);
 };
 
 const getPath = (name: string) =>
-	joinPath(BESTDORI_CACHE_DIR, "blurhash", `${name}.${IMAGE_FORMAT}`);
+	joinPath(BESTDORI_CACHE_DIR, "blurhash", `${name}.${BLURHASH_IMAGE_FORMAT}`);

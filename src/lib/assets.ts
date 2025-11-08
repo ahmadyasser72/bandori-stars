@@ -18,13 +18,11 @@ export const getCardAsset = (({ card, kind, trained, blurhash }) => {
 	const filename = parts.join("_");
 	return {
 		...defaultImageProps,
-		src: blurhash
-			? `/static/assets/card/${filename}.blurhash.${IMAGE_FORMAT}`
-			: `/static/assets/card/${filename}.${IMAGE_FORMAT}`,
+		src: `/static/assets/card/${filename}.${IMAGE_FORMAT}`,
 		alt: trained
 			? `Trained ${card.character.name} - ${card.name}`
 			: `${card.character.name} - ${card.name}`,
-		"data-blurhash": blurhash || undefined,
+		"data-blurhash": blurhash,
 	};
 }) satisfies (
 	arg: Pick<
