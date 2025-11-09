@@ -106,9 +106,14 @@ const results = calculateEvents([...events.past, events.active], options);
 								idx % 2 === 0 && "md:flex-row-reverse",
 							]}
 						>
-							<div class="badge badge-accent">Point : {stars.point}&starf;</div>
-							<div class="badge badge-accent">Rank : {stars.rank}&starf;</div>
-							<div class="badge badge-accent">Story : {stars.story}&starf;</div>
+							{Object.entries(stars)
+								.filter(([, value]) => value > 0)
+								.map(([label, value]) => (
+									<div class="badge badge-accent capitalize">
+										{label} : {value}&starf;
+									</div>
+								))}
+
 							<div class="badge badge-info">
 								Total : {sum(Object.values(stars))}&starf;
 							</div>
