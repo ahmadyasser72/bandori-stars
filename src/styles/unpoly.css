@@ -15,3 +15,7 @@ up-modal-box {
 up-modal-box {
 	@apply my-auto;
 }
+
+.up-loading {
+	@apply opacity-80;
+}
