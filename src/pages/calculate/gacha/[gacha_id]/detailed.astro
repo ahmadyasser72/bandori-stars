@@ -6,7 +6,7 @@ import { getEventAsset } from "~/lib/assets";
 import { formatNumber, sum } from "~/lib/math";
 import { regionValue } from "~/lib/utilities";
 import { calculateEvents } from "./_calculate";
-import { getParams } from "./_params";
+import { getOptions } from "./_options";
 
 export const partial = true;
 
@@ -15,9 +15,9 @@ if (!gacha) {
 	return new Response("Gacha not found.", { status: 404 });
 }
 
-const params = getParams(Astro);
+const options = await getOptions(Astro);
 const events = regionValue.unwrap(gacha.events)!;
-const results = calculateEvents([...events.past, events.active], params);
+const results = calculateEvents([...events.past, events.active], options);
 ---
 
 <main>
@@ -27,27 +27,29 @@ const results = calculateEvents([...events.past, events.active], params);
 			<div
 				class:list={[
 					"badge",
-					params.point > 0 ? "badge-primary" : "badge-neutral",
+					options.target_point > 0 ? "badge-primary" : "badge-neutral",
 				]}
 			>
-				Point : {formatNumber(params.point)}
+				Point : {formatNumber(options.target_point)}
 			</div>
 			<div
 				class:list={[
 					"badge",
-					Number.isFinite(params.rank) ? "badge-primary" : "badge-neutral",
+					Number.isFinite(options.target_rank)
+						? "badge-primary"
+						: "badge-neutral",
 				]}
 			>
-				Rank : T{Number.isFinite(params.rank) ? params.rank : 0}
+				Rank : T{Number.isFinite(options.target_rank) ? options.target_rank : 0}
 			</div>
 			<div
 				class:list={[
 					"badge",
-					params.readStories ? "badge-primary" : "badge-neutral",
+					options.read_stories ? "badge-primary" : "badge-neutral",
 				]}
 			>
 				<Icon
-					name={params.readStories ? "lucide:check" : "lucide:x"}
+					name={options.read_stories ? "lucide:check" : "lucide:x"}
 					class="size-4.5"
 				/>
 				Story
