@@ -4,50 +4,28 @@ import GachaCardGridItem from "~/components/gacha-card-grid-item.astro";
 import BaseLayout from "~/layouts/base-layout.astro";
 import { formatNumber, sum } from "~/lib/math";
 import { regionValue } from "~/lib/utilities";
+import { calculateEvents } from "./_calculate";
+import { getParams } from "./_params";
 
 const gacha = gacha_map.get(Astro.params.gacha_id!);
 if (!gacha) {
 	return new Response("Gacha not found.", { status: 404 });
 }
 
+const params = getParams(Astro);
 const events = regionValue.unwrap(gacha.events)!;
-const params = Astro.url.searchParams;
-const freeStars = (() => {
-	const getNumber = (name: string) => {
-		const value = params.get(name);
-		const number = Number(value ?? NaN);
-		return Number.isNaN(number) || number <= 0 ? 0 : number;
-	};
+const freeStars = {
+	events: (() => {
+		const results = calculateEvents(events, params);
+		const summed = {
+			point: sum(results.map(({ point }) => point)),
+			rank: sum(results.map(({ rank }) => rank)),
+			story: sum(results.map(({ story }) => story)),
+		};
 
-	const targets = {
-		point: getNumber("target_point"),
-		rank: getNumber("target_rank") || Number.POSITIVE_INFINITY,
-		readStories: params.get("read_stories") === "true",
-	};
-
-	const source = {
-		point: sum(
-			events.map(
-				({ pointRewards }) =>
-					pointRewards
-						.slice()
-						.reverse()
-						.find(({ point }) => point <= targets.point)?.stars ?? 0,
-			),
-		),
-		rank: sum(
-			events.map(
-				({ rankingRewards }) =>
-					rankingRewards.find(({ rank }) => rank >= targets.rank)?.stars ?? 0,
-			),
-		),
-		stories: targets.readStories
-			? sum(events.map(({ storyRewards }) => storyRewards))
-			: 0,
-	};
-
-	return { source, total: sum(Object.values(source)) };
-})();
+		return { ...summed, total: sum(Object.values(summed)) };
+	})(),
+};
 
 const suggestions = events.reduce(
 	(acc, { pointRewards, rankingRewards }) => {
@@ -109,8 +87,6 @@ const suggestions = events.reduce(
 						Read all event stories
 					</label>
 				</fieldset>
-
-				<button type="submit" class="btn btn-primary mt-4">Submit</button>
 			</fieldset>
 		</form>
 
@@ -119,21 +95,31 @@ const suggestions = events.reduce(
 				<h2 class="card-title">Free stars</h2>
 
 				<div class="flex w-full items-center justify-evenly">
-					<div class="grid grid-cols-2 gap-1 text-start">
+					<div class="grid grid-cols-2 gap-x-4 gap-y-0.5 text-start">
 						<span>Point</span>
-						<span>{formatNumber(freeStars.source.point)}</span>
+						<span>{formatNumber(freeStars.events.point)}</span>
 						<span>Rank</span>
-						<span>{formatNumber(freeStars.source.rank)}</span>
+						<span>{formatNumber(freeStars.events.rank)}</span>
 						<span>Stories</span>
-						<span>{formatNumber(freeStars.source.stories)}</span>
+						<span>{formatNumber(freeStars.events.story)}</span>
 					</div>
 
 					<div class="grid flex-1 gap-0.5">
 						<span>Total</span>
-						<span>{formatNumber(freeStars.total)}</span>
-						<span>{Math.floor(freeStars.total / 250)} pull(s)</span>
+						<span>{formatNumber(freeStars.events.total)}</span>
+						<span>{Math.floor(freeStars.events.total / 250)} pull(s)</span>
 					</div>
 				</div>
+
+				<a
+					up-layer="new"
+					up-history="false"
+					href={`/calculate/gacha/${Astro.params.gacha_id}/detailed${Astro.url.search}`}
+					class:list={[
+						"btn btn-sm btn-primary mt-4 w-full",
+						freeStars.events.total === 0 && "pointer-events-none opacity-0",
+					]}>Show details</a
+				>
 			</div>
 		</div>
 	</div>

@@ -1,0 +1,66 @@
+---
+import { Icon } from "astro-icon/components";
+
+import { gacha_map } from "@/contents/data";
+import { regionValue } from "~/lib/utilities";
+import { calculateEvents } from "./_calculate";
+import { getParams } from "./_params";
+
+export const partial = true;
+
+const gacha = gacha_map.get(Astro.params.gacha_id!);
+if (!gacha) {
+	return new Response("Gacha not found.", { status: 404 });
+}
+
+const params = getParams(Astro);
+const events = regionValue.unwrap(gacha.events)!;
+const results = calculateEvents(events, params);
+---
+
+<main>
+	<ul
+		class="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical"
+	>
+		{
+			results.map(({ data, point, rank, story }, idx) => (
+				<li>
+					{idx > 0 && <hr />}
+					<div class="timeline-middle">
+						<Icon name="lucide:calendar-clock" />
+					</div>
+					<div
+						class={
+							idx % 2 === 0
+								? "timeline-start mb-10 md:text-end"
+								: "timeline-end mb-10"
+						}
+					>
+						<div class="badge not-dark:badge-soft badge-neutral">
+							<Icon
+								name="emojione:flag-for-japan"
+								class="size-6 rounded-full border border-current"
+							/>
+							<time datetime={data.startAt.jp.toISOString()}>
+								{data.startAt.jp.format("DD-MM-YYYY")}
+							</time>
+							&ndash;
+							<time datetime={data.endAt.jp.toISOString()}>
+								{data.endAt.jp.format("DD-MM-YYYY")}
+							</time>
+						</div>
+
+						<div class="text-lg font-semibold">{data.name}</div>
+
+						<div class="mt-2 inline-flex flex-wrap gap-1">
+							<div class="badge badge-accent">Point : {point}&starf;</div>
+							<div class="badge badge-accent">Rank : {rank}&starf;</div>
+							<div class="badge badge-accent">Story : {story}&starf;</div>
+						</div>
+					</div>
+					{idx < results.length - 1 && <hr />}
+				</li>
+			))
+		}
+	</ul>
+</main>
