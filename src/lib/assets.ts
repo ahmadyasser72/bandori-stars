@@ -61,7 +61,7 @@ export const getEventAsset = (async (context, { event, kind }) => {
 	return {
 		...imageAttributes,
 		src,
-		alt: `Banner of ${event.name}`,
+		alt: `${event.name} ${kind}`,
 		"data-blurhash": await getBlurhash(context, src),
 	};
 }) satisfies GetAssetFunction<"event">;
