@@ -18,15 +18,15 @@ const events = regionValue.unwrap(gacha.events)!;
 const freeStars = {
 	events: (() => {
 		const results = calculateEvents([...events.past, events.active], options);
-		const summed = {
+		const stars = {
 			point: sum(results.map(({ point }) => point)),
 			rank: sum(results.map(({ rank }) => rank)),
 			story: sum(results.map(({ story }) => story)),
 		};
-		const total = sum(Object.values(summed));
+		const total = sum(Object.values(stars));
 		const pulls = Math.floor(total / 250);
 
-		return { ...summed, total, pulls };
+		return { stars, total, pulls };
 	})(),
 };
 
@@ -144,15 +144,18 @@ const values = [...events.past, events.active].reduce(
 
 				<div class="flex w-full items-center justify-around">
 					<div class="flex flex-col gap-1">
-						<div class="badge badge-accent w-32">
-							Point : {formatNumber(freeStars.events.point)}&starf;
-						</div>
-						<div class="badge badge-accent w-32">
-							Rank : {formatNumber(freeStars.events.rank)}&starf;
-						</div>
-						<div class="badge badge-accent w-32">
-							Story : {formatNumber(freeStars.events.story)}&starf;
-						</div>
+						{
+							Object.entries(freeStars.events.stars).map(([label, value]) => (
+								<div
+									class:list={[
+										"badge w-32 capitalize",
+										value > 0 ? "badge-accent" : "badge-neutral",
+									]}
+								>
+									{label} : {formatNumber(value)}&starf;
+								</div>
+							))
+						}
 					</div>
 
 					<div class="flex flex-col gap-2">
