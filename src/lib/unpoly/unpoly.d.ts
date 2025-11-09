@@ -8,6 +8,7 @@ interface Unpoly {
 		options: { batch: boolean },
 		handler: (elements: HTMLElement[]) => void | (() => void),
 	): void;
+	destructor(element: HTMLElement, callback: () => void): void;
 }
 
 declare global {
