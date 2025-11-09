@@ -29,6 +29,12 @@ const imageAttributes = {
 	decoding: "async",
 } satisfies JSX.ImgHTMLAttributes;
 
+type BestdoriAsset = typeof bestdori.asset;
+type GetAssetFunction<K extends keyof BestdoriAsset> = (
+	context: APIContext,
+	params: Omit<Parameters<BestdoriAsset[K]>[0], "blurhash">,
+) => Promise<Record<"src" | "alt", string> & JSX.ImgHTMLAttributes>;
+
 export const getCardAsset = (async (context, { card, kind, trained }) => {
 	trained ||= hasNoPreTrained(card);
 
@@ -46,13 +52,18 @@ export const getCardAsset = (async (context, { card, kind, trained }) => {
 			: `${card.character.name} - ${card.name}`,
 		"data-blurhash": await getBlurhash(context, src),
 	};
-}) satisfies (
-	context: APIContext,
-	arg: Pick<
-		Parameters<typeof bestdori.asset.card>[0],
-		"card" | "kind" | "trained"
-	>,
-) => Promise<Record<"src" | "alt", string> & JSX.ImgHTMLAttributes>;
+}) satisfies GetAssetFunction<"card">;
+
+export const getEventBanner = (async (context, { event }) => {
+	const src = `/static/assets/event/${event.id}_banner.${IMAGE_FORMAT}`;
+
+	return {
+		...imageAttributes,
+		src,
+		alt: `Banner of ${event.name}`,
+		"data-blurhash": await getBlurhash(context, src),
+	};
+}) satisfies GetAssetFunction<"eventBanner">;
 
 export const getGachaBanner = (async (context, { gacha }) => {
 	const src = `/static/assets/gacha/${gacha.id}_banner.${IMAGE_FORMAT}`;
@@ -63,7 +74,4 @@ export const getGachaBanner = (async (context, { gacha }) => {
 		alt: `Banner of ${gacha.name}`,
 		"data-blurhash": await getBlurhash(context, src),
 	};
-}) satisfies (
-	context: APIContext,
-	arg: Pick<Parameters<typeof bestdori.asset.gachaBanner>[0], "gacha">,
-) => Promise<Record<"src" | "alt", string> & JSX.ImgHTMLAttributes>;
+}) satisfies GetAssetFunction<"gachaBanner">;

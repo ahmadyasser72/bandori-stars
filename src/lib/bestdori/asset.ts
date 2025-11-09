@@ -6,11 +6,14 @@ import { compressImage } from "./process/compress";
 export const hasNoPreTrained = ({ name, type }: Entry<"card_map">) =>
 	name === "Graduation" || ["kirafes", "birthday"].includes(type);
 
-interface AssetCardParameters {
+interface Blurhashable {
+	blurhash?: boolean;
+}
+
+interface AssetCardParameters extends Blurhashable {
 	card: Entry<"card_map">;
 	kind: "icon" | "full";
 	trained: boolean;
-	blurhash?: boolean;
 }
 
 export const card = async ({
@@ -48,9 +51,24 @@ export const card = async ({
 	return (blurhash ? generateBlurhash : compressImage)(name, buffer);
 };
 
-interface AssetGachaBannerParameters {
+interface AssetEventBannerParameters extends Blurhashable {
+	event: Entry<"event_map">;
+}
+
+export const eventBanner = async ({
+	event,
+	blurhash = false,
+}: AssetEventBannerParameters) => {
+	const name = `event_${event.id}_banner`;
+	const buffer = await fetchBestdoriWithRegionFallbacks(
+		`assets/jp/event/${event.assetBundleName}/images_rip/banner.png`,
+	);
+
+	return (blurhash ? generateBlurhash : compressImage)(name, buffer);
+};
+
+interface AssetGachaBannerParameters extends Blurhashable {
 	gacha: Entry<"gacha_map">;
-	blurhash?: boolean;
 }
 
 export const gachaBanner = async ({

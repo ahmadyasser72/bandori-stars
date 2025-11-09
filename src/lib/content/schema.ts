@@ -43,6 +43,7 @@ export const schema = {
 		characters: z.array(id),
 		startAt: timestamp,
 		endAt: timestamp,
+		assetBundleName: id,
 		pointRewards: createMultiRegion(
 			z.array(
 				z.strictObject({
