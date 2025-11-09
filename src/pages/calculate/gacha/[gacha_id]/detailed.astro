@@ -3,7 +3,7 @@ import { Icon } from "astro-icon/components";
 
 import { gacha_map } from "@/contents/data";
 import { getEventAsset } from "~/lib/assets";
-import { formatNumber } from "~/lib/math";
+import { formatNumber, sum } from "~/lib/math";
 import { regionValue } from "~/lib/utilities";
 import { calculateEvents } from "./_calculate";
 import { getParams } from "./_params";
@@ -59,7 +59,7 @@ const results = calculateEvents([...events.past, events.active], params);
 		class="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical mt-8"
 	>
 		{
-			results.map(async ({ data: event, point, rank, story }, idx) => (
+			results.map(async ({ data: event, ...stars }, idx) => (
 				<li>
 					{idx > 0 && <hr />}
 					<div class="timeline-middle">
@@ -72,7 +72,7 @@ const results = calculateEvents([...events.past, events.active], params);
 								: "timeline-end mb-10"
 						}
 					>
-						<div class="badge badge-secondary">
+						<div class="badge not-dark:badge-soft badge-neutral">
 							<Icon
 								name="emojione:flag-for-japan"
 								class="size-6 rounded-full border border-current"
@@ -93,9 +93,12 @@ const results = calculateEvents([...events.past, events.active], params);
 						/>
 
 						<div class="mt-2 inline-flex flex-wrap gap-1">
-							<div class="badge badge-accent">Point : {point}&starf;</div>
-							<div class="badge badge-accent">Rank : {rank}&starf;</div>
-							<div class="badge badge-accent">Story : {story}&starf;</div>
+							<div class="badge badge-accent">Point : {stars.point}&starf;</div>
+							<div class="badge badge-accent">Rank : {stars.rank}&starf;</div>
+							<div class="badge badge-accent">Story : {stars.story}&starf;</div>
+							<div class="badge badge-info">
+								Total : {sum(Object.values(stars))}&starf;
+							</div>
 						</div>
 					</div>
 					{idx < results.length - 1 && <hr />}
