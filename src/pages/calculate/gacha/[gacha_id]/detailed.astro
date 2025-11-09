@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 
 import { gacha_map } from "@/contents/data";
-import { getEventBanner } from "~/lib/assets";
+import { getEventAsset } from "~/lib/assets";
 import { formatNumber } from "~/lib/math";
 import { regionValue } from "~/lib/utilities";
 import { calculateEvents } from "./_calculate";
@@ -17,7 +17,7 @@ if (!gacha) {
 
 const params = getParams(Astro);
 const events = regionValue.unwrap(gacha.events)!;
-const results = calculateEvents(events, params);
+const results = calculateEvents([...events.past, events.active], params);
 ---
 
 <main>
@@ -59,7 +59,7 @@ const results = calculateEvents(events, params);
 		class="timeline timeline-snap-icon max-md:timeline-compact timeline-vertical mt-8"
 	>
 		{
-			results.map(async ({ data, point, rank, story }, idx) => (
+			results.map(async ({ data: event, point, rank, story }, idx) => (
 				<li>
 					{idx > 0 && <hr />}
 					<div class="timeline-middle">
@@ -77,18 +77,18 @@ const results = calculateEvents(events, params);
 								name="emojione:flag-for-japan"
 								class="size-6 rounded-full border border-current"
 							/>
-							<time datetime={data.startAt.jp.toISOString()}>
-								{data.startAt.jp.format("DD-MM-YYYY")}
+							<time datetime={event.startAt.jp.toISOString()}>
+								{event.startAt.jp.format("DD-MM-YYYY")}
 							</time>
 							&ndash;
-							<time datetime={data.endAt.jp.toISOString()}>
-								{data.endAt.jp.format("DD-MM-YYYY")}
+							<time datetime={event.endAt.jp.toISOString()}>
+								{event.endAt.jp.format("DD-MM-YYYY")}
 							</time>
 						</div>
 
-						<div class="font-semibold max-sm:mt-1 sm:text-lg">{data.name}</div>
+						<div class="font-semibold max-sm:mt-1 sm:text-lg">{event.name}</div>
 						<img
-							{...await getEventBanner(Astro, { event: data })}
+							{...await getEventAsset(Astro, { event, kind: "banner" })}
 							class="aspect-3/1 w-96"
 						/>
 

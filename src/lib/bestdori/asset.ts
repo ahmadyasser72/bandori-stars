@@ -53,16 +53,32 @@ export const card = async ({
 
 interface AssetEventBannerParameters extends Blurhashable {
 	event: Entry<"event_map">;
+	kind: "banner" | "background";
 }
 
-export const eventBanner = async ({
+export const event = async ({
 	event,
+	kind,
 	blurhash = false,
 }: AssetEventBannerParameters) => {
-	const name = `event_${event.id}_banner`;
-	const buffer = await fetchBestdoriWithRegionFallbacks(
-		`assets/jp/event/${event.assetBundleName}/images_rip/banner.png`,
-	);
+	const name = ["event", event.id, kind].join("_");
+
+	let buffer: Buffer;
+	switch (kind) {
+		case "banner": {
+			buffer = await fetchBestdoriWithRegionFallbacks(
+				`assets/jp/event/${event.assetBundleName}/images_rip/banner.png`,
+			);
+			break;
+		}
+
+		case "background": {
+			buffer = await fetchBestdoriWithRegionFallbacks(
+				`assets/jp/event/${event.assetBundleName}/topscreen_rip/bg_eventtop.png`,
+			);
+			break;
+		}
+	}
 
 	return (blurhash ? generateBlurhash : compressImage)(name, buffer);
 };

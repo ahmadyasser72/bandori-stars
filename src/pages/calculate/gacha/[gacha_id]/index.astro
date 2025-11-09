@@ -2,6 +2,7 @@
 import { gacha_map } from "@/contents/data";
 import GachaCardGridItem from "~/components/gacha-card-grid-item.astro";
 import BaseLayout from "~/layouts/base-layout.astro";
+import { getEventAsset } from "~/lib/assets";
 import { formatNumber, sum } from "~/lib/math";
 import { regionValue } from "~/lib/utilities";
 import { calculateEvents } from "./_calculate";
@@ -16,7 +17,7 @@ const params = getParams(Astro);
 const events = regionValue.unwrap(gacha.events)!;
 const freeStars = {
 	events: (() => {
-		const results = calculateEvents(events, params);
+		const results = calculateEvents([...events.past, events.active], params);
 		const summed = {
 			point: sum(results.map(({ point }) => point)),
 			rank: sum(results.map(({ rank }) => rank)),
@@ -27,8 +28,11 @@ const freeStars = {
 	})(),
 };
 
-const suggestions = events.reduce(
-	(acc, { pointRewards, rankingRewards }) => {
+const suggestions = [...events.past, events.active].reduce(
+	(acc, next) => {
+		if (!next) return acc;
+
+		const { pointRewards, rankingRewards } = next;
 		for (const { point } of pointRewards) acc.points.add(point);
 		for (const { rank } of rankingRewards) acc.rankings.add(rank);
 		return acc;
@@ -38,10 +42,28 @@ const suggestions = events.reduce(
 ---
 
 <BaseLayout>
+	{
+		events.active && (
+			<img
+				{...await getEventAsset(Astro, {
+					event: events.active,
+					kind: "background",
+				})}
+				class="pointer-events-none fixed -z-1 h-screen w-screen object-cover"
+			/>
+		)
+	}
+
 	<div
 		class="container mx-auto grid max-w-xs gap-4 py-8 sm:max-w-sm md:max-w-2xl md:grid-cols-2"
 	>
-		<GachaCardGridItem {gacha} class="md:order-2" />
+		<GachaCardGridItem
+			{gacha}
+			class:list={[
+				"md:order-2",
+				events.active && "bg-base-100/80 backdrop-blur-sm",
+			]}
+		/>
 
 		<form
 			up-target="#free-stars"
@@ -49,7 +71,10 @@ const suggestions = events.reduce(
 			class="md:order-1 md:row-span-2"
 		>
 			<fieldset
-				class="fieldset bg-base-200 border-base-300 rounded-box h-full border p-4"
+				class:list={[
+					"fieldset bg-base-200 border-base-300 rounded-box h-full border p-4",
+					events.active && "bg-base-200/67 backdrop-blur-sm",
+				]}
 			>
 				<label class="label">Event points</label>
 				<select name="target_point" class="select">
@@ -90,7 +115,13 @@ const suggestions = events.reduce(
 			</fieldset>
 		</form>
 
-		<div id="free-stars" class="card bg-base-100 shadow-sm md:order-3">
+		<div
+			id="free-stars"
+			class:list={[
+				"card bg-base-100 shadow-sm md:order-3",
+				events.active && "bg-base-100/67 backdrop-blur-sm",
+			]}
+		>
 			<div class="card-body items-center text-center">
 				<h2 class="card-title">Free stars</h2>
 

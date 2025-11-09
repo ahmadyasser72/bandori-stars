@@ -54,8 +54,9 @@ export const getCardAsset = (async (context, { card, kind, trained }) => {
 	};
 }) satisfies GetAssetFunction<"card">;
 
-export const getEventBanner = (async (context, { event }) => {
-	const src = `/static/assets/event/${event.id}_banner.${IMAGE_FORMAT}`;
+export const getEventAsset = (async (context, { event, kind }) => {
+	const filename = [event.id, kind].join("_");
+	const src = `/static/assets/event/${filename}.${IMAGE_FORMAT}`;
 
 	return {
 		...imageAttributes,
@@ -63,7 +64,7 @@ export const getEventBanner = (async (context, { event }) => {
 		alt: `Banner of ${event.name}`,
 		"data-blurhash": await getBlurhash(context, src),
 	};
-}) satisfies GetAssetFunction<"eventBanner">;
+}) satisfies GetAssetFunction<"event">;
 
 export const getGachaBanner = (async (context, { gacha }) => {
 	const src = `/static/assets/gacha/${gacha.id}_banner.${IMAGE_FORMAT}`;
