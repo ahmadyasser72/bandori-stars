@@ -137,7 +137,7 @@ const values = [...events.past, events.active].reduce(
 				<h2 class="card-title">Free stars</h2>
 
 				<div class="flex w-full items-center justify-around">
-					<div class="flex flex-col gap-1.5">
+					<div class="flex flex-col gap-1">
 						<div class="badge badge-accent w-32">
 							Point : {formatNumber(freeStars.events.point)}&starf;
 						</div>
@@ -149,7 +149,7 @@ const values = [...events.past, events.active].reduce(
 						</div>
 					</div>
 
-					<div class="flex flex-col gap-3">
+					<div class="flex flex-col gap-2">
 						<div class="badge badge-info w-32">
 							Total: {formatNumber(freeStars.events.total)}&starf;
 						</div>
@@ -167,7 +167,7 @@ const values = [...events.past, events.active].reduce(
 					up-history="false"
 					href={`/calculate/gacha/${Astro.params.gacha_id}/detailed${Astro.url.search}`}
 					class:list={[
-						"btn btn-sm btn-primary mt-4 w-full",
+						"btn btn-sm btn-primary w-full",
 						freeStars.events.total === 0 && "btn-disabled",
 					]}
 				>
