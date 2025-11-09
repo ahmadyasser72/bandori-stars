@@ -68,24 +68,30 @@ const results = calculateEvents([...events.past, events.active], options);
 						<Icon name="lucide:calendar-clock" />
 					</div>
 					<div
-						class={
-							idx % 2 === 0
-								? "timeline-start mb-10 md:text-end"
-								: "timeline-end mb-10"
-						}
+						class:list={[
+							"mb-10",
+							idx % 2 === 0 ? "timeline-start md:text-end" : "timeline-end",
+						]}
 					>
-						<div class="badge not-dark:badge-soft badge-neutral">
+						<div
+							class:list={[
+								"badge not-dark:badge-soft badge-neutral",
+								idx % 2 === 0 && "md:flex-row-reverse",
+							]}
+						>
 							<Icon
 								name="emojione:flag-for-japan"
 								class="size-6 rounded-full border border-current"
 							/>
-							<time datetime={event.startAt.jp.toISOString()}>
-								{event.startAt.jp.format("DD-MM-YYYY")}
-							</time>
-							&ndash;
-							<time datetime={event.endAt.jp.toISOString()}>
-								{event.endAt.jp.format("DD-MM-YYYY")}
-							</time>
+							<div>
+								<time datetime={event.startAt.jp.toISOString()}>
+									{event.startAt.jp.format("DD-MM-YYYY")}
+								</time>
+								&ndash;
+								<time datetime={event.endAt.jp.toISOString()}>
+									{event.endAt.jp.format("DD-MM-YYYY")}
+								</time>
+							</div>
 						</div>
 
 						<div class="font-semibold max-sm:mt-1 sm:text-lg">{event.name}</div>
@@ -94,7 +100,12 @@ const results = calculateEvents([...events.past, events.active], options);
 							class="rounded-box aspect-3/1 w-96"
 						/>
 
-						<div class="mt-2 inline-flex flex-wrap gap-1">
+						<div
+							class:list={[
+								"mt-2 inline-flex flex-wrap gap-1",
+								idx % 2 === 0 && "md:flex-row-reverse",
+							]}
+						>
 							<div class="badge badge-accent">Point : {stars.point}&starf;</div>
 							<div class="badge badge-accent">Rank : {stars.rank}&starf;</div>
 							<div class="badge badge-accent">Story : {stars.story}&starf;</div>
