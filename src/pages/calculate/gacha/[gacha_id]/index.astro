@@ -148,10 +148,12 @@ const suggestions = [...events.past, events.active].reduce(
 					up-history="false"
 					href={`/calculate/gacha/${Astro.params.gacha_id}/detailed${Astro.url.search}`}
 					class:list={[
-						"btn btn-sm btn-primary mt-4 w-full",
-						freeStars.events.total === 0 && "pointer-events-none opacity-0",
-					]}>Show details</a
+						"btn btn-sm mt-4 w-full",
+						freeStars.events.total === 0 && "btn-disabled",
+					]}
 				>
+					Show details
+				</a>
 			</div>
 		</div>
 	</div>
