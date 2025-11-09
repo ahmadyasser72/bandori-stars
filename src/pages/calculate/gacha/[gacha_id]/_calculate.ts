@@ -11,8 +11,10 @@ export const calculateEvents = (
 				data.pointRewards.findLast(({ point }) => point <= options.target_point)
 					?.stars ?? 0,
 			rank:
-				data.rankingRewards.find(({ rank }) => rank >= options.target_rank)
-					?.stars ?? 0,
+				options.target_rank === 0
+					? 0
+					: (data.rankingRewards.find(({ rank }) => rank >= options.target_rank)
+							?.stars ?? 0),
 			story: options.read_stories ? data.storyRewards : 0,
 			data,
 		}));

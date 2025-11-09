@@ -12,7 +12,7 @@ export const getOptions = async (context: APIContext) => {
 
 	const options = {
 		target_point: getNumber("target_point"),
-		target_rank: getNumber("target_rank") || Number.POSITIVE_INFINITY,
+		target_rank: getNumber("target_rank"),
 		read_stories:
 			params.size > 0
 				? params.get("read_stories") === "true"

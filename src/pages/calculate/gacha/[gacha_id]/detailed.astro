@@ -35,14 +35,10 @@ const results = calculateEvents([...events.past, events.active], options);
 			<div
 				class:list={[
 					"badge",
-					Number.isFinite(options.target_rank)
-						? "badge-primary"
-						: "badge-neutral",
+					options.target_rank > 0 ? "badge-primary" : "badge-neutral",
 				]}
 			>
-				Rank : &le;T{
-					Number.isFinite(options.target_rank) ? options.target_rank : 0
-				}
+				Rank : &le;T{options.target_rank}
 			</div>
 			<div
 				class:list={[

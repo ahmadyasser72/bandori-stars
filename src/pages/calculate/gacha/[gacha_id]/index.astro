@@ -82,7 +82,10 @@ const values = [...events.past, events.active].reduce(
 			>
 				<label class="label">Event points</label>
 				<select name="target_point" class="select">
-					<option value="" disabled selected>Pick a point</option>
+					<option value="" disabled selected={options.target_point === 0}
+						>Pick a point</option
+					>
+
 					{
 						[...values.points]
 							.sort((a, b) => b - a)
@@ -96,7 +99,10 @@ const values = [...events.past, events.active].reduce(
 
 				<label class="label">Event rank</label>
 				<select name="target_rank" class="select">
-					<option value="" disabled selected>Pick a rank</option>
+					<option value="" disabled selected={options.target_rank === 0}
+						>Pick a rank</option
+					>
+
 					{
 						[...values.rankings]
 							.sort((a, b) => a - b)
