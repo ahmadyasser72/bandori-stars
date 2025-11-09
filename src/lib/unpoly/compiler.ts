@@ -2,6 +2,7 @@ import { decode, isBlurhashValid } from "blurhash";
 
 import { BLURHASH_SIZE } from "~/lib/bestdori/constants";
 
+const blurhashMap = new Map<string, string>();
 up.compiler("[data-blurhash]", { batch: true }, (elements) => {
 	const observer = new IntersectionObserver(
 		(entries) => {
@@ -9,12 +10,12 @@ up.compiler("[data-blurhash]", { batch: true }, (elements) => {
 				if (!isIntersecting) return;
 				else observer.unobserve(target);
 
-				const el = target as HTMLImageElement;
-				const original = el.dataset.original!;
+				const element = target as HTMLImageElement;
+				const original = element.dataset.original!;
 				const img = new Image();
 				img.src = original;
 
-				const done = () => (el.src = original);
+				const done = () => (element.src = original);
 				if (img.complete) done();
 				else img.addEventListener("load", done, { once: true });
 			});
@@ -22,25 +23,34 @@ up.compiler("[data-blurhash]", { batch: true }, (elements) => {
 		{ threshold: 0.67 },
 	);
 
-	for (const el of elements) {
+	for (const element of elements) {
 		if (
-			!(el instanceof HTMLImageElement) ||
-			!isBlurhashValid(el.dataset.blurhash!).result ||
-			el.complete
+			!(element instanceof HTMLImageElement) ||
+			!isBlurhashValid(element.dataset.blurhash!).result ||
+			element.complete
 		)
 			return;
 
-		const pixels = decode(el.dataset.blurhash!, BLURHASH_SIZE, BLURHASH_SIZE);
-		const canvas = document.createElement("canvas");
-		canvas.width = canvas.height = BLURHASH_SIZE;
-		const ctx = canvas.getContext("2d")!;
-		const imageData = ctx.createImageData(BLURHASH_SIZE, BLURHASH_SIZE);
-		imageData.data.set(pixels);
-		ctx.putImageData(imageData, 0, 0);
+		const hash = element.dataset.blurhash!;
+		element.dataset.original = element.src;
+		element.src =
+			blurhashMap.get(hash) ??
+			(() => {
+				const canvas = document.createElement("canvas");
+				canvas.width = canvas.height = BLURHASH_SIZE;
 
-		el.dataset.original = el.src;
-		el.src = canvas.toDataURL();
-		observer.observe(el);
+				const pixels = decode(hash, BLURHASH_SIZE, BLURHASH_SIZE);
+				const ctx = canvas.getContext("2d")!;
+				const imageData = ctx.createImageData(BLURHASH_SIZE, BLURHASH_SIZE);
+				imageData.data.set(pixels);
+				ctx.putImageData(imageData, 0, 0);
+
+				const image = canvas.toDataURL();
+				blurhashMap.set(hash, image);
+				return image;
+			})();
+
+		observer.observe(element);
 	}
 });
 
