@@ -68,7 +68,9 @@ const results = calculateEvents([...events.past, events.active], options);
 					<div
 						class:list={[
 							"mb-10",
-							idx % 2 === 0 ? "timeline-start md:text-end" : "timeline-end",
+							idx % 2 === 0
+								? "timeline-start md:justify-items-end md:text-end"
+								: "timeline-end",
 						]}
 					>
 						<div
