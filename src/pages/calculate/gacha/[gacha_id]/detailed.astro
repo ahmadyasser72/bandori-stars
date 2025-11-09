@@ -30,7 +30,7 @@ const results = calculateEvents([...events.past, events.active], options);
 					options.target_point > 0 ? "badge-primary" : "badge-neutral",
 				]}
 			>
-				Point : {formatNumber(options.target_point)}
+				Point : &ge;{formatNumber(options.target_point)}
 			</div>
 			<div
 				class:list={[
@@ -40,7 +40,9 @@ const results = calculateEvents([...events.past, events.active], options);
 						: "badge-neutral",
 				]}
 			>
-				Rank : T{Number.isFinite(options.target_rank) ? options.target_rank : 0}
+				Rank : &le;T{
+					Number.isFinite(options.target_rank) ? options.target_rank : 0
+				}
 			</div>
 			<div
 				class:list={[
