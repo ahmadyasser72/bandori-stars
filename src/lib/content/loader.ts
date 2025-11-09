@@ -37,7 +37,10 @@ export const character = async () => {
 };
 
 export const card = async () => {
-	const cardList = await bestdori<Bandori.CardList>("api/cards/all.5.json");
+	const cardList = await bestdori<Bandori.CardList>(
+		"api/cards/all.5.json",
+		true,
+	);
 
 	const gacha = ["permanent", "limited", "dreamfes", "birthday", "kirafes"];
 	const entries = await Promise.all(
@@ -79,14 +82,18 @@ export const card = async () => {
 };
 
 export const event = async () => {
-	const eventList = await bestdori<Bandori.EventList>("api/events/all.5.json");
+	const eventList = await bestdori<Bandori.EventList>(
+		"api/events/all.5.json",
+		true,
+	);
 
 	const entries = await Promise.all(
 		Object.entries(eventList)
 			.filter(([, { startAt, endAt }]) => maybeCanPullOnEn(startAt, endAt))
-			.map(async ([id]) => {
+			.map(async ([id], idx) => {
 				const bandoriEvent = await bestdori<Bandori.Event>(
 					`api/events/${id}.json`,
+					idx < 10,
 				);
 
 				const {
@@ -124,7 +131,10 @@ export const event = async () => {
 };
 
 export const gacha = async () => {
-	const gachaList = await bestdori<Bandori.GachaList>("api/gacha/all.5.json");
+	const gachaList = await bestdori<Bandori.GachaList>(
+		"api/gacha/all.5.json",
+		true,
+	);
 
 	const f2p = ["permanent", "limited", "dreamfes", "birthday", "kirafes"];
 	const entries = await Promise.all(
@@ -133,8 +143,11 @@ export const gacha = async () => {
 				([_, { type, publishedAt, closedAt }]) =>
 					f2p.includes(type) && maybeCanPullOnEn(publishedAt, closedAt),
 			)
-			.map(async ([id]) => {
-				const gacha = await bestdori<Bandori.Gacha>(`api/gacha/${id}.json`);
+			.map(async ([id], idx) => {
+				const gacha = await bestdori<Bandori.Gacha>(
+					`api/gacha/${id}.json`,
+					idx < 10,
+				);
 
 				const {
 					gachaName,

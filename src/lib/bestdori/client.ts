@@ -6,11 +6,11 @@ import { limitFunction } from "p-limit";
 import { BESTDORI_CACHE_DIR } from "./constants";
 
 export const fetchBestdori = limitFunction(
-	async (pathname: string) => {
+	async (pathname: string, skipCache = false) => {
 		const url = new URL(pathname, "https://bestdori.com");
 
 		const cachePath = getCachePath(url);
-		if (existsSync(cachePath) && !cachePath.includes("all"))
+		if (!skipCache && existsSync(cachePath))
 			return new Response(readFileSync(cachePath));
 
 		const response = await fetch(url);
