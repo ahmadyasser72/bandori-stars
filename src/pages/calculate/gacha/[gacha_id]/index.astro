@@ -5,7 +5,7 @@ import BaseLayout from "~/layouts/base-layout.astro";
 import { getEventAsset } from "~/lib/assets";
 import { formatNumber, sum } from "~/lib/math";
 import { regionValue } from "~/lib/utilities";
-import { calculateEvents } from "./_calculate";
+import { calculateEvents, calculatePassive } from "./_calculate";
 import { getOptions } from "./_options";
 
 const gacha = gacha_map.get(Astro.params.gacha_id!);
@@ -15,22 +15,39 @@ if (!gacha) {
 
 const options = await getOptions(Astro);
 const events = regionValue.unwrap(gacha.events)!;
+const allEvents = [...events.past, events.active];
+const [from, to] = [events.past.at(0)!.endAt.jp, gacha.endAt.jp];
+
 const freeStars = {
 	events: (() => {
-		const results = calculateEvents([...events.past, events.active], options);
+		const results = calculateEvents(allEvents, options);
 		const stars = {
 			point: sum(results.map(({ point }) => point)),
 			rank: sum(results.map(({ rank }) => rank)),
 			story: sum(results.map(({ story }) => story)),
 		};
+
 		const total = sum(Object.values(stars));
 		const pulls = Math.floor(total / 250);
 
 		return { stars, total, pulls };
 	})(),
+	passive: (() => {
+		const { dailyLogin, dailyLives } = calculatePassive({ from, to });
+		const stars = { dailyLogin: dailyLogin.stars };
+		const starGachaTicket = { dailyLives: dailyLives.starGachaTicket };
+
+		const total = sum(Object.values(stars));
+		const pulls = [
+			Math.floor(total / 250),
+			sum(Object.values(starGachaTicket)),
+		];
+
+		return { stars, starGachaTicket, total, pulls };
+	})(),
 };
 
-const values = [...events.past, events.active].reduce(
+const values = allEvents.reduce(
 	(acc, next) => {
 		if (!next) return acc;
 
@@ -68,11 +85,10 @@ const values = [...events.past, events.active].reduce(
 		/>
 
 		<form
-			up-target="#free-stars"
+			up-target="#free-stars-passive, #free-stars-events"
 			up-autosubmit
 			up-watch-disable
 			up-watch-delay="200"
-			class="md:order-1 md:row-span-2"
 		>
 			<fieldset
 				class:list={[
@@ -133,14 +149,63 @@ const values = [...events.past, events.active].reduce(
 		</form>
 
 		<div
-			id="free-stars"
+			id="free-stars-passive"
 			class:list={[
-				"card bg-base-100 shadow-sm md:order-3",
-				events.active && "bg-base-100/88 backdrop-blur-sm",
+				"card bg-base-100 shadow-sm md:order-2",
+				events.active && "bg-base-100/80 backdrop-blur-sm",
 			]}
 		>
 			<div class="card-body items-center text-center">
-				<h2 class="card-title">Free stars</h2>
+				<h2 class="card-title">Free stars (Passive)</h2>
+
+				<div class="flex flex-col gap-1">
+					<div
+						class:list={[
+							"badge w-64",
+							freeStars.passive.stars.dailyLogin > 0
+								? "badge-accent"
+								: "badge-neutral",
+						]}
+					>
+						Daily login : {
+							formatNumber(freeStars.passive.stars.dailyLogin)
+						}&starf;
+					</div>
+					<div
+						class:list={[
+							"badge w-64",
+							freeStars.passive.starGachaTicket.dailyLives > 0
+								? "badge-accent"
+								: "badge-neutral",
+						]}
+					>
+						Daily lives : {freeStars.passive.starGachaTicket.dailyLives}&Cross;
+						Star Gacha Ticket
+					</div>
+
+					<div class="flex gap-1">
+						<div class="badge badge-info">
+							Total: {formatNumber(freeStars.passive.total)}&starf;
+						</div>
+						<div class="badge badge-info flex-1">
+							{freeStars.passive.pulls[0]}&Cross; Pulls &plus; {
+								freeStars.passive.pulls[1]
+							}&Cross; Pulls
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div
+			id="free-stars-events"
+			class:list={[
+				"card bg-base-100 shadow-sm md:order-2",
+				events.active && "bg-base-100/80 backdrop-blur-sm",
+			]}
+		>
+			<div class="card-body items-center text-center">
+				<h2 class="card-title">Free stars (Events)</h2>
 
 				<div class="flex w-full items-center justify-around">
 					<div class="flex flex-col gap-1">
@@ -164,7 +229,7 @@ const values = [...events.past, events.active].reduce(
 						</div>
 						<div class="badge badge-info w-32">
 							{freeStars.events.pulls}&Cross; {
-								freeStars.events.pulls > 1 ? "pulls" : "pull"
+								freeStars.events.pulls > 1 ? "Pulls" : "Pull"
 							}
 						</div>
 					</div>
@@ -176,8 +241,8 @@ const values = [...events.past, events.active].reduce(
 					up-history="false"
 					href={`/calculate/gacha/${Astro.params.gacha_id}/detailed${Astro.url.search}`}
 					class:list={[
-						"btn btn-sm btn-primary w-full",
-						freeStars.events.total === 0 && "btn-disabled",
+						"btn btn-sm border-primary-content btn-primary w-full border",
+						freeStars.events.total === 0 && "btn-disabled border-0",
 					]}
 				>
 					Show details
