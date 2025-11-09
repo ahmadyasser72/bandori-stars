@@ -1,8 +1,13 @@
 interface Unpoly {
-	compiler: (
+	compiler(
 		selector: string,
 		handler: (element: HTMLElement) => void | (() => void),
-	) => void;
+	): void;
+	compiler(
+		selector: string,
+		options: { batch: boolean },
+		handler: (elements: HTMLElement[]) => void | (() => void),
+	): void;
 }
 
 declare global {
