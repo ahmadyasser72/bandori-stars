@@ -62,8 +62,7 @@ const gachaMap = await timed(
 									event.endAt &&
 									gacha.startAt &&
 									gacha.endAt &&
-									(gacha.startAt.isAfter(event.endAt) ||
-										gacha.endAt.isAfter(event.endAt)),
+									!event.endAt.isAfter(gacha.endAt),
 							)
 							.map(({ id }) => eventMap.get(id)!);
 
