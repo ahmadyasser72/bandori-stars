@@ -9,7 +9,6 @@ import BaseLayout from "~/layouts/base-layout.astro";
 			up-layer="new"
 			up-history="false"
 			up-evict-cache="/partials/select-card"
-			up-accept-location="/calculate/gacha/$id"
 			class="btn btn-accent"
 		>
 			Select card
@@ -22,6 +21,7 @@ import BaseLayout from "~/layouts/base-layout.astro";
 			up-history="false"
 			up-evict-cache="/partials/select-gacha"
 			up-accept-location="/calculate/gacha/$id"
+			up-on-accepted="__unpoly_animateSelectGacha(event)"
 			class="btn btn-accent"
 		>
 			Select gacha

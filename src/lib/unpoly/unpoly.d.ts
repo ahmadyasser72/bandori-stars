@@ -8,7 +8,17 @@ interface Unpoly {
 		options: { batch: boolean },
 		handler: (elements: HTMLElement[]) => void | (() => void),
 	): void;
+
 	destructor(element: HTMLElement, callback: () => void): void;
+
+	render(
+		selector: string,
+		options: { response: unknown; history?: boolean },
+	): Promise<{ layer: UnpolyLayer }>;
+}
+
+interface UnpolyLayer {
+	element: HTMLElement;
 }
 
 declare global {
@@ -24,6 +34,12 @@ declare global {
 			layerElement: HTMLElement,
 			reverse?: boolean,
 		) => void;
+
+		__unpoly_animateSelectGacha: (event: {
+			value: { id: string };
+			layer: UnpolyLayer;
+			response: unknown;
+		}) => void;
 	}
 }
 

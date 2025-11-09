@@ -32,6 +32,7 @@ const rateUpList = regionValue
 ---
 
 <div
+	id={`gacha-card-${gacha.id}`}
 	class:list={[
 		"group card bg-base-100 hover:shadow-bandori-band shadow-sm",
 		className,
@@ -45,6 +46,7 @@ const rateUpList = regionValue
 	</figure>
 	<div class="card-body items-center justify-between gap-4 text-center">
 		<a
+			up-follow
 			href={`/calculate/gacha/${gacha.id}`}
 			class="card-title group-hover:link line-clamp-2">{gacha.name}</a
 		>
