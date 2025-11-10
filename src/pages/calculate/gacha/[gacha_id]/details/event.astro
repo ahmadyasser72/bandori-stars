@@ -5,8 +5,8 @@ import { gacha_map } from "@/contents/data";
 import { getEventAsset } from "~/lib/assets";
 import { formatNumber, sum } from "~/lib/math";
 import { regionValue } from "~/lib/utilities";
-import { calculateEvents } from "./_calculate";
-import { getOptions } from "./_options";
+import { calculateEvents } from "../_calculate";
+import { getOptions } from "../_options";
 
 export const partial = true;
 
@@ -43,11 +43,11 @@ const results = calculateEvents([...events.past, events.active], options);
 			<div
 				class:list={[
 					"badge",
-					options.read_stories ? "badge-primary" : "badge-neutral",
+					options.read_event_story ? "badge-primary" : "badge-neutral",
 				]}
 			>
 				<Icon
-					name={options.read_stories ? "lucide:check" : "lucide:x"}
+					name={options.read_event_story ? "lucide:check" : "lucide:x"}
 					class="size-4.5"
 				/>
 				Story
