@@ -9,7 +9,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
 	output: "server",
 	adapter: cloudflare({ imageService: "passthrough" }),
-	session: { cookie: "laravel_session", ttl: 24 * 60 * 60 /* 1 day */ },
+	session: { cookie: "laravel_session", ttl: 7 * 24 * 60 * 60 /* 7 days */ },
 	integrations: [icon()],
 
 	build: { concurrency: 4 },
