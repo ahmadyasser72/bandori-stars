@@ -2,6 +2,7 @@
 import type { Entry } from "@/contents/data";
 import { formatNumber, sum } from "~/lib/math";
 import { calculateEvents } from "../_calculate";
+import { STARS_PER_PULL } from "../_constants";
 import { getOptions } from "../_options";
 
 interface Props {
@@ -19,7 +20,7 @@ const stars = {
 };
 
 const total = sum(Object.values(stars));
-const pulls = Math.floor(total / 250);
+const pulls = Math.floor(total / STARS_PER_PULL);
 ---
 
 <>

@@ -1,7 +1,9 @@
 ---
 import type { dayjs } from "~/lib/date";
-import { formatNumber, sum } from "~/lib/math";
+import { formatNumber } from "~/lib/math";
 import { calculatePassive } from "../_calculate";
+import { STARS_PER_PULL } from "../_constants";
+import { getOptions } from "../_options";
 
 interface Props {
 	from: dayjs.Dayjs;
@@ -9,13 +11,13 @@ interface Props {
 }
 
 const { from, to } = Astro.props;
+const options = await getOptions(Astro);
 
-const { dailyLogin, dailyLives } = calculatePassive({ from, to });
-const stars = { dailyLogin: dailyLogin.stars };
-const starGachaTicket = { dailyLives: dailyLives.starGachaTicket };
-
-const total = sum(Object.values(stars));
-const pulls = [Math.floor(total / 250), sum(Object.values(starGachaTicket))];
+const { stars, starGachaTicket } = calculatePassive({ from, to }, options);
+const pulls = {
+	stars: Math.floor(stars.dailyLogin / STARS_PER_PULL),
+	ticket: starGachaTicket.dailyLives,
+};
 ---
 
 <div class="flex flex-col gap-1">
@@ -37,6 +39,6 @@ const pulls = [Math.floor(total / 250), sum(Object.values(starGachaTicket))];
 	</div>
 
 	<div class="badge badge-info w-64">
-		{pulls[0]}&Cross; Pulls &plus; {pulls[1]}&Cross; Pulls
+		{pulls.stars}&Cross; Pulls &plus; {pulls.ticket}&Cross; Pulls
 	</div>
 </div>

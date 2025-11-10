@@ -17,7 +17,9 @@ declare namespace App {
 		calculate_options: Partial<{
 			target_point: number;
 			target_rank: number;
-			read_stories: boolean;
+			read_event_story: boolean;
+			daily_login: boolean;
+			daily_live: boolean;
 		}>;
 	}
 }

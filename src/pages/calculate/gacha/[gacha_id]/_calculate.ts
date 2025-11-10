@@ -21,30 +21,36 @@ export const calculateEvents = (
 					? 0
 					: (data.rankingRewards.find(({ rank }) => rank >= options.target_rank)
 							?.stars ?? 0),
-			story: options.read_stories ? data.storyRewards : 0,
+			story: options.read_event_story ? data.storyRewards : 0,
 			data,
 		}));
 
-export const calculatePassive = ({
-	from,
-	to,
-}: Record<"from" | "to", dayjs.Dayjs>) => {
+export const calculatePassive = (
+	{ from, to }: Record<"from" | "to", dayjs.Dayjs>,
+	options: Required<App.SessionData["calculate_options"]>,
+) => {
 	const dailyLogin = (() => {
+		if (!options.daily_login) return 0;
+
 		const days = to.diff(from, "days");
 
 		const weeks = Math.floor(days / 7);
 		const leftOverDays = days % 7;
-		return {
-			stars:
-				weeks * WEEKLY_STARS_FROM_DAILY_LOGIN +
-				sum(STARS_FROM_DAILY_LOGIN.slice(0, leftOverDays)),
-		};
+		return (
+			weeks * WEEKLY_STARS_FROM_DAILY_LOGIN +
+			sum(STARS_FROM_DAILY_LOGIN.slice(0, leftOverDays))
+		);
 	})();
 
 	const dailyLives = (() => {
+		if (!options.daily_live) return 0;
+
 		const weeks = to.diff(from, "weeks");
-		return { starGachaTicket: weeks };
+		return weeks;
 	})();
 
-	return { dailyLogin, dailyLives };
+	return {
+		stars: { dailyLogin },
+		starGachaTicket: { dailyLives },
+	};
 };
