@@ -1,5 +1,10 @@
 import type { Entry } from "@/contents/data";
 import { dayjs } from "~/lib/date";
+import { sum } from "~/lib/math";
+import {
+	STARS_FROM_DAILY_LOGIN,
+	WEEKLY_STARS_FROM_DAILY_LOGIN,
+} from "./_constants";
 
 export const calculateEvents = (
 	events: (Entry<"event_map"> | null)[],
@@ -24,19 +29,16 @@ export const calculatePassive = ({
 	from,
 	to,
 }: Record<"from" | "to", dayjs.Dayjs>) => {
-	// source: https://bandori.fandom.com/wiki/BanG_Dream!_Girls_Band_Party!/Login_Bonus#Normal_Login_Bonus
 	const dailyLogin = (() => {
 		const days = to.diff(from, "days");
 
 		const weeks = Math.floor(days / 7);
-		const weeklyStars = weeks * 150;
-
 		const leftOverDays = days % 7;
-		let extra = 0;
-		if (leftOverDays >= 4) extra = 100;
-		else if (leftOverDays >= 2) extra = 50;
-
-		return { stars: weeklyStars + extra };
+		return {
+			stars:
+				weeks * WEEKLY_STARS_FROM_DAILY_LOGIN +
+				sum(STARS_FROM_DAILY_LOGIN.slice(0, leftOverDays)),
+		};
 	})();
 
 	const dailyLives = (() => {

@@ -3,9 +3,10 @@ import { gacha_map } from "@/contents/data";
 import GachaCardGridItem from "~/components/gacha-card-grid-item.astro";
 import BaseLayout from "~/layouts/base-layout.astro";
 import { getEventAsset } from "~/lib/assets";
-import { formatNumber, sum } from "~/lib/math";
+import { formatNumber } from "~/lib/math";
 import { regionValue } from "~/lib/utilities";
-import { calculateEvents, calculatePassive } from "./_calculate";
+import FreeStarsEvents from "./_components/free-stars-events.astro";
+import FreeStarsPassive from "./_components/free-stars-passive.astro";
 import { getOptions } from "./_options";
 
 const gacha = gacha_map.get(Astro.params.gacha_id!);
@@ -17,35 +18,6 @@ const options = await getOptions(Astro);
 const events = regionValue.unwrap(gacha.events)!;
 const allEvents = [...events.past, events.active];
 const [from, to] = [events.past.at(0)!.endAt.jp, gacha.endAt.jp];
-
-const freeStars = {
-	events: (() => {
-		const results = calculateEvents(allEvents, options);
-		const stars = {
-			point: sum(results.map(({ point }) => point)),
-			rank: sum(results.map(({ rank }) => rank)),
-			story: sum(results.map(({ story }) => story)),
-		};
-
-		const total = sum(Object.values(stars));
-		const pulls = Math.floor(total / 250);
-
-		return { stars, total, pulls };
-	})(),
-	passive: (() => {
-		const { dailyLogin, dailyLives } = calculatePassive({ from, to });
-		const stars = { dailyLogin: dailyLogin.stars };
-		const starGachaTicket = { dailyLives: dailyLives.starGachaTicket };
-
-		const total = sum(Object.values(stars));
-		const pulls = [
-			Math.floor(total / 250),
-			sum(Object.values(starGachaTicket)),
-		];
-
-		return { stars, starGachaTicket, total, pulls };
-	})(),
-};
 
 const values = allEvents.reduce(
 	(acc, next) => {
@@ -158,42 +130,7 @@ const values = allEvents.reduce(
 			<div class="card-body items-center text-center">
 				<h2 class="card-title">Free stars (Passive)</h2>
 
-				<div class="flex flex-col gap-1">
-					<div
-						class:list={[
-							"badge w-64",
-							freeStars.passive.stars.dailyLogin > 0
-								? "badge-accent"
-								: "badge-neutral",
-						]}
-					>
-						Daily login : {
-							formatNumber(freeStars.passive.stars.dailyLogin)
-						}&starf;
-					</div>
-					<div
-						class:list={[
-							"badge w-64",
-							freeStars.passive.starGachaTicket.dailyLives > 0
-								? "badge-accent"
-								: "badge-neutral",
-						]}
-					>
-						Daily lives : {freeStars.passive.starGachaTicket.dailyLives}&Cross;
-						Star Gacha Ticket
-					</div>
-
-					<div class="flex gap-1">
-						<div class="badge badge-info">
-							Total: {formatNumber(freeStars.passive.total)}&starf;
-						</div>
-						<div class="badge badge-info flex-1">
-							{freeStars.passive.pulls[0]}&Cross; Pulls &plus; {
-								freeStars.passive.pulls[1]
-							}&Cross; Pulls
-						</div>
-					</div>
-				</div>
+				<FreeStarsPassive {from} {to} />
 			</div>
 		</div>
 
@@ -207,46 +144,7 @@ const values = allEvents.reduce(
 			<div class="card-body items-center text-center">
 				<h2 class="card-title">Free stars (Events)</h2>
 
-				<div class="flex w-full items-center justify-around">
-					<div class="flex flex-col gap-1">
-						{
-							Object.entries(freeStars.events.stars).map(([label, value]) => (
-								<div
-									class:list={[
-										"badge w-32 capitalize",
-										value > 0 ? "badge-accent" : "badge-neutral",
-									]}
-								>
-									{label} : {formatNumber(value)}&starf;
-								</div>
-							))
-						}
-					</div>
-
-					<div class="flex flex-col gap-2">
-						<div class="badge badge-info w-32">
-							Total: {formatNumber(freeStars.events.total)}&starf;
-						</div>
-						<div class="badge badge-info w-32">
-							{freeStars.events.pulls}&Cross; {
-								freeStars.events.pulls > 1 ? "Pulls" : "Pull"
-							}
-						</div>
-					</div>
-				</div>
-
-				<a
-					up-layer="new"
-					up-size="large"
-					up-history="false"
-					href={`/calculate/gacha/${Astro.params.gacha_id}/detailed${Astro.url.search}`}
-					class:list={[
-						"btn btn-sm border-primary-content btn-primary w-full border",
-						freeStars.events.total === 0 && "btn-disabled border-0",
-					]}
-				>
-					Show details
-				</a>
+				<FreeStarsEvents events={allEvents} />
 			</div>
 		</div>
 	</div>
