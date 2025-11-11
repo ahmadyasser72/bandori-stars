@@ -15,5 +15,5 @@ export interface CalendarData {
 
 export const useCalendar = (data: CalendarData) => ({
 	"data-calendar": devalue.stringify(data),
-	class: "w-full h-120",
+	class: "w-full h-108",
 });

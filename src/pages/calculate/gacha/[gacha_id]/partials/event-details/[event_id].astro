@@ -36,7 +36,7 @@ const [{ data, ...stars }] = calculateEvents([event], options);
 	<div class="font-semibold max-sm:mt-1 sm:text-lg">{event.name}</div>
 	<img
 		{...await getEventAsset(Astro, { event, kind: "banner" })}
-		class="rounded-box aspect-3/1 w-96"
+		class="rounded-box aspect-3/1 w-120"
 	/>
 
 	<div class="mt-2 inline-flex flex-wrap gap-1">
