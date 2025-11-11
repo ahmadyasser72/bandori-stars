@@ -54,7 +54,7 @@ const pulls = Math.floor(total / STARS_PER_PULL);
 		up-layer="new"
 		up-size="large"
 		up-history="false"
-		href={`/calculate/gacha/${Astro.params.gacha_id}/details/event${Astro.url.search}`}
+		href={`/calculate/gacha/${Astro.params.gacha_id}/calendar${Astro.url.search}`}
 		class:list={[
 			"btn btn-sm border-primary-content btn-primary w-full border",
 			total === 0 && "btn-disabled border-0",

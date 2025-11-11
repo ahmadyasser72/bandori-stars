@@ -1,0 +1,13 @@
+.sx__calendar {
+	.sx__calendar-header {
+		> .sx__calendar-header-content:nth-child(2),
+		> .sx__calendar-header-content:nth-child(1) > button {
+			display: none;
+		}
+	}
+
+	.sx__event {
+		cursor: pointer;
+		user-select: none;
+	}
+}

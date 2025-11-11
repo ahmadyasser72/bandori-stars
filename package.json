@@ -13,6 +13,8 @@
 	},
 	"dependencies": {
 		"@astrojs/cloudflare": "^12.6.10",
+		"@schedule-x/calendar": "^3.3.0",
+		"@schedule-x/theme-default": "^3.3.0",
 		"@tailwindcss/vite": "^4.1.17",
 		"astro": "^5.15.4",
 		"astro-icon": "^1.1.5",
@@ -20,10 +22,12 @@
 		"clsx": "^2.1.1",
 		"daisyui": "^5.4.7",
 		"dayjs": "^1.11.19",
+		"devalue": "^5.4.2",
 		"fast-shuffle": "^6.1.1",
 		"flexsearch": "^0.8.212",
 		"p-limit": "^7.2.0",
 		"tailwindcss": "^4.1.17",
+		"temporal-polyfill": "^0.3.0",
 		"unpoly": "^3.12.0"
 	},
 	"devDependencies": {
@@ -32,7 +36,6 @@
 		"@iconify-json/emojione": "^1.2.3",
 		"@iconify-json/lucide": "^1.2.72",
 		"@types/node": "^24.10.0",
-		"devalue": "^5.4.2",
 		"prettier": "^3.6.2",
 		"prettier-plugin-astro": "^0.14.1",
 		"prettier-plugin-tailwindcss": "^0.7.1",
