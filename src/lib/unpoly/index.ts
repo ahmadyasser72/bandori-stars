@@ -43,3 +43,21 @@ window.__unpoly_animateShowFullCard = (el, layerElement, reverse = false) => {
 		to.style.viewTransitionName = "";
 	});
 };
+
+window.__unpoly_animateSelectGacha = ({ value, layer, response }) => {
+	if (!document.startViewTransition) return;
+
+	const elementId = `#gacha-card-${value.id}`;
+	const from = layer.element.querySelector<HTMLElement>(elementId)!;
+
+	const transitionName = "animate-select-gacha";
+	from.style.viewTransitionName = transitionName;
+	const transition = document.startViewTransition(async () => {
+		from.style.viewTransitionName = "";
+
+		const { layer } = await up.render("main", { response, history: true });
+		const to = layer.element.querySelector<HTMLElement>(elementId)!;
+		to.style.viewTransitionName = transitionName;
+		transition.finished.finally(() => (to.style.viewTransitionName = ""));
+	});
+};

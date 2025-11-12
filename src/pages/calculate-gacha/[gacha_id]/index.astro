@@ -1,0 +1,186 @@
+---
+import { gacha_map } from "@/contents/data";
+import GachaCardGridItem from "~/components/gacha-card-grid-item.astro";
+import BaseLayout from "~/layouts/base-layout.astro";
+import { getEventAsset } from "~/lib/assets";
+import { formatNumber } from "~/lib/math";
+import { regionValue } from "~/lib/utilities";
+import FreeStarsEvents from "./_components/free-stars-events.astro";
+import FreeStarsPassive from "./_components/free-stars-passive.astro";
+import { getOptions } from "./_options";
+
+const gacha = gacha_map.get(Astro.params.gacha_id!);
+if (!gacha) {
+	return new Response("Gacha not found.", { status: 404 });
+}
+
+const options = await getOptions(Astro);
+const events = regionValue.unwrap(gacha.events)!;
+const allEvents = [...events.past, events.active];
+const [from, to] = [events.past.at(0)!.endAt.jp, gacha.endAt.jp];
+
+const choices = allEvents.reduce(
+	(acc, next) => {
+		if (!next) return acc;
+
+		const { pointRewards, rankingRewards } = next;
+		for (const { point } of pointRewards) acc.point.add(point);
+		for (const { rank } of rankingRewards) acc.rank.add(rank);
+		return acc;
+	},
+	{ point: new Set<number>(), rank: new Set<number>() },
+);
+---
+
+<BaseLayout>
+	{
+		events.active && (
+			<img
+				{...await getEventAsset(Astro, {
+					event: events.active,
+					kind: "background",
+				})}
+				class="pointer-events-none fixed -z-1 h-screen w-screen object-cover"
+			/>
+		)
+	}
+
+	<div
+		class="container mx-auto grid max-w-xs gap-2 py-8 sm:max-w-sm md:max-w-2xl md:grid-cols-2"
+	>
+		<GachaCardGridItem
+			{gacha}
+			class:list={[
+				"md:order-2",
+				events.active && "bg-base-100/80 backdrop-blur-sm",
+			]}
+		/>
+
+		<form
+			up-target="#free-stars-passive, #free-stars-events"
+			up-autosubmit
+			up-watch-disable
+			up-watch-delay="200"
+		>
+			<fieldset
+				class:list={[
+					"fieldset bg-base-200 border-base-300 rounded-box h-full border p-4",
+					events.active && "bg-base-200/67 backdrop-blur-sm",
+				]}
+			>
+				<label class="label">Event points</label>
+				<select name="target_point" class="select">
+					<option value="" disabled selected={options.target_point === 0}
+						>Pick a point</option
+					>
+
+					{
+						[...choices.point]
+							.sort((a, b) => b - a)
+							.map((point) => (
+								<option value={point} selected={options.target_point === point}>
+									{formatNumber(point)}
+								</option>
+							))
+					}
+				</select>
+
+				<label class="label">Event rank</label>
+				<select name="target_rank" class="select">
+					<option value="" disabled selected={options.target_rank === 0}
+						>Pick a rank</option
+					>
+
+					{
+						[...choices.rank]
+							.sort((a, b) => a - b)
+							.map((rank) => (
+								<option value={rank} selected={options.target_rank === rank}>
+									T{rank}
+								</option>
+							))
+					}
+				</select>
+
+				<fieldset
+					class="fieldset bg-base-100 border-base-300 rounded-box justify-items-center border p-4 pt-2"
+				>
+					<legend class="fieldset-legend">Options</legend>
+
+					<label class="label">
+						<input
+							name="read_event_story"
+							type="checkbox"
+							class="checkbox"
+							value="true"
+							checked={options.read_event_story}
+						/>
+						Read event stories
+					</label>
+
+					<div class="flex gap-4">
+						<label class="label">
+							<input
+								name="daily_login"
+								type="checkbox"
+								class="checkbox"
+								value="true"
+								checked={options.daily_login}
+							/>
+							Daily login
+						</label>
+
+						<label class="label">
+							<input
+								name="daily_live"
+								type="checkbox"
+								class="checkbox"
+								value="true"
+								checked={options.daily_live}
+							/>
+							Daily live
+						</label>
+					</div>
+				</fieldset>
+			</fieldset>
+		</form>
+
+		<div
+			id="free-stars-passive"
+			class:list={[
+				"card bg-base-100 shadow-sm md:order-2",
+				events.active && "bg-base-100/80 backdrop-blur-sm",
+			]}
+		>
+			<div class="card-body items-center text-center">
+				<h2 class="card-title">Free stars (Passive)</h2>
+
+				<FreeStarsPassive {from} {to} />
+			</div>
+		</div>
+
+		<div
+			id="free-stars-events"
+			class:list={[
+				"card bg-base-100 shadow-sm md:order-2",
+				events.active && "bg-base-100/80 backdrop-blur-sm",
+			]}
+		>
+			<div class="card-body items-center text-center">
+				<h2 class="card-title">Free stars (Events)</h2>
+
+				<FreeStarsEvents events={allEvents} />
+			</div>
+		</div>
+
+		<a
+			up-layer="new"
+			up-size="large"
+			up-history="false"
+			href={`/calculate-gacha/${Astro.params.gacha_id}/calendar${Astro.url.search}`}
+			class="btn btn-sm border-primary-content btn-primary w-full border md:order-2 md:col-span-2"
+		>
+			Show details (calendar)
+		</a>
+	</div>
+</BaseLayout>

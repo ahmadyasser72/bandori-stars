@@ -55,20 +55,30 @@ const gachaMap = await timed(
 							}),
 						);
 
-						const results = events
-							.filter(
-								(event) =>
-									event.startAt &&
-									event.endAt &&
-									gacha.startAt &&
-									gacha.endAt &&
-									(gacha.startAt.isSame(event.startAt) ||
-										gacha.startAt.isBetween(event.startAt, event.endAt) ||
-										gacha.endAt.isBetween(event.startAt, event.endAt)),
-							)
-							.map(({ id }) => eventMap.get(id)!);
+						const results = events.filter(
+							(event) =>
+								event.startAt &&
+								event.endAt &&
+								gacha.startAt &&
+								gacha.endAt &&
+								(gacha.endAt.isAfter(event.endAt) ||
+									gacha.endAt.isBetween(event.startAt, event.endAt)),
+						);
 
-						return results.length > 0 ? results : null;
+						if (results.length === 0) return null;
+
+						const activeEventId = results.find(
+							(event) =>
+								gacha.startAt!.isSame(event.startAt) ||
+								gacha.startAt!.isBetween(event.startAt, event.endAt),
+						)?.id;
+
+						return {
+							past: results
+								.filter((event) => event.endAt!.isBefore(gacha.startAt))
+								.map(({ id }) => eventMap.get(id)!),
+							active: activeEventId ? eventMap.get(activeEventId)! : null,
+						};
 					};
 
 					return { jp: get("jp"), en: get("en") };

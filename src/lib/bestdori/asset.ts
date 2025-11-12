@@ -6,11 +6,14 @@ import { compressImage } from "./process/compress";
 export const hasNoPreTrained = ({ name, type }: Entry<"card_map">) =>
 	name === "Graduation" || ["kirafes", "birthday"].includes(type);
 
-interface AssetCardParameters {
+interface Blurhashable {
+	blurhash?: boolean;
+}
+
+interface AssetCardParameters extends Blurhashable {
 	card: Entry<"card_map">;
 	kind: "icon" | "full";
 	trained: boolean;
-	blurhash?: boolean;
 }
 
 export const card = async ({
@@ -48,9 +51,40 @@ export const card = async ({
 	return (blurhash ? generateBlurhash : compressImage)(name, buffer);
 };
 
-interface AssetGachaBannerParameters {
+interface AssetEventParameters extends Blurhashable {
+	event: Entry<"event_map">;
+	kind: "banner" | "background";
+}
+
+export const event = async ({
+	event,
+	kind,
+	blurhash = false,
+}: AssetEventParameters) => {
+	const name = ["event", event.id, kind].join("_");
+
+	let buffer: Buffer;
+	switch (kind) {
+		case "banner": {
+			buffer = await fetchBestdoriWithRegionFallbacks(
+				`assets/jp/event/${event.assetBundleName}/images_rip/banner.png`,
+			);
+			break;
+		}
+
+		case "background": {
+			buffer = await fetchBestdoriWithRegionFallbacks(
+				`assets/jp/event/${event.assetBundleName}/topscreen_rip/bg_eventtop.png`,
+			);
+			break;
+		}
+	}
+
+	return (blurhash ? generateBlurhash : compressImage)(name, buffer);
+};
+
+interface AssetGachaBannerParameters extends Blurhashable {
 	gacha: Entry<"gacha_map">;
-	blurhash?: boolean;
 }
 
 export const gachaBanner = async ({

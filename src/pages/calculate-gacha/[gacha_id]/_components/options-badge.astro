@@ -1,0 +1,36 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+	name: string;
+	value: number | boolean;
+	formattedValue?: string;
+
+	badgeClass?: string;
+}
+
+const { name, value, formattedValue, badgeClass } = Astro.props;
+---
+
+{
+	typeof value === "number" ? (
+		<div
+			class:list={[
+				"badge",
+				value > 0 ? (badgeClass ?? "badge-primary") : "badge-neutral",
+			]}
+		>
+			{name} : {formattedValue ?? value}
+		</div>
+	) : (
+		<div
+			class:list={[
+				"badge",
+				value ? (badgeClass ?? "badge-primary") : "badge-neutral",
+			]}
+		>
+			<Icon name={value ? "lucide:check" : "lucide:x"} class="size-4.5" />
+			{name}
+		</div>
+	)
+}

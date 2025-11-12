@@ -4,6 +4,7 @@ import type { JSX } from "astro/jsx-runtime";
 import { IMAGE_FORMAT } from "~/lib/bestdori/constants";
 import type { bestdori } from "./bestdori";
 import { hasNoPreTrained } from "./bestdori/asset";
+import { capitalize } from "./utilities";
 
 const blurhashMap = new Map<string, string>();
 const getBlurhash = async (context: APIContext, pathname: string) => {
@@ -29,6 +30,12 @@ const imageAttributes = {
 	decoding: "async",
 } satisfies JSX.ImgHTMLAttributes;
 
+type BestdoriAsset = typeof bestdori.asset;
+type GetAssetFunction<K extends keyof BestdoriAsset> = (
+	context: APIContext,
+	params: Omit<Parameters<BestdoriAsset[K]>[0], "blurhash">,
+) => Promise<Record<"src" | "alt", string> & JSX.ImgHTMLAttributes>;
+
 export const getCardAsset = (async (context, { card, kind, trained }) => {
 	trained ||= hasNoPreTrained(card);
 
@@ -46,13 +53,19 @@ export const getCardAsset = (async (context, { card, kind, trained }) => {
 			: `${card.character.name} - ${card.name}`,
 		"data-blurhash": await getBlurhash(context, src),
 	};
-}) satisfies (
-	context: APIContext,
-	arg: Pick<
-		Parameters<typeof bestdori.asset.card>[0],
-		"card" | "kind" | "trained"
-	>,
-) => Promise<Record<"src" | "alt", string> & JSX.ImgHTMLAttributes>;
+}) satisfies GetAssetFunction<"card">;
+
+export const getEventAsset = (async (context, { event, kind }) => {
+	const filename = [event.id, kind].join("_");
+	const src = `/static/assets/event/${filename}.${IMAGE_FORMAT}`;
+
+	return {
+		...imageAttributes,
+		src,
+		alt: `${capitalize(kind)} of ${event.name}`,
+		"data-blurhash": await getBlurhash(context, src),
+	};
+}) satisfies GetAssetFunction<"event">;
 
 export const getGachaBanner = (async (context, { gacha }) => {
 	const src = `/static/assets/gacha/${gacha.id}_banner.${IMAGE_FORMAT}`;
@@ -63,7 +76,4 @@ export const getGachaBanner = (async (context, { gacha }) => {
 		alt: `Banner of ${gacha.name}`,
 		"data-blurhash": await getBlurhash(context, src),
 	};
-}) satisfies (
-	context: APIContext,
-	arg: Pick<Parameters<typeof bestdori.asset.gachaBanner>[0], "gacha">,
-) => Promise<Record<"src" | "alt", string> & JSX.ImgHTMLAttributes>;
+}) satisfies GetAssetFunction<"gachaBanner">;

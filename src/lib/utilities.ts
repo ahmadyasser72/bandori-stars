@@ -1,3 +1,6 @@
+export const capitalize = (s: string) =>
+	s.length === 0 ? "" : s.at(0)!.toUpperCase() + s.slice(1);
+
 export const emptyObjectIsNull = <T extends object>(o: T | {}): T | null =>
 	Object.keys(o).length === 0 ? null : (o as T);
 

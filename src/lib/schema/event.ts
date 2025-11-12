@@ -10,6 +10,7 @@ export interface Event {
 	characters: Character[];
 	startAt: RegionTuple<string>;
 	endAt: RegionTuple<string>;
+	assetBundleName: string;
 	pointRewards: RegionTuple<PointReward[]>;
 	rankingRewards: RegionTuple<RankingReward[]>;
 	stories: Story[];

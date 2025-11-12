@@ -8,9 +8,19 @@ declare namespace App {
 	type SearchOptions = Partial<
 		Record<"oldest_first" | "show_trained", boolean>
 	>;
+	type CalculateOptions = {
+		target_point: number;
+		target_rank: number;
+		read_event_story: boolean;
+		daily_login: boolean;
+		daily_live: boolean;
+	};
+
 	interface SessionData {
 		card_filters: Partial<Record<"band" | "type" | "attribute", string[]>>;
 		gacha_filters: Partial<Record<"character" | "type", string[]>>;
 		search_options: SearchOptions;
+
+		calculate_options: Partial<CalculateOptions>;
 	}
 }
