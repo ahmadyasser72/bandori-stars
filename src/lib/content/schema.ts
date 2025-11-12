@@ -80,6 +80,21 @@ export const schema = {
 			),
 		),
 	}),
+
+	song: z.strictObject({
+		id,
+		title: name,
+		releasedAt: timestamp,
+		specialReleasedAt: timestamp.optional(),
+		rewards: z.strictObject({
+			fullCombo: z.strictObject({
+				hard: z.number().nonnegative(),
+				expert: z.number().nonnegative(),
+				special: z.number().nonnegative().optional(),
+			}),
+			score: z.record(z.enum(["S", "SS"]), z.number().nonnegative()),
+		}),
+	}),
 };
 
 export type SchemaKeys = keyof typeof schema;

@@ -1,6 +1,6 @@
 import { dayjs } from "~/lib/date";
 import { sum } from "~/lib/math";
-import type { Card, Event, Gacha, RegionTuple } from "~/lib/schema";
+import type { Card, Event, Gacha, RegionTuple, Song } from "~/lib/schema";
 import { emptyObjectIsNull } from "~/lib/utilities";
 
 export const regionTuple = <T>([jp, en]: RegionTuple<T>) => ({ jp, en });
@@ -100,4 +100,34 @@ export const gacha = {
 					: null,
 			) as RegionTuple<{ card: string; rarity: number; rate: number }>,
 		),
+};
+
+export const song = {
+	rewards: (
+		achievements: Song["achievements"],
+		difficulty: Song["difficulty"],
+	) => {
+		const getStarReward = (
+			type: Song["achievements"][number]["achievementType"],
+		) =>
+			achievements.find(
+				({ achievementType, rewardType }) =>
+					achievementType === type && rewardType === "star",
+			)!.quantity;
+
+		return {
+			fullCombo: {
+				hard: getStarReward("full_combo_hard"),
+				expert: getStarReward("full_combo_expert"),
+				special:
+					difficulty[4] !== undefined
+						? getStarReward("full_combo_special")
+						: undefined,
+			},
+			score: {
+				S: getStarReward("score_rank_s"),
+				SS: getStarReward("score_rank_ss"),
+			},
+		};
+	},
 };

@@ -126,11 +126,17 @@ const gacha_map = toMap(
 	})),
 );
 
+const songMap = await timed(
+	"fetch song_map",
+	loader.song().then(regionValue.mapUnwrap("title")).then(toMap),
+);
+
 const data = {
 	band_map: bandMap,
 	character_map: characterMap,
 	event_map: eventMap,
 	card_map: cardMap,
+	song_map: songMap,
 	gacha_map,
 } satisfies Record<string, Map<string, any>>;
 
