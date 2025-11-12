@@ -19,16 +19,16 @@ const events = regionValue.unwrap(gacha.events)!;
 const allEvents = [...events.past, events.active];
 const [from, to] = [events.past.at(0)!.endAt.jp, gacha.endAt.jp];
 
-const values = allEvents.reduce(
+const choices = allEvents.reduce(
 	(acc, next) => {
 		if (!next) return acc;
 
 		const { pointRewards, rankingRewards } = next;
-		for (const { point } of pointRewards) acc.points.add(point);
-		for (const { rank } of rankingRewards) acc.rankings.add(rank);
+		for (const { point } of pointRewards) acc.point.add(point);
+		for (const { rank } of rankingRewards) acc.rank.add(rank);
 		return acc;
 	},
-	{ points: new Set<number>(), rankings: new Set<number>() },
+	{ point: new Set<number>(), rank: new Set<number>() },
 );
 ---
 
@@ -75,7 +75,7 @@ const values = allEvents.reduce(
 					>
 
 					{
-						[...values.points]
+						[...choices.point]
 							.sort((a, b) => b - a)
 							.map((point) => (
 								<option value={point} selected={options.target_point === point}>
@@ -92,7 +92,7 @@ const values = allEvents.reduce(
 					>
 
 					{
-						[...values.rankings]
+						[...choices.rank]
 							.sort((a, b) => a - b)
 							.map((rank) => (
 								<option value={rank} selected={options.target_rank === rank}>
@@ -177,7 +177,7 @@ const values = allEvents.reduce(
 			up-layer="new"
 			up-size="large"
 			up-history="false"
-			href={`/calculate/gacha/${Astro.params.gacha_id}/calendar${Astro.url.search}`}
+			href={`/calculate-gacha/${Astro.params.gacha_id}/calendar${Astro.url.search}`}
 			class="btn btn-sm border-primary-content btn-primary w-full border md:order-2 md:col-span-2"
 		>
 			Show details (calendar)

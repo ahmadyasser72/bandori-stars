@@ -38,7 +38,7 @@ const rateUpList = regionValue
 		className,
 	]}
 >
-	<a up-follow href={`/calculate/gacha/${gacha.id}`} class="contents">
+	<a up-follow href={`/calculate-gacha/${gacha.id}`} class="contents">
 		<figure>
 			<img
 				{...await getGachaBanner(Astro, { gacha })}
@@ -49,7 +49,7 @@ const rateUpList = regionValue
 	<div class="card-body items-center justify-between gap-4 text-center">
 		<a
 			up-follow
-			href={`/calculate/gacha/${gacha.id}`}
+			href={`/calculate-gacha/${gacha.id}`}
 			class="card-title group-hover:link line-clamp-2">{gacha.name}</a
 		>
 

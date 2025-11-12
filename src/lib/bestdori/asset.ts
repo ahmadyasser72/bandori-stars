@@ -51,7 +51,7 @@ export const card = async ({
 	return (blurhash ? generateBlurhash : compressImage)(name, buffer);
 };
 
-interface AssetEventBannerParameters extends Blurhashable {
+interface AssetEventParameters extends Blurhashable {
 	event: Entry<"event_map">;
 	kind: "banner" | "background";
 }
@@ -60,7 +60,7 @@ export const event = async ({
 	event,
 	kind,
 	blurhash = false,
-}: AssetEventBannerParameters) => {
+}: AssetEventParameters) => {
 	const name = ["event", event.id, kind].join("_");
 
 	let buffer: Buffer;

@@ -51,7 +51,7 @@ up.compiler("[data-calendar]", async (element) => {
 				if (calendarId === "event-stars") {
 					const event = events.get(id)!;
 					up.layer.open({
-						url: `/calculate/gacha/_/partials/event-details/${event.id}`,
+						url: `/calculate-gacha/_/partials/event-details/${event.id}`,
 						origin: clickEvent.target as HTMLElement,
 						params: data.options,
 					});

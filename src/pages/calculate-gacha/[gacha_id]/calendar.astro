@@ -6,6 +6,7 @@ import { useCalendar } from "~/lib/unpoly/compiler/calendar/helper";
 import { regionValue } from "~/lib/utilities";
 import { calculateEvents } from "./_calculate";
 import OptionsBadge from "./_components/options-badge.astro";
+import { STARS_FROM_DAILY_LOGIN } from "./_constants";
 import { getOptions } from "./_options";
 
 export const partial = true;
@@ -65,7 +66,14 @@ const calendar = useCalendar({
 		...(!options.daily_login
 			? []
 			: [
-					createRecurrenceEvent("daily_login", "Daily Login", "50★", [2, 4, 7]),
+					createRecurrenceEvent(
+						"daily_login",
+						"Daily Login",
+						"50★",
+						STARS_FROM_DAILY_LOGIN.map((star, idx) => ({ idx, star }))
+							.filter(({ star }) => star > 0)
+							.map(({ idx }) => idx + 1),
+					),
 				]),
 		...(!options.daily_live
 			? []

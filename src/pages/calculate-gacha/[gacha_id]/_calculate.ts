@@ -1,14 +1,11 @@
 import type { Entry } from "@/contents/data";
 import { dayjs } from "~/lib/date";
 import { sum } from "~/lib/math";
-import {
-	STARS_FROM_DAILY_LOGIN,
-	WEEKLY_STARS_FROM_DAILY_LOGIN,
-} from "./_constants";
+import { STARS_FROM_DAILY_LOGIN } from "./_constants";
 
 export const calculateEvents = (
 	events: (Entry<"event_map"> | null)[],
-	options: Required<App.SessionData["calculate_options"]>,
+	options: App.CalculateOptions,
 ) =>
 	events
 		.filter((data) => data !== null)
@@ -27,18 +24,17 @@ export const calculateEvents = (
 
 export const calculatePassive = (
 	{ from, to }: Record<"from" | "to", dayjs.Dayjs>,
-	options: Required<App.SessionData["calculate_options"]>,
+	options: App.CalculateOptions,
 ) => {
 	const dailyLogin = (() => {
 		if (!options.daily_login) return 0;
 
 		const days = to.diff(from, "days");
-
-		const weeks = Math.floor(days / 7);
-		const leftOverDays = days % 7;
-		return (
-			weeks * WEEKLY_STARS_FROM_DAILY_LOGIN +
-			sum(STARS_FROM_DAILY_LOGIN.slice(0, leftOverDays))
+		return sum(
+			Array.from(
+				{ length: days },
+				(_, idx) => STARS_FROM_DAILY_LOGIN[idx % STARS_FROM_DAILY_LOGIN.length],
+			),
 		);
 	})();
 
