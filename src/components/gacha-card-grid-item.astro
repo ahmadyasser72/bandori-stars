@@ -38,12 +38,14 @@ const rateUpList = regionValue
 		className,
 	]}
 >
-	<figure>
-		<img
-			{...await getGachaBanner(Astro, { gacha })}
-			class="aspect-3/1 w-full"
-		/>
-	</figure>
+	<a up-follow href={`/calculate/gacha/${gacha.id}`} class="contents">
+		<figure>
+			<img
+				{...await getGachaBanner(Astro, { gacha })}
+				class="aspect-3/1 w-full"
+			/>
+		</figure>
+	</a>
 	<div class="card-body items-center justify-between gap-4 text-center">
 		<a
 			up-follow
