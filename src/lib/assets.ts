@@ -4,6 +4,7 @@ import type { JSX } from "astro/jsx-runtime";
 import { IMAGE_FORMAT } from "~/lib/bestdori/constants";
 import type { bestdori } from "./bestdori";
 import { hasNoPreTrained } from "./bestdori/asset";
+import { capitalize } from "./utilities";
 
 const blurhashMap = new Map<string, string>();
 const getBlurhash = async (context: APIContext, pathname: string) => {
@@ -61,7 +62,7 @@ export const getEventAsset = (async (context, { event, kind }) => {
 	return {
 		...imageAttributes,
 		src,
-		alt: `${event.name} ${kind}`,
+		alt: `${capitalize(kind)} of ${event.name}`,
 		"data-blurhash": await getBlurhash(context, src),
 	};
 }) satisfies GetAssetFunction<"event">;
