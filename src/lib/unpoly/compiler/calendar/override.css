@@ -1,4 +1,5 @@
 .sx__calendar {
+	/* Targets @schedule-x/calendar v3.3.0 header structure */
 	.sx__calendar-header {
 		> .sx__calendar-header-content:nth-child(2),
 		> .sx__calendar-header-content:nth-child(1) > button {
