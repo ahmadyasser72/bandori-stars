@@ -211,13 +211,18 @@ export const song = async () => {
 						special === undefined
 							? undefined
 							: parser.timestamp(special.publishedAt ?? publishedAt),
-					rewards: parser.song.rewards(achievements, difficulty),
+					...parser.song.rewards(achievements, difficulty),
 				};
 			}),
 	);
 
 	return entries
 		.filter(({ releasedAt }) => releasedAt.jp !== null)
+		.sort((a, b) =>
+			(a.specialReleasedAt ?? a.releasedAt).jp.diff(
+				(b.specialReleasedAt ?? b.releasedAt).jp,
+			),
+		)
 		.map((entry) => schema.song.parse(entry));
 };
 

@@ -116,15 +116,24 @@ export const song = {
 			)!.quantity;
 
 		return {
-			fullCombo: {
-				hard: getStarReward("full_combo_hard"),
-				expert: getStarReward("full_combo_expert"),
+			fullComboRewards: {
+				hard: {
+					level: difficulty[2].playLevel,
+					stars: getStarReward("full_combo_hard"),
+				},
+				expert: {
+					level: difficulty[3].playLevel,
+					stars: getStarReward("full_combo_expert"),
+				},
 				special:
 					difficulty[4] !== undefined
-						? getStarReward("full_combo_special")
-						: undefined,
+						? {
+								level: difficulty[4].playLevel,
+								stars: getStarReward("full_combo_special"),
+							}
+						: null,
 			},
-			score: {
+			scoreRewards: {
 				S: getStarReward("score_rank_s"),
 				SS: getStarReward("score_rank_ss"),
 			},

@@ -86,14 +86,23 @@ export const schema = {
 		title: name,
 		releasedAt: timestamp,
 		specialReleasedAt: timestamp.optional(),
-		rewards: z.strictObject({
-			fullCombo: z.strictObject({
-				hard: z.number().nonnegative(),
-				expert: z.number().nonnegative(),
-				special: z.number().nonnegative().optional(),
+		fullComboRewards: z.strictObject({
+			hard: z.strictObject({
+				level: z.number().nonnegative(),
+				stars: z.number().nonnegative(),
 			}),
-			score: z.record(z.enum(["S", "SS"]), z.number().nonnegative()),
+			expert: z.strictObject({
+				level: z.number().nonnegative(),
+				stars: z.number().nonnegative(),
+			}),
+			special: z
+				.strictObject({
+					level: z.number().nonnegative(),
+					stars: z.number().nonnegative(),
+				})
+				.nullable(),
 		}),
+		scoreRewards: z.record(z.enum(["S", "SS"]), z.number().nonnegative()),
 	}),
 };
 
