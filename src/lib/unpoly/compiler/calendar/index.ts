@@ -33,13 +33,6 @@ up.compiler("[data-calendar]", async (element) => {
 		},
 	});
 
-	const isDark = window.matchMedia("(prefers-color-scheme: dark)");
-	isDark.addEventListener("change", (event) => {
-		calendar.setTheme(event.matches ? "dark" : "light");
-	});
-
-	if (isDark.matches) calendar.setTheme("dark");
 	calendar.render(element);
-
 	return () => calendar.destroy();
 });
