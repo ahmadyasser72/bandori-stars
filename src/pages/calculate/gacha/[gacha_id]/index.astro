@@ -46,7 +46,7 @@ const values = allEvents.reduce(
 	}
 
 	<div
-		class="container mx-auto grid max-w-xs gap-4 py-8 sm:max-w-sm md:max-w-2xl md:grid-cols-2"
+		class="container mx-auto grid max-w-xs gap-2 py-8 sm:max-w-sm md:max-w-2xl md:grid-cols-2"
 	>
 		<GachaCardGridItem
 			{gacha}
@@ -172,5 +172,15 @@ const values = allEvents.reduce(
 				<FreeStarsEvents events={allEvents} />
 			</div>
 		</div>
+
+		<a
+			up-layer="new"
+			up-size="large"
+			up-history="false"
+			href={`/calculate/gacha/${Astro.params.gacha_id}/calendar${Astro.url.search}`}
+			class="btn btn-sm border-primary-content btn-primary w-full border md:order-2 md:col-span-2"
+		>
+			Show details (calendar)
+		</a>
 	</div>
 </BaseLayout>

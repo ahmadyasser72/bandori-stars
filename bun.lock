@@ -6,6 +6,7 @@
       "dependencies": {
         "@astrojs/cloudflare": "^12.6.10",
         "@schedule-x/calendar": "^3.3.0",
+        "@schedule-x/event-recurrence": "^3.3.0",
         "@schedule-x/theme-default": "^3.3.0",
         "@tailwindcss/vite": "^4.1.17",
         "astro": "^5.15.4",
@@ -316,6 +317,8 @@
     "@rollup/rollup-win32-x64-msvc": ["@rollup/rollup-win32-x64-msvc@4.52.5", "", { "os": "win32", "cpu": "x64" }, "sha512-TAcgQh2sSkykPRWLrdyy2AiceMckNf5loITqXxFI5VuQjS5tSuw3WlwdN8qv8vzjLAUTvYaH/mVjSFpbkFbpTg=="],
 
     "@schedule-x/calendar": ["@schedule-x/calendar@3.3.0", "", { "peerDependencies": { "@preact/signals": "^2.0.2", "preact": "^10.19.2", "temporal-polyfill": "0.3.0" } }, "sha512-wPzRM/zlTy1HTeqxJfGGp5PdhAyFEKvNb1Kcsdavig+X+80mWEpBbxvachoQgy5TUI9gSVdcPdxBIOmnW8bS9w=="],
+
+    "@schedule-x/event-recurrence": ["@schedule-x/event-recurrence@3.3.0", "", {}, "sha512-G34aNi5KND1r3L3OITwOZz7KGn9dWKuJM3NGOB0JKwa24G47ktFbME/V6ya9iBm32N1WJgzs84+GqndQFKMC/A=="],
 
     "@schedule-x/theme-default": ["@schedule-x/theme-default@3.3.0", "", {}, "sha512-B9TT7+CQUFdZL2IfmT9Tt9GWfhB6Dxqerl07bPtuQebjHPuJcsYKVnyAc646x6rI6lzVhe2wnde4oa6PGGKz6g=="],
 

@@ -1,12 +1,11 @@
 ---
-import { Icon } from "astro-icon/components";
-
 import { gacha_map } from "@/contents/data";
-import { getEventAsset } from "~/lib/assets";
-import { formatNumber } from "~/lib/math";
+import { now } from "~/lib/date";
+import { sum } from "~/lib/math";
 import { useCalendar } from "~/lib/unpoly/compiler/calendar/helper";
 import { regionValue } from "~/lib/utilities";
 import { calculateEvents } from "./_calculate";
+import OptionsBadge from "./_components/options-badge.astro";
 import { getOptions } from "./_options";
 
 export const partial = true;
@@ -24,59 +23,85 @@ const enEventDiff = (() => {
 	return en!.diff(jp);
 })();
 
-const results = calculateEvents([...events.past, events.active], options);
+const RRULE_DAYS = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
+const getRruleDay = (idx: number) => {
+	const today = now().day();
+	return RRULE_DAYS[(today + (idx - 1)) % 7];
+};
+const createRecurrenceEvent = (
+	id: string,
+	title: string,
+	reward: string,
+	days: number[],
+) => {
+	const until = eventStars
+		.at(-1)!
+		.data.endAt.jp.add(enEventDiff)
+		.format("YYYYMMDD");
+	const byday = days.map((idx) => getRruleDay(idx)).join(",");
+
+	return {
+		id,
+		title: `${title} (${reward})`,
+		start: Temporal.PlainDate.from(now().add(days[0], "days").format()),
+		end: Temporal.PlainDate.from(now().add(days[0], "days").format()),
+		rrule: `FREQ=WEEKLY;UNTIL=${until};BYDAY=${byday}`,
+		calendarId: "passive-stars",
+	};
+};
+
+const eventStars = calculateEvents([...events.past, events.active], options);
+
+const calendar = useCalendar({
+	options,
+	events: eventStars.map(({ data: event, ...stars }) => ({
+		id: event.id,
+		title: `${event.name} (${sum(Object.values(stars))}★)`,
+		start: Temporal.PlainDate.from(event.startAt.jp.add(enEventDiff).format()),
+		end: Temporal.PlainDate.from(event.endAt.jp.add(enEventDiff).format()),
+		calendarId: "event-stars",
+	})),
+	recurrenceEvents: [
+		...(!options.daily_login
+			? []
+			: [
+					createRecurrenceEvent("daily_login", "Daily Login", "50★", [2, 4, 7]),
+				]),
+		...(!options.daily_live
+			? []
+			: [createRecurrenceEvent("daily_live", "Daily Live", "1× Pull", [7])]),
+	],
+});
 ---
 
-<main class="text-center">
-	<div class="my-4 inline-flex flex-wrap justify-center gap-1 font-medium">
-		<div
-			class:list={[
-				"badge",
-				options.target_point > 0 ? "badge-primary" : "badge-neutral",
-			]}
-		>
-			Point : &ge;{formatNumber(options.target_point)}
-		</div>
-		<div
-			class:list={[
-				"badge",
-				options.target_rank > 0 ? "badge-primary" : "badge-neutral",
-			]}
-		>
-			Rank : &le;T{options.target_rank}
-		</div>
-		<div
-			class:list={[
-				"badge",
-				options.read_event_story ? "badge-primary" : "badge-neutral",
-			]}
-		>
-			<Icon
-				name={options.read_event_story ? "lucide:check" : "lucide:x"}
-				class="size-4.5"
-			/>
-			Story
-		</div>
+<main>
+	<div
+		class="my-4 inline-flex w-full flex-wrap justify-center gap-1 text-center font-medium"
+	>
+		<OptionsBadge
+			name="Point"
+			value={options.target_point}
+			formattedValue={`≥${options.target_point}`}
+		/>
+		<OptionsBadge
+			name="Rank"
+			value={options.target_rank}
+			formattedValue={`≤${options.target_rank}`}
+		/>
+		<OptionsBadge name="Story" value={options.read_event_story} />
+		<OptionsBadge
+			name="Daily Login"
+			value={options.daily_login}
+			badgeClass="badge-secondary"
+		/>
+		<OptionsBadge
+			name="Daily Live"
+			value={options.daily_live}
+			badgeClass="badge-secondary"
+		/>
 	</div>
 
-	<div
-		{...useCalendar({
-			options,
-			events: await Promise.all(
-				results.map(async ({ data: event, ...stars }) => ({
-					banner: await getEventAsset(Astro, { event, kind: "banner" }),
-					stars,
-					id: event.id,
-					title: `${event.name}`,
-					start: Temporal.PlainDate.from(
-						event.startAt.jp.add(enEventDiff).format(),
-					),
-					end: Temporal.PlainDate.from(
-						event.endAt.jp.add(enEventDiff).format(),
-					),
-				})),
-			),
-		})}
-	>
+	<div class="overflow-x-auto">
+		<div {...calendar}></div>
 	</div>
 </main>

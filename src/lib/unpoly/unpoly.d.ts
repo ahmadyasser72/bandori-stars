@@ -18,7 +18,7 @@ interface Unpoly {
 	destructor(element: HTMLElement, callback: () => void): void;
 
 	layer: {
-		open({}: { url: string; origin: HTMLElement; params?: object }): void;
+		open(options: { url: string; origin: HTMLElement; params?: object }): void;
 	};
 
 	render(
