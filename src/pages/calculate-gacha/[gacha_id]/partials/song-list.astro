@@ -1,7 +1,11 @@
 ---
+import { Icon } from "astro-icon/components";
+
 import { gacha_map } from "@/contents/data";
 import { getSongAlbumCover } from "~/lib/assets";
+import { getDateOffset } from "~/lib/date";
 import { sum } from "~/lib/math";
+import { regionValue } from "~/lib/utilities";
 import { calculateSongs } from "../_calculate";
 import OptionsBadge from "../_components/options-badge.astro";
 import { getOptions } from "../_options";
@@ -13,9 +17,15 @@ if (!gacha) {
 	return new Response("Gacha not found.", { status: 404 });
 }
 
+const events = regionValue.unwrap(gacha.events)!;
+const dateOffset = getDateOffset((events.past.at(0) ?? events.active!).startAt);
+
 const options = await getOptions(Astro);
 const results = calculateSongs(gacha.endAt.jp, options).map((it) => ({
 	...it,
+	predicted: (it.data.specialReleasedAt ?? it.data.releasedAt).jp.add(
+		dateOffset,
+	),
 	total: sum([
 		...Object.values(it.fullCombo).map(({ stars }) => stars),
 		...Object.values(it.score),
@@ -38,17 +48,25 @@ const results = calculateSongs(gacha.endAt.jp, options).map((it) => ({
 
 	<ul class="list w-full">
 		{
-			results.map(async ({ data, fullCombo, score, total }) => (
+			results.map(async ({ data, fullCombo, score, predicted, total }) => (
 				<li class="group list-row select-none">
 					<div>
 						<img
 							{...await getSongAlbumCover(Astro, { song: data })}
-							class="rounded-box size-16"
+							class="rounded-box size-12 md:size-16"
 						/>
 					</div>
 
-					<div class="flex flex-col items-start gap-1">
+					<div class="flex flex-col items-start gap-1.5">
 						<span class="text-start text-sm font-semibold">{data.title}</span>
+
+						<span class="badge badge-soft border-0 pl-0">
+							<Icon
+								class="size-5 rounded-full border border-current"
+								name="emojione:flag-for-united-states"
+							/>
+							{predicted.format("DD-MM-YYYY")} / {predicted.fromNow()}
+						</span>
 
 						<div class="inline-flex flex-wrap gap-1">
 							{Object.entries(score)
