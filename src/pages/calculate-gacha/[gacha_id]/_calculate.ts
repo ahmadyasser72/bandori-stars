@@ -27,7 +27,7 @@ export const calculateDaily = (
 	options: App.CalculateOptions,
 ) => {
 	const dailyLogin = (() => {
-		if (!options.daily_login) return 0;
+		if (!options.daily_login || to.isBefore(from)) return 0;
 
 		const days = to.diff(from, "days");
 		return sum(
@@ -39,7 +39,7 @@ export const calculateDaily = (
 	})();
 
 	const dailyLives = (() => {
-		if (!options.daily_live) return 0;
+		if (!options.daily_live || to.isBefore(from)) return 0;
 
 		const weeks = to.diff(from, "weeks");
 		return weeks;
@@ -62,8 +62,8 @@ export const calculateSongs = (
 	return [...song_map.values()]
 		.filter(
 			({ releasedAt, specialReleasedAt }) =>
-				releasedAt.jp.isBefore(until) ||
-				(specialReleasedAt && specialReleasedAt.jp.isBefore(until)),
+				releasedAt.jp.isBefore(until) &&
+				(!specialReleasedAt || specialReleasedAt.jp.isBefore(until)),
 		)
 		.map((data) => ({
 			fullCombo: Object.fromEntries(
