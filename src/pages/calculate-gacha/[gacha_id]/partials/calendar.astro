@@ -55,13 +55,19 @@ const createRecurrenceEvent = (
 
 const calendar = useCalendar({
 	options,
-	events: calculatedEvents.map(({ data: event, ...stars }) => ({
-		id: event.id,
-		title: `${event.name} (${sum(Object.values(stars))}★)`,
-		start: Temporal.PlainDate.from(event.startAt.jp.add(dateOffset).format()),
-		end: Temporal.PlainDate.from(event.endAt.jp.add(dateOffset).format()),
-		calendarId: "event-stars",
-	})),
+	events: calculatedEvents
+		.map(({ data, ...stars }) => ({
+			event: data,
+			total: sum(Object.values(stars)),
+		}))
+		.filter(({ total }) => total > 0)
+		.map(({ event, total }) => ({
+			id: event.id,
+			title: `${event.name} (${total}★)`,
+			start: Temporal.PlainDate.from(event.startAt.jp.add(dateOffset).format()),
+			end: Temporal.PlainDate.from(event.endAt.jp.add(dateOffset).format()),
+			calendarId: "event-stars",
+		})),
 	recurrenceEvents: [
 		...(!options.daily_login
 			? []
