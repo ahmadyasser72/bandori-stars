@@ -103,7 +103,7 @@ export const schema = {
 				})
 				.nullable(),
 		}),
-		scoreRewards: z.record(z.enum(["S", "SS"]), z.number().nonnegative()),
+		scoreRewards: z.record(z.enum(["s", "ss"]), z.number().nonnegative()),
 	}),
 };
 

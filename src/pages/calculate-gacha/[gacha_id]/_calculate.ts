@@ -80,8 +80,8 @@ export const calculateSongs = (
 			score: isOnlySpecialRelease(data)
 				? { s: 0, ss: 0 }
 				: {
-						s: options.song_s_score ? data.scoreRewards.S : 0,
-						ss: options.song_ss_score ? data.scoreRewards.SS : 0,
+						s: options.song_s_score ? data.scoreRewards.s : 0,
+						ss: options.song_ss_score ? data.scoreRewards.ss : 0,
 					},
 			data,
 		}))

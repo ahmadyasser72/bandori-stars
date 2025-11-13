@@ -134,8 +134,8 @@ export const song = {
 						: null,
 			},
 			scoreRewards: {
-				S: getStarReward("score_rank_s"),
-				SS: getStarReward("score_rank_ss"),
+				s: getStarReward("score_rank_s"),
+				ss: getStarReward("score_rank_ss"),
 			},
 		};
 	},
