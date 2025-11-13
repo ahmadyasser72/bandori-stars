@@ -85,6 +85,7 @@ export const schema = {
 		id,
 		title: name,
 		releasedAt: timestamp,
+		jacketImage: z.array(id),
 		specialReleasedAt: timestamp.optional(),
 		fullComboRewards: z.strictObject({
 			hard: z.strictObject({

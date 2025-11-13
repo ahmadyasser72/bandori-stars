@@ -54,8 +54,12 @@ export const calculateDaily = (
 export const calculateSongs = (
 	until: dayjs.Dayjs,
 	options: App.CalculateOptions,
-) =>
-	[...song_map.values()]
+) => {
+	const isOnlySpecialRelease = (entry: Entry<"song_map">) =>
+		entry.specialReleasedAt &&
+		!entry.specialReleasedAt.jp.isSame(entry.releasedAt.jp);
+
+	return [...song_map.values()]
 		.filter(
 			({ releasedAt, specialReleasedAt }) =>
 				releasedAt.jp.isBefore(until) ||
@@ -64,14 +68,19 @@ export const calculateSongs = (
 		.map((data) => ({
 			fullCombo: Object.fromEntries(
 				Object.entries(data.fullComboRewards)
+					.filter(([difficulty]) =>
+						isOnlySpecialRelease(data) ? difficulty === "special" : true,
+					)
 					.filter(
 						([, it]) =>
 							it !== null && it.level <= options.song_full_combo_level,
 					)
 					.map(([difficulty, it]) => [difficulty, it!]),
 			),
-			score: options.song_get_ss_score
-				? sum(Object.values(data.scoreRewards))
-				: 0,
+			score:
+				options.song_get_ss_score && !isOnlySpecialRelease(data)
+					? sum(Object.values(data.scoreRewards))
+					: 0,
 			data,
 		}));
+};

@@ -229,11 +229,13 @@ const songLevelChoices = new Set(
 		<a
 			id="show-detail-songs"
 			up-layer="new"
-			up-size="large"
 			up-history="false"
-			href={`/calculate-gacha/${Astro.params.gacha_id}/calendar${Astro.url.search}`}
+			href={`/calculate-gacha/${Astro.params.gacha_id}/partials/song-list${Astro.url.search}`}
 			class:list={[
-				"btn btn-sm border-primary-content btn-primary w-full border md:order-2 md:col-span-2 lg:col-span-1",
+				"btn border-primary-content btn-primary w-full border md:order-2 md:col-span-2 lg:col-span-1",
+				options.song_get_ss_score || options.song_full_combo_level > 0
+					? "btn-primary"
+					: "btn-disabled",
 			]}
 		>
 			Show details (songs)
@@ -244,9 +246,9 @@ const songLevelChoices = new Set(
 			up-layer="new"
 			up-size="large"
 			up-history="false"
-			href={`/calculate-gacha/${Astro.params.gacha_id}/calendar${Astro.url.search}`}
+			href={`/calculate-gacha/${Astro.params.gacha_id}/partials/calendar${Astro.url.search}`}
 			class:list={[
-				"btn btn-sm bg-primary border-primary-content w-full border md:order-2 md:col-span-2",
+				"btn bg-primary border-primary-content w-full border md:order-2 md:col-span-2",
 				options.target_point > 0 ||
 				options.target_rank > 0 ||
 				options.read_event_story ||

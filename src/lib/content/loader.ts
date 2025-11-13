@@ -200,12 +200,19 @@ export const song = async () => {
 					idx < 10 || entry.difficulty[4]?.publishedAt !== undefined,
 				);
 
-				const { musicTitle, publishedAt, achievements, difficulty } = song;
+				const {
+					musicTitle,
+					publishedAt,
+					achievements,
+					difficulty,
+					jacketImage,
+				} = song;
 				const special = difficulty[4];
 
 				return {
 					id: id,
 					title: parser.regionTuple(musicTitle),
+					jacketImage,
 					releasedAt: parser.timestamp(publishedAt),
 					specialReleasedAt:
 						special === undefined
