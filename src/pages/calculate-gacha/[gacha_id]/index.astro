@@ -1,4 +1,6 @@
 ---
+import { Icon } from "astro-icon/components";
+
 import { gacha_map, song_map } from "@/contents/data";
 import GachaCardGridItem from "~/components/gacha-card-grid-item.astro";
 import BaseLayout from "~/layouts/base-layout.astro";
@@ -70,7 +72,7 @@ const songLevelChoices = new Set(
 		/>
 
 		<form
-			up-target="#free-stars-songs, #free-stars-daily, #free-stars-events, #show-detail-songs, #show-detail-calendar"
+			up-target="#free-stars, #show-details"
 			up-autosubmit
 			up-watch-disable
 			up-watch-delay="200"
@@ -202,63 +204,101 @@ const songLevelChoices = new Set(
 			</InputFieldset>
 		</form>
 
-		<FreeStarsCard
-			id="free-stars-songs"
-			title="Free stars (songs)"
-			backdrop={!!events.active}
-		>
-			<FreeStarsSongs until={to} />
-		</FreeStarsCard>
+		<div id="free-stars" class="contents">
+			<FreeStarsCard title="Free stars (songs)" backdrop={!!events.active}>
+				<FreeStarsSongs until={to} />
+			</FreeStarsCard>
 
-		<FreeStarsCard
-			id="free-stars-daily"
-			title="Free stars (daily)"
-			backdrop={!!events.active}
-		>
-			<FreeStarsDaily {from} {to} />
-		</FreeStarsCard>
+			<FreeStarsCard title="Free stars (daily)" backdrop={!!events.active}>
+				<FreeStarsDaily {from} {to} />
+			</FreeStarsCard>
 
-		<FreeStarsCard
-			id="free-stars-events"
-			title="Free stars (events)"
-			backdrop={!!events.active}
-		>
-			<FreeStarsEvents events={allEvents} />
-		</FreeStarsCard>
+			<FreeStarsCard title="Free stars (events)" backdrop={!!events.active}>
+				<FreeStarsEvents events={allEvents} />
+			</FreeStarsCard>
+		</div>
 
-		<a
-			id="show-detail-songs"
-			up-layer="new"
-			up-history="false"
-			href={`/calculate-gacha/${Astro.params.gacha_id}/partials/song-list${Astro.url.search}`}
-			class:list={[
-				"btn bg-primary border-primary-content w-full border md:order-2 md:col-span-2 lg:col-span-1",
-				options.song_get_ss_score || options.song_full_combo_level > 0
-					? "btn-primary"
-					: "btn-disabled",
-			]}
-		>
-			Show details (songs)
-		</a>
+		<div id="show-details" class="contents">
+			<a
+				up-layer="new"
+				up-history="false"
+				href={`/calculate-gacha/${Astro.params.gacha_id}/partials/song-list${Astro.url.search}`}
+				class:list={[
+					"btn bg-primary border-primary-content w-full border max-md:hidden md:order-2 md:col-span-2 lg:col-span-1",
+					options.song_get_ss_score || options.song_full_combo_level > 0
+						? "btn-primary"
+						: "btn-disabled",
+				]}
+			>
+				Show details (songs)
+			</a>
 
-		<a
-			id="show-detail-calendar"
-			up-layer="new"
-			up-size="large"
-			up-history="false"
-			href={`/calculate-gacha/${Astro.params.gacha_id}/partials/calendar${Astro.url.search}`}
-			class:list={[
-				"btn bg-primary border-primary-content w-full border md:order-2 md:col-span-2",
-				options.target_point > 0 ||
-				options.target_rank > 0 ||
-				options.read_event_story ||
-				options.daily_login ||
-				options.daily_live
-					? "btn-primary"
-					: "btn-disabled",
-			]}
-		>
-			Show details (daily &amp; events)
-		</a>
+			<a
+				up-layer="new"
+				up-size="large"
+				up-history="false"
+				href={`/calculate-gacha/${Astro.params.gacha_id}/partials/calendar${Astro.url.search}`}
+				class:list={[
+					"btn bg-primary border-primary-content w-full border max-md:hidden md:order-2 md:col-span-2",
+					options.target_point > 0 ||
+					options.target_rank > 0 ||
+					options.read_event_story ||
+					options.daily_login ||
+					options.daily_live
+						? "btn-primary"
+						: "btn-disabled",
+				]}
+			>
+				Show details (daily &amp; events)
+			</a>
+
+			<div class="fab md:hidden">
+				<div tabindex="0" role="button" class="btn btn-lg btn-circle btn-info">
+					<Icon name="lucide:info" />
+				</div>
+
+				<div class="fab-close">
+					<span class="btn btn-lg btn-circle btn-error">
+						<Icon name="lucide:x" />
+					</span>
+				</div>
+
+				<div>
+					<a
+						up-layer="new"
+						up-size="large"
+						up-history="false"
+						href={`/calculate-gacha/${Astro.params.gacha_id}/partials/calendar${Astro.url.search}`}
+						class:list={[
+							"btn bg-primary border-primary-content w-full border md:order-2 md:col-span-2",
+							options.target_point > 0 ||
+							options.target_rank > 0 ||
+							options.read_event_story ||
+							options.daily_login ||
+							options.daily_live
+								? "btn-primary"
+								: "btn-disabled",
+						]}
+					>
+						Show details (daily &amp; events)
+					</a>
+				</div>
+				<div>
+					<a
+						up-layer="new"
+						up-history="false"
+						href={`/calculate-gacha/${Astro.params.gacha_id}/partials/song-list${Astro.url.search}`}
+						class:list={[
+							"btn bg-primary border-primary-content w-full border md:order-2 md:col-span-2 lg:col-span-1",
+							options.song_get_ss_score || options.song_full_combo_level > 0
+								? "btn-primary"
+								: "btn-disabled",
+						]}
+					>
+						Show details (songs)
+					</a>
+				</div>
+			</div>
+		</div>
 	</div>
 </BaseLayout>

@@ -1,15 +1,13 @@
 ---
 interface Props {
-	id: string;
 	title: string;
 	backdrop: boolean;
 }
 
-const { id, title, backdrop } = Astro.props;
+const { title, backdrop } = Astro.props;
 ---
 
 <div
-	{id}
 	class:list={[
 		"free-stars card shadow-sm md:order-2",
 		backdrop ? "bg-base-100/67 backdrop-blur-sm" : "bg-base-100",
