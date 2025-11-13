@@ -61,12 +61,12 @@ const results = calculateSongs(gacha.endAt.jp, options).map((it) => ({
 					<div class="flex flex-col items-start gap-1.5">
 						<span class="text-start text-sm font-semibold">{data.title}</span>
 
-						<span class="badge badge-soft border-0 pl-0">
+						<span class="badge badge-soft border-0 pl-0 text-xs">
 							<Icon
 								class="size-5 rounded-full border border-current"
 								name="emojione:flag-for-united-states"
 							/>
-							{predicted.format("DD-MM-YYYY")} / {predicted.fromNow(true)}
+							{predicted.format("DD-MM-YYYY")} / {predicted.fromNow()}
 						</span>
 
 						<div class="inline-flex flex-wrap gap-1">
