@@ -232,7 +232,7 @@ const songLevelChoices = new Set(
 			up-history="false"
 			href={`/calculate-gacha/${Astro.params.gacha_id}/partials/song-list${Astro.url.search}`}
 			class:list={[
-				"btn border-primary-content btn-primary w-full border md:order-2 md:col-span-2 lg:col-span-1",
+				"btn bg-primary border-primary-content w-full border md:order-2 md:col-span-2 lg:col-span-1",
 				options.song_get_ss_score || options.song_full_combo_level > 0
 					? "btn-primary"
 					: "btn-disabled",
