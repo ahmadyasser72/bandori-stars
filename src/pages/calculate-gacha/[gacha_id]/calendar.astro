@@ -1,6 +1,6 @@
 ---
 import { gacha_map } from "@/contents/data";
-import { now } from "~/lib/date";
+import { getDateOffset, now } from "~/lib/date";
 import { sum } from "~/lib/math";
 import { useCalendar } from "~/lib/unpoly/compiler/calendar/helper";
 import { regionValue } from "~/lib/utilities";
@@ -18,11 +18,7 @@ if (!gacha) {
 
 const options = await getOptions(Astro);
 const events = regionValue.unwrap(gacha.events)!;
-
-const enEventDiff = (() => {
-	const { en, jp } = events.past[0].startAt;
-	return en!.diff(jp);
-})();
+const dateOffset = getDateOffset(events.past[0].startAt);
 
 const RRULE_DAYS = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
 const getRruleDay = (idx: number) => {
@@ -37,7 +33,7 @@ const createRecurrenceEvent = (
 ) => {
 	const until = eventStars
 		.at(-1)!
-		.data.endAt.jp.add(enEventDiff)
+		.data.endAt.jp.add(dateOffset)
 		.format("YYYYMMDD");
 	const byday = days.map((idx) => getRruleDay(idx)).join(",");
 
@@ -58,8 +54,8 @@ const calendar = useCalendar({
 	events: eventStars.map(({ data: event, ...stars }) => ({
 		id: event.id,
 		title: `${event.name} (${sum(Object.values(stars))}★)`,
-		start: Temporal.PlainDate.from(event.startAt.jp.add(enEventDiff).format()),
-		end: Temporal.PlainDate.from(event.endAt.jp.add(enEventDiff).format()),
+		start: Temporal.PlainDate.from(event.startAt.jp.add(dateOffset).format()),
+		end: Temporal.PlainDate.from(event.endAt.jp.add(dateOffset).format()),
 		calendarId: "event-stars",
 	})),
 	recurrenceEvents: [

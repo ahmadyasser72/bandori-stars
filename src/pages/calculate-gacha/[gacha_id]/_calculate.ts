@@ -1,4 +1,4 @@
-import type { Entry } from "@/contents/data";
+import { song_map, type Entry } from "@/contents/data";
 import { dayjs } from "~/lib/date";
 import { sum } from "~/lib/math";
 import { STARS_FROM_DAILY_LOGIN } from "./_constants";
@@ -22,7 +22,7 @@ export const calculateEvents = (
 			data,
 		}));
 
-export const calculatePassive = (
+export const calculateDaily = (
 	{ from, to }: Record<"from" | "to", dayjs.Dayjs>,
 	options: App.CalculateOptions,
 ) => {
@@ -50,3 +50,28 @@ export const calculatePassive = (
 		starGachaTicket: { dailyLives },
 	};
 };
+
+export const calculateSongs = (
+	until: dayjs.Dayjs,
+	options: App.CalculateOptions,
+) =>
+	[...song_map.values()]
+		.filter(
+			({ releasedAt, specialReleasedAt }) =>
+				releasedAt.jp.isBefore(until) ||
+				(specialReleasedAt && specialReleasedAt.jp.isBefore(until)),
+		)
+		.map((data) => ({
+			fullCombo: Object.fromEntries(
+				Object.entries(data.fullComboRewards)
+					.filter(
+						([, it]) =>
+							it !== null && it.level <= options.song_full_combo_level,
+					)
+					.map(([difficulty, it]) => [difficulty, it!]),
+			),
+			score: options.song_get_ss_score
+				? sum(Object.values(data.scoreRewards))
+				: 0,
+			data,
+		}));

@@ -1,7 +1,7 @@
 ---
 import type { dayjs } from "~/lib/date";
 import { formatNumber } from "~/lib/math";
-import { calculatePassive } from "../_calculate";
+import { calculateDaily } from "../_calculate";
 import { STARS_PER_PULL } from "../_constants";
 import { getOptions } from "../_options";
 
@@ -13,7 +13,7 @@ interface Props {
 const { from, to } = Astro.props;
 const options = await getOptions(Astro);
 
-const { stars, starGachaTicket } = calculatePassive({ from, to }, options);
+const { stars, starGachaTicket } = calculateDaily({ from, to }, options);
 const pulls = {
 	stars: Math.floor(stars.dailyLogin / STARS_PER_PULL),
 	ticket: starGachaTicket.dailyLives,

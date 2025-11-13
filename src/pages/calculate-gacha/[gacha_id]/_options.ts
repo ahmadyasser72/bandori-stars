@@ -19,7 +19,9 @@ export const getOptions = async (context: APIContext) => {
 		read_event_story: getBoolean("read_event_story"),
 		daily_login: getBoolean("daily_login"),
 		daily_live: getBoolean("daily_live"),
-	};
+		song_get_ss_score: getBoolean("song_get_ss_score"),
+		song_full_combo_level: getNumber("song_full_combo_level"),
+	} satisfies App.CalculateOptions;
 
 	context.session!.set("calculate_options", options);
 	return options;

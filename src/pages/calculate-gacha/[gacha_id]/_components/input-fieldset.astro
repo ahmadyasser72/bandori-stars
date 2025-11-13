@@ -1,0 +1,19 @@
+---
+interface Props {
+	title: string;
+	class?: string;
+}
+
+const { title, class: className } = Astro.props;
+---
+
+<fieldset
+	class:list={[
+		"fieldset bg-base-100 border-base-300 rounded-box justify-items-center gap-4 border p-4 pt-2",
+		className,
+	]}
+>
+	<legend class="fieldset-legend">{title}</legend>
+
+	<slot />
+</fieldset>

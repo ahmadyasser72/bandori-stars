@@ -1,12 +1,16 @@
 ---
-import { gacha_map } from "@/contents/data";
+import { gacha_map, song_map } from "@/contents/data";
 import GachaCardGridItem from "~/components/gacha-card-grid-item.astro";
 import BaseLayout from "~/layouts/base-layout.astro";
 import { getEventAsset } from "~/lib/assets";
+import { getDateOffset, now } from "~/lib/date";
 import { formatNumber } from "~/lib/math";
 import { regionValue } from "~/lib/utilities";
+import FreeStarsCard from "./_components/free-stars-card.astro";
+import FreeStarsDaily from "./_components/free-stars-daily.astro";
 import FreeStarsEvents from "./_components/free-stars-events.astro";
-import FreeStarsPassive from "./_components/free-stars-passive.astro";
+import FreeStarsSongs from "./_components/free-stars-songs.astro";
+import InputFieldset from "./_components/input-fieldset.astro";
 import { getOptions } from "./_options";
 
 const gacha = gacha_map.get(Astro.params.gacha_id!);
@@ -17,18 +21,26 @@ if (!gacha) {
 const options = await getOptions(Astro);
 const events = regionValue.unwrap(gacha.events)!;
 const allEvents = [...events.past, events.active];
-const [from, to] = [events.past.at(0)!.endAt.jp, gacha.endAt.jp];
+const dateOffset = getDateOffset(events.past[0].startAt);
+const [from, to] = [now().subtract(dateOffset), gacha.endAt.jp];
 
-const choices = allEvents.reduce(
+const { pointChoices, rankChoices } = allEvents.reduce(
 	(acc, next) => {
 		if (!next) return acc;
 
 		const { pointRewards, rankingRewards } = next;
-		for (const { point } of pointRewards) acc.point.add(point);
-		for (const { rank } of rankingRewards) acc.rank.add(rank);
+		for (const { point } of pointRewards) acc.pointChoices.add(point);
+		for (const { rank } of rankingRewards) acc.rankChoices.add(rank);
 		return acc;
 	},
-	{ point: new Set<number>(), rank: new Set<number>() },
+	{ pointChoices: new Set<number>(), rankChoices: new Set<number>() },
+);
+const songLevelChoices = new Set(
+	[...song_map.values()].flatMap(({ fullComboRewards }) =>
+		Object.values(fullComboRewards)
+			.map((it) => it?.level)
+			.filter((level) => level !== undefined),
+	),
 );
 ---
 
@@ -46,10 +58,11 @@ const choices = allEvents.reduce(
 	}
 
 	<div
-		class="container mx-auto grid max-w-xs gap-2 py-8 sm:max-w-sm md:max-w-2xl md:grid-cols-2"
+		class="container mx-auto grid max-w-xs gap-2 py-8 sm:max-w-lg md:max-w-2xl md:grid-cols-2 lg:max-w-4xl lg:grid-cols-3"
 	>
 		<GachaCardGridItem
 			{gacha}
+			compact
 			class:list={[
 				"md:order-2",
 				events.active && "bg-base-100/80 backdrop-blur-sm",
@@ -57,130 +70,193 @@ const choices = allEvents.reduce(
 		/>
 
 		<form
-			up-target="#free-stars-passive, #free-stars-events"
+			up-target="#free-stars-songs, #free-stars-daily, #free-stars-events, #show-detail-songs, #show-detail-calendar"
 			up-autosubmit
 			up-watch-disable
 			up-watch-delay="200"
+			class:list={[
+				"bg-base-200 border-base-300 rounded-box grid h-full content-center gap-x-2 border p-4 sm:grid-cols-2 md:row-span-2 md:grid-cols-1 lg:col-span-2 lg:row-span-1 lg:grid-cols-2",
+				events.active && "bg-base-200/67 backdrop-blur-sm",
+			]}
 		>
-			<fieldset
-				class:list={[
-					"fieldset bg-base-200 border-base-300 rounded-box h-full border p-4",
-					events.active && "bg-base-200/67 backdrop-blur-sm",
-				]}
+			<InputFieldset
+				title="Events"
+				class="sm:col-span-2 md:col-span-1 lg:row-span-2"
 			>
-				<label class="label">Event points</label>
-				<select name="target_point" class="select">
-					<option value="" disabled selected={options.target_point === 0}
-						>Pick a point</option
-					>
+				<label class="select">
+					<span class="label">Event points</span>
+					<select name="target_point">
+						<option value="" disabled selected={options.target_point === 0}
+							>Pick a point</option
+						>
 
-					{
-						[...choices.point]
-							.sort((a, b) => b - a)
-							.map((point) => (
-								<option value={point} selected={options.target_point === point}>
-									{formatNumber(point)}
-								</option>
-							))
-					}
-				</select>
+						{
+							[...pointChoices]
+								.sort((a, b) => b - a)
+								.map((point) => (
+									<option
+										value={point}
+										selected={options.target_point === point}
+									>
+										&ge;{formatNumber(point)}
+									</option>
+								))
+						}
+					</select>
+				</label>
 
-				<label class="label">Event rank</label>
-				<select name="target_rank" class="select">
-					<option value="" disabled selected={options.target_rank === 0}
-						>Pick a rank</option
-					>
+				<label class="select">
+					<span class="label">Event rank</span>
+					<select name="target_rank">
+						<option value="" disabled selected={options.target_rank === 0}
+							>Pick a rank</option
+						>
 
-					{
-						[...choices.rank]
-							.sort((a, b) => a - b)
-							.map((rank) => (
-								<option value={rank} selected={options.target_rank === rank}>
-									T{rank}
-								</option>
-							))
-					}
-				</select>
+						{
+							[...rankChoices]
+								.sort((a, b) => a - b)
+								.map((rank) => (
+									<option value={rank} selected={options.target_rank === rank}>
+										&le;T{rank}
+									</option>
+								))
+						}
+					</select>
+				</label>
 
-				<fieldset
-					class="fieldset bg-base-100 border-base-300 rounded-box justify-items-center border p-4 pt-2"
-				>
-					<legend class="fieldset-legend">Options</legend>
+				<label class="label">
+					<input
+						name="read_event_story"
+						type="checkbox"
+						class="checkbox"
+						value="true"
+						checked={options.read_event_story}
+					/>
+					Read event stories
+				</label>
+			</InputFieldset>
 
-					<label class="label">
-						<input
-							name="read_event_story"
-							type="checkbox"
-							class="checkbox"
-							value="true"
-							checked={options.read_event_story}
-						/>
-						Read event stories
-					</label>
+			<InputFieldset
+				title="Daily"
+				class="grid-cols-2 sm:grid-cols-1 md:grid-cols-2"
+			>
+				<label class="label">
+					<input
+						name="daily_login"
+						type="checkbox"
+						class="checkbox checkbox-sm"
+						value="true"
+						checked={options.daily_login}
+					/>
+					Daily login
+				</label>
 
-					<div class="flex gap-4">
-						<label class="label">
-							<input
-								name="daily_login"
-								type="checkbox"
-								class="checkbox"
-								value="true"
-								checked={options.daily_login}
-							/>
-							Daily login
-						</label>
+				<label class="label">
+					<input
+						name="daily_live"
+						type="checkbox"
+						class="checkbox checkbox-sm"
+						value="true"
+						checked={options.daily_live}
+					/>
+					Daily live
+				</label>
+			</InputFieldset>
 
-						<label class="label">
-							<input
-								name="daily_live"
-								type="checkbox"
-								class="checkbox"
-								value="true"
-								checked={options.daily_live}
-							/>
-							Daily live
-						</label>
-					</div>
-				</fieldset>
-			</fieldset>
+			<InputFieldset title="Songs">
+				<label class="label">
+					<input
+						name="song_get_ss_score"
+						type="checkbox"
+						class="checkbox checkbox-sm"
+						value="true"
+						checked={options.song_get_ss_score}
+					/>
+					Get S &amp; SS Score
+				</label>
+
+				<label class="select select-sm w-max">
+					<span class="label">Full combo</span>
+
+					<select name="song_full_combo_level">
+						<option
+							value=""
+							disabled
+							selected={options.song_full_combo_level === 0}>Pick level</option
+						>
+
+						{
+							[...songLevelChoices]
+								.sort((a, b) => a - b)
+								.map((level) => (
+									<option
+										value={level}
+										selected={options.song_full_combo_level === level}
+									>
+										Level &le;{level}
+									</option>
+								))
+						}
+					</select>
+				</label>
+			</InputFieldset>
 		</form>
 
-		<div
-			id="free-stars-passive"
-			class:list={[
-				"card bg-base-100 shadow-sm md:order-2",
-				events.active && "bg-base-100/80 backdrop-blur-sm",
-			]}
+		<FreeStarsCard
+			id="free-stars-songs"
+			title="Free stars (songs)"
+			backdrop={!!events.active}
 		>
-			<div class="card-body items-center text-center">
-				<h2 class="card-title">Free stars (Passive)</h2>
+			<FreeStarsSongs until={to} />
+		</FreeStarsCard>
 
-				<FreeStarsPassive {from} {to} />
-			</div>
-		</div>
+		<FreeStarsCard
+			id="free-stars-daily"
+			title="Free stars (daily)"
+			backdrop={!!events.active}
+		>
+			<FreeStarsDaily {from} {to} />
+		</FreeStarsCard>
 
-		<div
+		<FreeStarsCard
 			id="free-stars-events"
-			class:list={[
-				"card bg-base-100 shadow-sm md:order-2",
-				events.active && "bg-base-100/80 backdrop-blur-sm",
-			]}
+			title="Free stars (events)"
+			backdrop={!!events.active}
 		>
-			<div class="card-body items-center text-center">
-				<h2 class="card-title">Free stars (Events)</h2>
-
-				<FreeStarsEvents events={allEvents} />
-			</div>
-		</div>
+			<FreeStarsEvents events={allEvents} />
+		</FreeStarsCard>
 
 		<a
+			id="show-detail-songs"
 			up-layer="new"
 			up-size="large"
 			up-history="false"
 			href={`/calculate-gacha/${Astro.params.gacha_id}/calendar${Astro.url.search}`}
-			class="btn btn-sm border-primary-content btn-primary w-full border md:order-2 md:col-span-2"
+			class:list={[
+				"btn btn-sm border-primary-content btn-primary w-full border md:order-2 md:col-span-2 lg:col-span-1",
+			]}
 		>
-			Show details (calendar)
+			Show details (songs)
+		</a>
+
+		<a
+			id="show-detail-calendar"
+			up-layer="new"
+			up-size="large"
+			up-history="false"
+			href={`/calculate-gacha/${Astro.params.gacha_id}/calendar${Astro.url.search}`}
+			class:list={[
+				"btn btn-sm bg-primary border-primary-content w-full border md:order-2 md:col-span-2",
+				options.target_point > 0 ||
+				options.target_rank > 0 ||
+				options.read_event_story ||
+				options.daily_login ||
+				options.daily_live
+					? "btn-primary"
+					: "btn-disabled",
+			]}
+		>
+			Show details (daily &amp; events)
 		</a>
 	</div>
 </BaseLayout>
