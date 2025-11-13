@@ -22,6 +22,11 @@ if (!gacha) {
 }
 
 const options = await getOptions(Astro);
+if (Astro.url.searchParams.size === 0)
+	Astro.url.search = new URLSearchParams(
+		Object.entries(options).map(([k, v]) => [k, v.toString()]),
+	).toString();
+
 const events = regionValue.unwrap(gacha.events)!;
 const allEvents = [...events.past, events.active];
 const dateOffset = getDateOffset((events.past.at(0) ?? events.active!).startAt);
