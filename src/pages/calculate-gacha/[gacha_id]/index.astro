@@ -5,7 +5,7 @@ import { gacha_map, song_map } from "@/contents/data";
 import GachaCardGridItem from "~/components/gacha-card-grid-item.astro";
 import BaseLayout from "~/layouts/base-layout.astro";
 import { getEventAsset } from "~/lib/assets";
-import { getDateOffset, now } from "~/lib/date";
+import { dayjs, getDateOffset, now } from "~/lib/date";
 import { formatNumber } from "~/lib/math";
 import { regionValue } from "~/lib/utilities";
 import FreeStarsCard from "./_components/free-stars-card.astro";
@@ -69,7 +69,46 @@ const songLevelChoices = new Set(
 				"md:order-2",
 				events.active && "bg-base-100/80 backdrop-blur-sm",
 			]}
-		/>
+		>
+			<Fragment slot="badge">
+				<div>
+					<div class="badge badge-neutral border-0 pl-0">
+						<Icon
+							class="size-6 rounded-full border border-current"
+							name="emojione:flag-for-united-states"
+						/>
+						{gacha.startAt.jp.add(dateOffset).format("DD-MM-YYYY")}
+						/
+						{gacha.startAt.jp.add(dateOffset).fromNow()}
+					</div>
+
+					<div class="dropdown dropdown-end dropdown-top">
+						<div
+							tabindex="0"
+							role="button"
+							class="btn btn-circle btn-ghost btn-xs text-info"
+						>
+							<Icon tabindex="0" name="lucide:info" class="size-6" />
+						</div>
+
+						<div
+							tabindex="0"
+							class="card card-sm dropdown-content bg-base-100 rounded-box z-1 mb-2 w-64 shadow-sm"
+						>
+							<div tabindex="0" class="card-body">
+								<h2 class="card-title">Predicted start date</h2>
+								<p>
+									This assumes ~{
+										Math.round(dayjs.duration(dateOffset).asDays())
+									}
+									days difference between JP and EN server.
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</Fragment>
+		</GachaCardGridItem>
 
 		<form
 			up-target="#free-stars, #show-details"

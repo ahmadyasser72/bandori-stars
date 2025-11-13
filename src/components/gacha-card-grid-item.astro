@@ -54,41 +54,45 @@ const rateUpList = regionValue
 			class="card-title group-hover:link line-clamp-2">{gacha.name}</a
 		>
 
-		{
-			!compact && (
-				<div class="flex flex-col items-center gap-1.5 *:gap-1">
-					{rate && (
-						<div class="badge badge-primary font-medium">
-							<Icon class="size-4" name="lucide:percent" />
-							{rate}
+		<div class="flex flex-col items-center gap-1.5 *:gap-1">
+			{
+				!compact && (
+					<>
+						{rate && (
+							<div class="badge badge-primary font-medium">
+								<Icon class="size-4" name="lucide:percent" />
+								{rate}
+							</div>
+						)}
+
+						<div class="badge badge-secondary font-medium">
+							{gacha.type.toUpperCase()}
 						</div>
-					)}
 
-					<div class="badge badge-secondary font-medium">
-						{gacha.type.toUpperCase()}
-					</div>
-
-					<div class="badge not-dark:badge-soft badge-neutral">
-						<Icon
-							class="size-6 rounded-full border border-current"
-							name="emojione:flag-for-japan"
-						/>
-						{gacha.startAt.jp.format("DD/MM/YYYY")} (
-						{gacha.startAt.jp.fromNow()})
-					</div>
-					{gacha.startAt.en && (
 						<div class="badge not-dark:badge-soft badge-neutral">
 							<Icon
 								class="size-6 rounded-full border border-current"
-								name="emojione:flag-for-united-states"
+								name="emojione:flag-for-japan"
 							/>
-							{gacha.startAt.en.format("DD/MM/YYYY")} (
-							{gacha.startAt.en.fromNow()})
+							{gacha.startAt.jp.format("DD/MM/YYYY")} (
+							{gacha.startAt.jp.fromNow()})
 						</div>
-					)}
-				</div>
-			)
-		}
+						{gacha.startAt.en && (
+							<div class="badge not-dark:badge-soft badge-neutral">
+								<Icon
+									class="size-6 rounded-full border border-current"
+									name="emojione:flag-for-united-states"
+								/>
+								{gacha.startAt.en.format("DD/MM/YYYY")} (
+								{gacha.startAt.en.fromNow()})
+							</div>
+						)}
+					</>
+				)
+			}
+
+			<slot name="badge" />
+		</div>
 
 		<ul class="flex gap-1">
 			{
