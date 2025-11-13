@@ -43,6 +43,7 @@ const results = calculateSongs(gacha.endAt.jp, options).map((it) => ({
 			name="Full Combo"
 			value={options.song_full_combo_level}
 			formattedValue={`Level ≤${options.song_full_combo_level}`}
+			badgeClass="badge-secondary"
 		/>
 	</div>
 
@@ -72,7 +73,7 @@ const results = calculateSongs(gacha.endAt.jp, options).map((it) => ({
 							{Object.entries(score)
 								.filter(([, stars]) => stars > 0)
 								.map(([label, stars]) => (
-									<span class="badge badge-sm badge-accent">
+									<span class="badge badge-sm badge-primary">
 										{label.toUpperCase()} &bullet; {stars}&starf;
 									</span>
 								))}
