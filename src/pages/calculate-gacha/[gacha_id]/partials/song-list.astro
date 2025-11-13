@@ -3,6 +3,7 @@ import { gacha_map } from "@/contents/data";
 import { getSongAlbumCover } from "~/lib/assets";
 import { sum } from "~/lib/math";
 import { calculateSongs } from "../_calculate";
+import OptionsBadge from "../_components/options-badge.astro";
 import { getOptions } from "../_options";
 
 export const partial = true;
@@ -23,6 +24,17 @@ const results = calculateSongs(gacha.endAt.jp, options).map((it) => ({
 ---
 
 <main>
+	<div
+		class="my-4 inline-flex w-full flex-wrap justify-center gap-1 text-center font-medium"
+	>
+		<OptionsBadge name="S & SS Score" value={options.song_get_ss_score} />
+		<OptionsBadge
+			name="Full Combo"
+			value={options.song_full_combo_level}
+			formattedValue={`Level ≤${options.song_full_combo_level}`}
+		/>
+	</div>
+
 	<ul class="list w-full">
 		{
 			results.map(async ({ data, fullCombo, score, total }) => (
