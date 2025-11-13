@@ -18,7 +18,7 @@ const results = calculateSongs(gacha.endAt.jp, options).map((it) => ({
 	...it,
 	total: sum([
 		...Object.values(it.fullCombo).map(({ stars }) => stars),
-		it.score,
+		...Object.values(it.score),
 	]),
 }));
 ---
@@ -27,7 +27,8 @@ const results = calculateSongs(gacha.endAt.jp, options).map((it) => ({
 	<div
 		class="my-4 inline-flex w-full flex-wrap justify-center gap-1 text-center font-medium"
 	>
-		<OptionsBadge name="S & SS Score" value={options.song_get_ss_score} />
+		<OptionsBadge name="S Score" value={options.song_s_score} />
+		<OptionsBadge name="SS Score" value={options.song_ss_score} />
 		<OptionsBadge
 			name="Full Combo"
 			value={options.song_full_combo_level}
@@ -50,11 +51,13 @@ const results = calculateSongs(gacha.endAt.jp, options).map((it) => ({
 						<span class="text-start text-sm font-semibold">{data.title}</span>
 
 						<div class="inline-flex flex-wrap gap-1">
-							{score > 0 && (
-								<span class="badge badge-sm badge-accent">
-									S &amp; SS &bullet; {score}&starf;
-								</span>
-							)}
+							{Object.entries(score)
+								.filter(([, stars]) => stars > 0)
+								.map(([label, stars]) => (
+									<span class="badge badge-sm badge-accent">
+										{label.toUpperCase()} &bullet; {stars}&starf;
+									</span>
+								))}
 
 							{Object.entries(fullCombo).map(
 								([difficulty, { level, stars }]) => (

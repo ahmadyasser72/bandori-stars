@@ -165,19 +165,29 @@ const songLevelChoices = new Set(
 				</label>
 			</InputFieldset>
 
-			<InputFieldset title="Songs">
+			<InputFieldset title="Songs" class="grid-cols-2">
 				<label class="label">
 					<input
-						name="song_get_ss_score"
+						name="song_s_score"
 						type="checkbox"
 						class="checkbox checkbox-sm"
 						value="true"
-						checked={options.song_get_ss_score}
+						checked={options.song_s_score}
 					/>
-					Get S &amp; SS Score
+					S Score
+				</label>
+				<label class="label">
+					<input
+						name="song_ss_score"
+						type="checkbox"
+						class="checkbox checkbox-sm"
+						value="true"
+						checked={options.song_ss_score}
+					/>
+					SS Score
 				</label>
 
-				<label class="select select-sm w-max">
+				<label class="select select-sm col-span-2 w-max">
 					<span class="label">Full combo</span>
 
 					<select name="song_full_combo_level">
@@ -225,7 +235,9 @@ const songLevelChoices = new Set(
 				href={`/calculate-gacha/${Astro.params.gacha_id}/partials/song-list${Astro.url.search}`}
 				class:list={[
 					"btn bg-primary border-primary-content w-full border max-md:hidden md:order-2 md:col-span-2 lg:col-span-1",
-					options.song_get_ss_score || options.song_full_combo_level > 0
+					options.song_s_score ||
+					options.song_ss_score ||
+					options.song_full_combo_level > 0
 						? "btn-primary"
 						: "btn-disabled",
 				]}
@@ -270,7 +282,7 @@ const songLevelChoices = new Set(
 						up-history="false"
 						href={`/calculate-gacha/${Astro.params.gacha_id}/partials/calendar${Astro.url.search}`}
 						class:list={[
-							"btn bg-primary border-primary-content w-full border md:order-2 md:col-span-2",
+							"btn bg-primary border-primary-content w-full border",
 							options.target_point > 0 ||
 							options.target_rank > 0 ||
 							options.read_event_story ||
@@ -289,8 +301,10 @@ const songLevelChoices = new Set(
 						up-history="false"
 						href={`/calculate-gacha/${Astro.params.gacha_id}/partials/song-list${Astro.url.search}`}
 						class:list={[
-							"btn bg-primary border-primary-content w-full border md:order-2 md:col-span-2 lg:col-span-1",
-							options.song_get_ss_score || options.song_full_combo_level > 0
+							"btn bg-primary border-primary-content w-full border",
+							options.song_s_score ||
+							options.song_ss_score ||
+							options.song_full_combo_level > 0
 								? "btn-primary"
 								: "btn-disabled",
 						]}

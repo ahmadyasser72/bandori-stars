@@ -77,14 +77,20 @@ export const calculateSongs = (
 					)
 					.map(([difficulty, it]) => [difficulty, it!]),
 			),
-			score:
-				options.song_get_ss_score && !isOnlySpecialRelease(data)
-					? sum(Object.values(data.scoreRewards))
-					: 0,
+			score: isOnlySpecialRelease(data)
+				? { s: 0, ss: 0 }
+				: {
+						s: options.song_s_score ? data.scoreRewards.S : 0,
+						ss: options.song_ss_score ? data.scoreRewards.SS : 0,
+					},
 			data,
 		}))
 		.filter(
 			({ fullCombo, score }) =>
-				0 < sum(Object.values(fullCombo).map(({ stars }) => stars)) + score,
+				0 <
+				sum([
+					...Object.values(fullCombo).map(({ stars }) => stars),
+					...Object.values(score),
+				]),
 		);
 };

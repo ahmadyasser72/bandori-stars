@@ -14,12 +14,13 @@ const options = await getOptions(Astro);
 
 const results = calculateSongs(until, options);
 const stars = {
+	S: sum(results.map(({ score }) => score.s)),
+	SS: sum(results.map(({ score }) => score.ss)),
 	FC: sum(
 		results.flatMap(({ fullCombo }) =>
 			Object.values(fullCombo).map((it) => it.stars),
 		),
 	),
-	SS: sum(results.map(({ score }) => score)),
 };
 
 const total = sum(Object.values(stars));
@@ -28,7 +29,7 @@ const pulls = Math.floor(total / STARS_PER_PULL);
 
 <>
 	<div class="flex w-full items-center justify-center">
-		<div class="mb-4 flex flex-col gap-1">
+		<div class="flex flex-col gap-1">
 			{
 				Object.entries(stars).map(([label, value]) => (
 					<div
@@ -43,7 +44,7 @@ const pulls = Math.floor(total / STARS_PER_PULL);
 			}
 		</div>
 
-		<div class="mt-4 flex flex-col gap-1">
+		<div class="flex flex-col gap-1">
 			<div class="badge badge-info w-32">
 				Total: {formatNumber(total)}&starf;
 			</div>
