@@ -82,5 +82,9 @@ export const calculateSongs = (
 					? sum(Object.values(data.scoreRewards))
 					: 0,
 			data,
-		}));
+		}))
+		.filter(
+			({ fullCombo, score }) =>
+				0 < sum(Object.values(fullCombo).map(({ stars }) => stars)) + score,
+		);
 };
