@@ -1,0 +1,23 @@
+---
+interface Props {
+	href: string;
+	active: boolean;
+	class?: string;
+}
+
+const { active, href, class: className } = Astro.props;
+---
+
+<a
+	{href}
+	up-layer="new"
+	up-size="large"
+	up-history="false"
+	class:list={[
+		"btn bg-primary border-primary-content w-full border",
+		active ? "btn-primary" : "btn-disabled text-primary-content/50",
+		className,
+	]}
+>
+	<slot />
+</a>

@@ -13,6 +13,7 @@ import FreeStarsDaily from "./_components/free-stars-daily.astro";
 import FreeStarsEvents from "./_components/free-stars-events.astro";
 import FreeStarsSongs from "./_components/free-stars-songs.astro";
 import InputFieldset from "./_components/input-fieldset.astro";
+import ShowDetailsButton from "./_components/show-details-button.astro";
 import { getOptions } from "./_options";
 
 const gacha = gacha_map.get(Astro.params.gacha_id!);
@@ -268,40 +269,27 @@ const songLevelChoices = new Set(
 		</div>
 
 		<div id="show-details" class="contents">
-			<a
-				up-layer="new"
-				up-history="false"
+			<ShowDetailsButton
 				href={`/calculate-gacha/${Astro.params.gacha_id}/partials/song-list${Astro.url.search}`}
-				class:list={[
-					"btn bg-primary border-primary-content w-full border max-md:hidden md:order-2 md:col-span-2 lg:col-span-1",
-					options.song_s_score ||
+				class="max-md:hidden md:order-2 md:col-span-2 lg:col-span-1"
+				active={options.song_s_score ||
 					options.song_ss_score ||
-					options.song_full_combo_level > 0
-						? "btn-primary"
-						: "btn-disabled",
-				]}
+					options.song_full_combo_level > 0}
 			>
 				Show details (songs)
-			</a>
+			</ShowDetailsButton>
 
-			<a
-				up-layer="new"
-				up-size="large"
-				up-history="false"
+			<ShowDetailsButton
 				href={`/calculate-gacha/${Astro.params.gacha_id}/partials/calendar${Astro.url.search}`}
-				class:list={[
-					"btn bg-primary border-primary-content w-full border max-md:hidden md:order-2 md:col-span-2",
-					options.target_point > 0 ||
+				class="max-md:hidden md:order-2 md:col-span-2"
+				active={options.target_point > 0 ||
 					options.target_rank > 0 ||
 					options.read_event_story ||
 					options.daily_login ||
-					options.daily_live
-						? "btn-primary"
-						: "btn-disabled",
-				]}
+					options.daily_live}
 			>
 				Show details (daily &amp; events)
-			</a>
+			</ShowDetailsButton>
 
 			<div class="fab md:hidden">
 				<div
@@ -319,41 +307,26 @@ const songLevelChoices = new Set(
 				</div>
 
 				<div>
-					<a
-						up-layer="new"
-						up-size="large"
-						up-history="false"
+					<ShowDetailsButton
 						href={`/calculate-gacha/${Astro.params.gacha_id}/partials/calendar${Astro.url.search}`}
-						class:list={[
-							"btn bg-primary border-primary-content w-full border",
-							options.target_point > 0 ||
+						active={options.target_point > 0 ||
 							options.target_rank > 0 ||
 							options.read_event_story ||
 							options.daily_login ||
-							options.daily_live
-								? "btn-primary"
-								: "btn-disabled",
-						]}
+							options.daily_live}
 					>
 						Show details (daily &amp; events)
-					</a>
+					</ShowDetailsButton>
 				</div>
 				<div>
-					<a
-						up-layer="new"
-						up-history="false"
+					<ShowDetailsButton
 						href={`/calculate-gacha/${Astro.params.gacha_id}/partials/song-list${Astro.url.search}`}
-						class:list={[
-							"btn bg-primary border-primary-content w-full border",
-							options.song_s_score ||
+						active={options.song_s_score ||
 							options.song_ss_score ||
-							options.song_full_combo_level > 0
-								? "btn-primary"
-								: "btn-disabled",
-						]}
+							options.song_full_combo_level > 0}
 					>
 						Show details (songs)
-					</a>
+					</ShowDetailsButton>
 				</div>
 			</div>
 		</div>
