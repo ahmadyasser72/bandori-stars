@@ -18,7 +18,12 @@ if (!gacha) {
 
 const options = await getOptions(Astro);
 const events = regionValue.unwrap(gacha.events)!;
-const dateOffset = getDateOffset(events.past[0].startAt);
+const calculatedEvents = calculateEvents(
+	[...events.past, events.active],
+	options,
+);
+
+const dateOffset = getDateOffset((events.past.at(0) ?? events.active!).startAt);
 
 const RRULE_DAYS = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
 const getRruleDay = (idx: number) => {
@@ -31,27 +36,26 @@ const createRecurrenceEvent = (
 	reward: string,
 	days: number[],
 ) => {
-	const until = eventStars
-		.at(-1)!
-		.data.endAt.jp.add(dateOffset)
-		.format("YYYYMMDD");
+	const maxDate = calculatedEvents.at(-1)!.data.endAt.jp.add(dateOffset);
+	const startDate = now().add(days[0], "days");
+	if (startDate.isAfter(maxDate, "days")) return;
+
+	const until = maxDate.format("YYYYMMDD");
 	const byday = days.map((idx) => getRruleDay(idx)).join(",");
 
 	return {
 		id,
 		title: `${title} (${reward})`,
-		start: Temporal.PlainDate.from(now().add(days[0], "days").format()),
-		end: Temporal.PlainDate.from(now().add(days[0], "days").format()),
+		start: Temporal.PlainDate.from(startDate.format()),
+		end: Temporal.PlainDate.from(startDate.format()),
 		rrule: `FREQ=WEEKLY;UNTIL=${until};BYDAY=${byday}`,
 		calendarId: "passive-stars",
 	};
 };
 
-const eventStars = calculateEvents([...events.past, events.active], options);
-
 const calendar = useCalendar({
 	options,
-	events: eventStars.map(({ data: event, ...stars }) => ({
+	events: calculatedEvents.map(({ data: event, ...stars }) => ({
 		id: event.id,
 		title: `${event.name} (${sum(Object.values(stars))}★)`,
 		start: Temporal.PlainDate.from(event.startAt.jp.add(dateOffset).format()),
@@ -74,7 +78,7 @@ const calendar = useCalendar({
 		...(!options.daily_live
 			? []
 			: [createRecurrenceEvent("daily_live", "Daily Live", "1× Pull", [7])]),
-	],
+	].filter((it) => it !== undefined),
 });
 ---
 

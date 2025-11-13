@@ -15,6 +15,6 @@ export const getDateOffset = ({
 	en: dayjs.Dayjs | null;
 	jp: dayjs.Dayjs;
 }) => {
-	if (!en) throw new Error("EN date is not defined.");
+	if (!en) return 330 * 24 * 60 * 60 * 1000; // default offset 330 days
 	return en.diff(jp);
 };

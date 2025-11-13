@@ -107,7 +107,7 @@ export const songAlbumCover = async ({
 	song,
 	blurhash = false,
 }: AssetSongAlbumCoverParameters) => {
-	const name = `gacha_${song.id}_album_cover`;
+	const name = `song_${song.id}_album_cover`;
 	const chunk = 10 * Math.ceil(Number(song.id) / 10);
 	const buffer = await fetchBestdoriWithRegionFallbacks(
 		`assets/jp/musicjacket/musicjacket${chunk}_rip/assets-star-forassetbundle-startapp-musicjacket-musicjacket${chunk}-${song.jacketImage[0].toLowerCase()}-jacket.png`,

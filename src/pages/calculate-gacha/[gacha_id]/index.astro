@@ -23,7 +23,7 @@ if (!gacha) {
 const options = await getOptions(Astro);
 const events = regionValue.unwrap(gacha.events)!;
 const allEvents = [...events.past, events.active];
-const dateOffset = getDateOffset(events.past[0].startAt);
+const dateOffset = getDateOffset((events.past.at(0) ?? events.active!).startAt);
 const [from, to] = [now().subtract(dateOffset), gacha.endAt.jp];
 
 const { pointChoices, rankChoices } = allEvents.reduce(

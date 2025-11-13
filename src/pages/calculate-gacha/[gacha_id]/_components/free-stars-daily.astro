@@ -1,6 +1,7 @@
 ---
 import type { dayjs } from "~/lib/date";
 import { formatNumber } from "~/lib/math";
+import { pluralize } from "~/lib/utilities";
 import { calculateDaily } from "../_calculate";
 import { STARS_PER_PULL } from "../_constants";
 import { getOptions } from "../_options";
@@ -39,6 +40,8 @@ const pulls = {
 	</div>
 
 	<div class="badge badge-info w-64">
-		{pulls.stars}&Cross; Pulls &plus; {pulls.ticket}&Cross; Pulls
+		{pulls.stars}&Cross;
+		{pluralize(pulls.stars, "Pull")} &plus;
+		{pulls.ticket}&Cross; {pluralize(pulls.ticket, "Pull")}
 	</div>
 </div>

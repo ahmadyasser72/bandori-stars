@@ -1,6 +1,7 @@
 ---
 import type { dayjs } from "~/lib/date";
 import { formatNumber, sum } from "~/lib/math";
+import { pluralize } from "~/lib/utilities";
 import { calculateSongs } from "../_calculate";
 import { STARS_PER_PULL } from "../_constants";
 import { getOptions } from "../_options";
@@ -49,7 +50,7 @@ const pulls = Math.floor(total / STARS_PER_PULL);
 				Total: {formatNumber(total)}&starf;
 			</div>
 			<div class="badge badge-info w-32">
-				{pulls}&Cross; {pulls > 1 ? "Pulls" : "Pull"}
+				{pulls}&Cross; {pluralize(pulls, "Pull")}
 			</div>
 		</div>
 	</div>
