@@ -270,6 +270,7 @@ const songLevelChoices = new Set(
 
 		<div id="show-details" class="contents">
 			<ShowDetailsButton
+				size="medium"
 				href={`/calculate-gacha/${Astro.params.gacha_id}/partials/song-list${Astro.url.search}`}
 				class="max-md:hidden md:order-2 md:col-span-2 lg:col-span-1"
 				active={options.song_s_score ||
@@ -280,6 +281,7 @@ const songLevelChoices = new Set(
 			</ShowDetailsButton>
 
 			<ShowDetailsButton
+				size="large"
 				href={`/calculate-gacha/${Astro.params.gacha_id}/partials/calendar${Astro.url.search}`}
 				class="max-md:hidden md:order-2 md:col-span-2"
 				active={options.target_point > 0 ||
@@ -308,6 +310,7 @@ const songLevelChoices = new Set(
 
 				<div>
 					<ShowDetailsButton
+						size="large"
 						href={`/calculate-gacha/${Astro.params.gacha_id}/partials/calendar${Astro.url.search}`}
 						active={options.target_point > 0 ||
 							options.target_rank > 0 ||
@@ -320,6 +323,7 @@ const songLevelChoices = new Set(
 				</div>
 				<div>
 					<ShowDetailsButton
+						size="medium"
 						href={`/calculate-gacha/${Astro.params.gacha_id}/partials/song-list${Astro.url.search}`}
 						active={options.song_s_score ||
 							options.song_ss_score ||
