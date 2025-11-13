@@ -5,11 +5,16 @@ import { defineConfig } from "astro/config";
 import cloudflare from "@astrojs/cloudflare";
 import tailwindcss from "@tailwindcss/vite";
 
+const SESSION_TTL = 7 * 24 * 60 * 60; /* 7 days */
+
 // https://astro.build/config
 export default defineConfig({
 	output: "server",
 	adapter: cloudflare({ imageService: "passthrough" }),
-	session: { cookie: "laravel_session", ttl: 7 * 24 * 60 * 60 /* 7 days */ },
+	session: {
+		cookie: { name: "laravel_session", maxAge: SESSION_TTL },
+		ttl: SESSION_TTL,
+	},
 	integrations: [icon()],
 
 	build: { concurrency: 4 },
