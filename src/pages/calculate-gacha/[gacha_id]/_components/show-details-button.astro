@@ -15,6 +15,7 @@ const { active, href, size, class: className } = Astro.props;
 	up-size={size}
 	up-history="false"
 	aria-disabled={!active}
+	tabindex={active ? 0 : -1}
 	class:list={[
 		"btn bg-secondary border-secondary-content w-full border",
 		active ? "btn-secondary link" : "btn-disabled text-secondary-content/50",
