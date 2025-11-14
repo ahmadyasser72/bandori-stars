@@ -42,7 +42,7 @@ export const card = async () => {
 		true,
 	);
 
-	const gacha = ["permanent", "limited", "dreamfes", "birthday", "kirafes"];
+	const gacha = ["permanent", "limited", "dreamfes", "kirafes"];
 	const entries = await Promise.all(
 		Object.entries(cardList)
 			.filter(
@@ -143,7 +143,7 @@ export const gacha = async () => {
 		true,
 	);
 
-	const f2p = ["permanent", "limited", "dreamfes", "birthday", "kirafes"];
+	const f2p = ["permanent", "limited", "dreamfes", "kirafes"];
 	const entries = await Promise.all(
 		Object.entries(gachaList)
 			.filter(
