@@ -15,7 +15,11 @@ import FreeStarsEvents from "./_components/free-stars-events.astro";
 import FreeStarsSongs from "./_components/free-stars-songs.astro";
 import InputFieldset from "./_components/input-fieldset.astro";
 import ShowDetailsButton from "./_components/show-details-button.astro";
-import { STARS_PER_PULL } from "./_constants";
+import {
+	STARS_FROM_FREE_MONTHLY_PASS,
+	STARS_FROM_PAID_MONTHLY_PASS,
+	STARS_PER_PULL,
+} from "./_constants";
 import { getOptions } from "./_options";
 
 const gacha = gacha_map.get(Astro.params.gacha_id!);
@@ -66,6 +70,11 @@ const { pointChoices, rankChoices } = allEvents.reduce(
 		return acc;
 	},
 	{ pointChoices: new Set<number>(), rankChoices: new Set<number>() },
+);
+const livePointChoices = new Set(
+	[...STARS_FROM_FREE_MONTHLY_PASS, ...STARS_FROM_PAID_MONTHLY_PASS].map(
+		({ livePoints }) => livePoints,
+	),
 );
 const songLevelChoices = new Set(
 	[...song_map.values()].flatMap(({ fullComboRewards }) =>
@@ -152,9 +161,9 @@ const songLevelChoices = new Set(
 		>
 			<InputFieldset
 				title="Events"
-				class="sm:col-span-2 md:col-span-1 lg:row-span-2"
+				class="sm:col-span-2 sm:grid-cols-2 md:col-span-1 md:grid-cols-1 lg:row-span-2"
 			>
-				<label class="select">
+				<label class="select select-sm w-52">
 					<span class="label">Event points</span>
 					<select name="target_point">
 						<option value="" disabled selected={options.target_point === 0}
@@ -176,7 +185,7 @@ const songLevelChoices = new Set(
 					</select>
 				</label>
 
-				<label class="select">
+				<label class="select select-sm w-52">
 					<span class="label">Event rank</span>
 					<select name="target_rank">
 						<option value="" disabled selected={options.target_rank === 0}
@@ -195,7 +204,7 @@ const songLevelChoices = new Set(
 					</select>
 				</label>
 
-				<label class="label">
+				<label class="label sm:col-span-2 md:col-span-1">
 					<input
 						name="read_event_story"
 						type="checkbox"
@@ -209,7 +218,7 @@ const songLevelChoices = new Set(
 
 			<InputFieldset
 				title="Daily"
-				class="grid-cols-2 sm:grid-cols-1 md:grid-cols-2"
+				class="flex justify-evenly sm:col-span-2 md:col-span-1"
 			>
 				<label class="label">
 					<input
@@ -219,7 +228,7 @@ const songLevelChoices = new Set(
 						value="true"
 						checked={options.daily_login}
 					/>
-					Daily login
+					Daily Login
 				</label>
 
 				<label class="label">
@@ -230,33 +239,87 @@ const songLevelChoices = new Set(
 						value="true"
 						checked={options.daily_live}
 					/>
-					Daily live
+					Daily Live
 				</label>
 			</InputFieldset>
 
-			<InputFieldset title="Songs" class="grid-cols-2">
-				<label class="label">
-					<input
-						name="song_s_score"
-						type="checkbox"
-						class="checkbox checkbox-sm"
-						value="true"
-						checked={options.song_s_score}
-					/>
-					S Score
-				</label>
-				<label class="label">
-					<input
-						name="song_ss_score"
-						type="checkbox"
-						class="checkbox checkbox-sm"
-						value="true"
-						checked={options.song_ss_score}
-					/>
-					SS Score
-				</label>
+			<InputFieldset title="Monthly Pass">
+				<div class="flex w-full justify-evenly">
+					<label class="label">
+						<input
+							id="monthly_pass_type_free"
+							name="monthly_pass_type"
+							type="radio"
+							class="radio checkbox-sm"
+							value="free"
+							checked={options.monthly_pass_type === "free"}
+						/>
+						Free
+					</label>
 
-				<label class="select select-sm col-span-2 w-max">
+					<label class="label">
+						<input
+							id="monthly_pass_type_paid"
+							name="monthly_pass_type"
+							type="radio"
+							class="radio checkbox-sm"
+							value="paid"
+							checked={options.monthly_pass_type === "paid"}
+						/>
+						Paid
+					</label>
+				</div>
+
+				<label class="select select-sm w-52">
+					<span class="label">Live points</span>
+					<select name="monthly_pass_points">
+						<option
+							value=""
+							disabled
+							selected={options.monthly_pass_points === 0}>Pick point</option
+						>
+
+						{
+							[...livePointChoices]
+								.sort((a, b) => b - a)
+								.map((livePoint) => (
+									<option
+										value={livePoint}
+										selected={options.monthly_pass_points === livePoint}
+									>
+										&ge;{formatNumber(livePoint)}
+									</option>
+								))
+						}
+					</select>
+				</label>
+			</InputFieldset>
+
+			<InputFieldset title="Songs" class="lg:col-span-2 lg:grid-cols-2">
+				<div class="flex w-full justify-evenly">
+					<label class="label">
+						<input
+							name="song_s_score"
+							type="checkbox"
+							class="checkbox checkbox-sm"
+							value="true"
+							checked={options.song_s_score}
+						/>
+						S Score
+					</label>
+					<label class="label">
+						<input
+							name="song_ss_score"
+							type="checkbox"
+							class="checkbox checkbox-sm"
+							value="true"
+							checked={options.song_ss_score}
+						/>
+						SS Score
+					</label>
+				</div>
+
+				<label class="select select-sm w-52">
 					<span class="label">Full combo</span>
 
 					<select name="song_full_combo_level">

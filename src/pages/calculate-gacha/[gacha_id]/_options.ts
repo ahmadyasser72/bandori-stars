@@ -17,8 +17,16 @@ export const getOptions = async (context: APIContext) => {
 		target_point: getNumber("target_point"),
 		target_rank: getNumber("target_rank"),
 		read_event_story: getBoolean("read_event_story"),
+
 		daily_login: getBoolean("daily_login"),
 		daily_live: getBoolean("daily_live"),
+
+		monthly_pass_type: (() => {
+			const value = params.get("monthly_pass_type");
+			return value === "free" || value === "paid" ? value : "free";
+		})(),
+		monthly_pass_points: getNumber("monthly_pass_points"),
+
 		song_s_score: getBoolean("song_s_score"),
 		song_ss_score: getBoolean("song_ss_score"),
 		song_full_combo_level: getNumber("song_full_combo_level"),

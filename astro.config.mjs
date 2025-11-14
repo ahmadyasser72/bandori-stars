@@ -31,7 +31,7 @@ export default defineConfig({
 				},
 			},
 		},
-		css: { transformer: "lightningcss" },
+		css: { transformer: process.env.DEV ? "lightningcss" : "postcss" },
 	},
 	devToolbar: { enabled: false },
 });
