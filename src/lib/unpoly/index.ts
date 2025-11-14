@@ -23,7 +23,9 @@ window.__unpoly_applyFormValueToSiblingInputs = (el, entries) => {
 window.__unpoly_animateShowFullCard = (el, layerElement, reverse = false) => {
 	if (!document.startViewTransition) return;
 
-	const iconImage = el.closest("li")!.querySelector("img")!;
+	const iconImage = (el.closest("li") ?? el.parentElement!).querySelector(
+		"img",
+	)!;
 	const fullImage =
 		layerElement
 			.querySelector("input:checked")

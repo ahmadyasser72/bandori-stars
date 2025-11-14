@@ -1,15 +1,40 @@
 ---
+import { card_map } from "@/contents/data";
 import BaseLayout from "~/layouts/base-layout.astro";
+import { getCardAsset } from "~/lib/assets";
+import { showFullCardModalOnClick } from "./partials/view-card/_helper";
+
+const randomCard = (() => {
+	const id = [...card_map.keys()][Math.floor(Math.random() * card_map.size)];
+	return { card: card_map.get(id)!, trained: Math.random() < 0.5 };
+})();
 ---
 
 <BaseLayout>
-	<div class="absolute-center absolute flex flex-col gap-2">
+	<a
+		{...showFullCardModalOnClick(randomCard.card, {
+			auto_scroll: true,
+			show_gacha_list: true,
+			show_trained: randomCard.trained,
+		})}
+		class="absolute h-screen w-screen select-none"
+	>
+		<img
+			{...await getCardAsset(Astro, { kind: "full", ...randomCard })}
+			class="-z-1 h-full w-full object-cover"
+		/>
+	</a>
+
+	<div
+		data-band-id={randomCard.card.band.id}
+		class="absolute-center bg-bandori-band/20 rounded-box border-bandori-band absolute flex w-xs flex-col gap-2 border px-12 py-6 backdrop-blur-sm"
+	>
 		<a
 			href="/partials/select-card"
 			up-layer="new"
 			up-history="false"
 			up-evict-cache="/partials/select-card"
-			class="btn btn-accent"
+			class="btn btn-primary border-primary-content"
 		>
 			Select card
 		</a>
@@ -22,7 +47,7 @@ import BaseLayout from "~/layouts/base-layout.astro";
 			up-evict-cache="/partials/select-gacha"
 			up-accept-location="/calculate-gacha/$id"
 			up-on-accepted="__unpoly_animateSelectGacha(event)"
-			class="btn btn-accent"
+			class="btn btn-primary border-primary-content"
 		>
 			Select gacha
 		</a>
