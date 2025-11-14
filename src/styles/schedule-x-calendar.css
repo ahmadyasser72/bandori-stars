@@ -1,19 +1,6 @@
+@import "@schedule-x/theme-default/dist/index.css";
+
 .sx__calendar {
-	/* Targets @schedule-x/calendar v3.3.0 header structure */
-	.sx__calendar-header {
-		> .sx__calendar-header-content:nth-child(2),
-		> .sx__calendar-header-content:nth-child(1) > button {
-			display: none;
-		}
-	}
-
-	.sx__event {
-		cursor: pointer;
-		user-select: none;
-	}
-}
-
-[data-calendar] {
 	--sx-color-primary: var(--color-primary);
 	--sx-color-on-primary: var(--color-primary-content);
 	--sx-color-primary-container: var(--color-primary);
@@ -49,8 +36,19 @@
 	--sx-color-neutral: var(--color-neutral);
 	--sx-color-neutral-variant: var(--color-neutral-content);
 
-	/* Internal extras */
 	--sx-internal-color-gray-ripple-background: var(--color-base-300);
 	--sx-internal-color-light-gray: var(--color-base-200);
 	--sx-internal-color-text: var(--color-base-content);
+
+	.sx__calendar-header {
+		> .sx__calendar-header-content:nth-child(2),
+		> .sx__calendar-header-content:nth-child(1) > button {
+			display: none;
+		}
+	}
+
+	.sx__event {
+		cursor: pointer;
+		user-select: none;
+	}
 }

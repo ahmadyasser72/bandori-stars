@@ -1,6 +1,4 @@
 import "temporal-polyfill/global";
-import "@schedule-x/theme-default/dist/index.css";
-import "./override.css";
 
 import type { CalendarData } from "./helper";
 
