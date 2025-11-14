@@ -1,22 +1,26 @@
 ---
-import type { Entry } from "@/contents/data";
+import type { dayjs } from "~/lib/date";
 import { formatNumber, sum } from "~/lib/math";
 import { pluralize } from "~/lib/utilities";
-import { calculateEvents } from "../_calculate";
+import { calculateSongs } from "../_calculate";
 import { STARS_PER_PULL } from "../_constants";
 
 interface Props {
-	events: (Entry<"event_map"> | null)[];
+	until: dayjs.Dayjs;
 	options: App.CalculateOptions;
 }
 
-const { events, options } = Astro.props;
+const { until, options } = Astro.props;
 
-const results = calculateEvents(events, options);
+const results = calculateSongs(until, options);
 const stars = {
-	point: sum(results.map(({ point }) => point)),
-	rank: sum(results.map(({ rank }) => rank)),
-	story: sum(results.map(({ story }) => story)),
+	S: sum(results.map(({ score }) => score.s)),
+	SS: sum(results.map(({ score }) => score.ss)),
+	FC: sum(
+		results.flatMap(({ fullCombo }) =>
+			Object.values(fullCombo).map((it) => it.stars),
+		),
+	),
 };
 
 const total = sum(Object.values(stars));

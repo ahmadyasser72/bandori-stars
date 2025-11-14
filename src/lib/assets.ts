@@ -77,3 +77,14 @@ export const getGachaBanner = (async (context, { gacha }) => {
 		"data-blurhash": await getBlurhash(context, src),
 	};
 }) satisfies GetAssetFunction<"gachaBanner">;
+
+export const getSongAlbumCover = (async (context, { song }) => {
+	const src = `/static/assets/song/${song.id}_album_cover.${IMAGE_FORMAT}`;
+
+	return {
+		...imageAttributes,
+		src,
+		alt: `Album cover of ${song.title}`,
+		"data-blurhash": await getBlurhash(context, src),
+	};
+}) satisfies GetAssetFunction<"songAlbumCover">;

@@ -99,6 +99,23 @@ export const gachaBanner = async ({
 	return (blurhash ? generateBlurhash : compressImage)(name, buffer);
 };
 
+interface AssetSongAlbumCoverParameters extends Blurhashable {
+	song: Entry<"song_map">;
+}
+
+export const songAlbumCover = async ({
+	song,
+	blurhash = false,
+}: AssetSongAlbumCoverParameters) => {
+	const name = `song_${song.id}_album_cover`;
+	const chunk = 10 * Math.ceil(Number(song.id) / 10);
+	const buffer = await fetchBestdoriWithRegionFallbacks(
+		`assets/jp/musicjacket/musicjacket${chunk}_rip/assets-star-forassetbundle-startapp-musicjacket-musicjacket${chunk}-${song.jacketImage[0].toLowerCase()}-jacket.png`,
+	);
+
+	return (blurhash ? generateBlurhash : compressImage)(name, buffer);
+};
+
 const fetchBestdoriWithRegionFallbacks = (jpUrl: string) =>
 	fetchBestdori(jpUrl)
 		.catch(() => fetchBestdori(jpUrl.replace("jp", "en")))

@@ -6,6 +6,10 @@
 	--color-bandori-band: var(--band-color);
 	--color-bandori-band-alt: var(--band-color-alt);
 	--color-bandori-band-content: var(--band-color-content);
+
+	--color-bandori-difficulty: var(--difficulty-color);
+	--color-bandori-difficulty-alt: var(--difficulty-color-alt);
+	--color-bandori-difficulty-content: var(--difficulty-color-content);
 }
 
 @theme static {
@@ -58,6 +62,19 @@
 	--color-mygo: hsl(205 59% 46%);
 	--color-mygo-alt: light-dark(hsl(205 59% 34%), hsl(205 59% 42%));
 	--color-mygo-content: hsl(0 0% 100%);
+
+	/* difficulties */
+	--color-hard: hsl(46 94% 62%);
+	--color-hard-alt: light-dark(hsl(46 94% 50%), hsl(46 94% 58%));
+	--color-hard-content: hsl(0 0% 0%);
+
+	--color-expert: hsl(358 100% 53%);
+	--color-expert-alt: light-dark(hsl(358 100% 40%), hsl(358 100% 47%));
+	--color-expert-content: hsl(0 0% 100%);
+
+	--color-special: hsl(319 82% 53%);
+	--color-special-alt: light-dark(hsl(319 82% 40%), hsl(319 82% 47%));
+	--color-special-content: hsl(0 0% 100%);
 }
 
 /* Cool */
@@ -154,4 +171,25 @@
 	--band-color: var(--color-mygo);
 	--band-color-alt: var(--color-mygo-alt);
 	--band-color-content: var(--color-mygo-content);
+}
+
+[data-difficulty="hard"],
+[data-difficulty="hard"] & {
+	--difficulty-color: var(--color-hard);
+	--difficulty-color-alt: var(--color-hard-alt);
+	--difficulty-color-content: var(--color-hard-content);
+}
+
+[data-difficulty="expert"],
+[data-difficulty="expert"] & {
+	--difficulty-color: var(--color-expert);
+	--difficulty-color-alt: var(--color-expert-alt);
+	--difficulty-color-content: var(--color-expert-content);
+}
+
+[data-difficulty="special"],
+[data-difficulty="special"] & {
+	--difficulty-color: var(--color-special);
+	--difficulty-color-alt: var(--color-special-alt);
+	--difficulty-color-content: var(--color-special-content);
 }

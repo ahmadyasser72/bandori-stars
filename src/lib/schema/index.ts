@@ -3,6 +3,7 @@ export type { Characters } from "./character";
 export type { Card, CardList } from "./card";
 export type { Event, EventList } from "./event";
 export type { Gacha, GachaList } from "./gacha";
+export type { Song, SongList } from "./song";
 
 export * from "./utilities";
 

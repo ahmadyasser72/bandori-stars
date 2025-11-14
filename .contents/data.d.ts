@@ -7,6 +7,7 @@ export const {
 	card_map,
 	gacha_map,
 	event_map,
+	song_map,
 }: ContentData;
 
 type MapValue<T extends Map<any, any>> =

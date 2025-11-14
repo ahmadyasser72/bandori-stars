@@ -14,6 +14,9 @@ declare namespace App {
 		read_event_story: boolean;
 		daily_login: boolean;
 		daily_live: boolean;
+		song_s_score: boolean;
+		song_ss_score: boolean;
+		song_full_combo_level: number;
 	};
 
 	interface SessionData {

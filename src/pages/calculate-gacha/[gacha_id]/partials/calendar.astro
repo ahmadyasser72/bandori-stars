@@ -1,13 +1,13 @@
 ---
 import { gacha_map } from "@/contents/data";
-import { now } from "~/lib/date";
-import { sum } from "~/lib/math";
+import { getDateOffset, now } from "~/lib/date";
+import { formatNumber, sum } from "~/lib/math";
 import { useCalendar } from "~/lib/unpoly/compiler/calendar/helper";
 import { regionValue } from "~/lib/utilities";
-import { calculateEvents } from "./_calculate";
-import OptionsBadge from "./_components/options-badge.astro";
-import { STARS_FROM_DAILY_LOGIN } from "./_constants";
-import { getOptions } from "./_options";
+import { calculateEvents } from "../_calculate";
+import OptionsBadge from "../_components/options-badge.astro";
+import { STARS_FROM_DAILY_LOGIN } from "../_constants";
+import { getOptions } from "../_options";
 
 export const partial = true;
 
@@ -18,11 +18,12 @@ if (!gacha) {
 
 const options = await getOptions(Astro);
 const events = regionValue.unwrap(gacha.events)!;
+const calculatedEvents = calculateEvents(
+	[...events.past, events.active],
+	options,
+);
 
-const enEventDiff = (() => {
-	const { en, jp } = events.past[0].startAt;
-	return en!.diff(jp);
-})();
+const dateOffset = getDateOffset((events.past.at(0) ?? events.active!).startAt);
 
 const RRULE_DAYS = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
 const getRruleDay = (idx: number) => {
@@ -35,33 +36,38 @@ const createRecurrenceEvent = (
 	reward: string,
 	days: number[],
 ) => {
-	const until = eventStars
-		.at(-1)!
-		.data.endAt.jp.add(enEventDiff)
-		.format("YYYYMMDD");
+	const maxDate = calculatedEvents.at(-1)!.data.endAt.jp.add(dateOffset);
+	const startDate = now().add(days[0], "days");
+	if (startDate.isAfter(maxDate, "days")) return;
+
+	const until = maxDate.format("YYYYMMDD");
 	const byday = days.map((idx) => getRruleDay(idx)).join(",");
 
 	return {
 		id,
 		title: `${title} (${reward})`,
-		start: Temporal.PlainDate.from(now().add(days[0], "days").format()),
-		end: Temporal.PlainDate.from(now().add(days[0], "days").format()),
+		start: Temporal.PlainDate.from(startDate.format()),
+		end: Temporal.PlainDate.from(startDate.format()),
 		rrule: `FREQ=WEEKLY;UNTIL=${until};BYDAY=${byday}`,
 		calendarId: "passive-stars",
 	};
 };
 
-const eventStars = calculateEvents([...events.past, events.active], options);
-
 const calendar = useCalendar({
 	options,
-	events: eventStars.map(({ data: event, ...stars }) => ({
-		id: event.id,
-		title: `${event.name} (${sum(Object.values(stars))}★)`,
-		start: Temporal.PlainDate.from(event.startAt.jp.add(enEventDiff).format()),
-		end: Temporal.PlainDate.from(event.endAt.jp.add(enEventDiff).format()),
-		calendarId: "event-stars",
-	})),
+	events: calculatedEvents
+		.map(({ data, ...stars }) => ({
+			event: data,
+			total: sum(Object.values(stars)),
+		}))
+		.filter(({ total }) => total > 0)
+		.map(({ event, total }) => ({
+			id: event.id,
+			title: `${event.name} (${total}★)`,
+			start: Temporal.PlainDate.from(event.startAt.jp.add(dateOffset).format()),
+			end: Temporal.PlainDate.from(event.endAt.jp.add(dateOffset).format()),
+			calendarId: "event-stars",
+		})),
 	recurrenceEvents: [
 		...(!options.daily_login
 			? []
@@ -78,7 +84,7 @@ const calendar = useCalendar({
 		...(!options.daily_live
 			? []
 			: [createRecurrenceEvent("daily_live", "Daily Live", "1× Pull", [7])]),
-	],
+	].filter((it) => it !== undefined),
 });
 ---
 
@@ -89,12 +95,12 @@ const calendar = useCalendar({
 		<OptionsBadge
 			name="Point"
 			value={options.target_point}
-			formattedValue={`≥${options.target_point}`}
+			formattedValue={`≥${formatNumber(options.target_point)}`}
 		/>
 		<OptionsBadge
 			name="Rank"
 			value={options.target_rank}
-			formattedValue={`≤${options.target_rank}`}
+			formattedValue={`≤${formatNumber(options.target_rank)}`}
 		/>
 		<OptionsBadge name="Story" value={options.read_event_story} />
 		<OptionsBadge

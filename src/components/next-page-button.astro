@@ -1,6 +1,6 @@
 ---
 interface Props {
-	page: { size: number; current: number; next: URL };
+	page: { size: number; current: number; next?: URL };
 	item: { name: string; length: number };
 }
 
@@ -8,18 +8,21 @@ const { page, item } = Astro.props;
 ---
 
 {
-	item.length === page.size ? (
+	page.next ? (
 		<a
 			id="next-page"
 			href={page.next.href}
 			up-defer="reveal"
 			up-target={`#next-page, #${item.name}-list>ul:after`}
-			class="btn btn-wide"
+			class="btn btn-accent w-full"
 		>
 			Next page
 		</a>
 	) : (
-		<div id="next-page" class="text-base-content/50 text-sm font-semibold">
+		<div
+			id="next-page"
+			class="text-base-content/50 text-center text-sm font-semibold"
+		>
 			{item.length === 0 && page.current === 1
 				? `No ${item.name} found.`
 				: page.current > 1 && `No more ${item.name}.`}

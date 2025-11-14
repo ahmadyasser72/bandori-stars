@@ -2,6 +2,8 @@ import type { APIContext } from "astro";
 
 import type { Document, DocumentData, DocumentOptions } from "flexsearch";
 
+import { paginate } from "~/lib/paginate";
+
 export const documentOptions = {
 	tokenize: "tolerant",
 	cache: false,
@@ -47,13 +49,6 @@ export const search = async <
 	const options = context.locals.search_options;
 	const sessionFilters = await context.session!.get(sessionKey);
 
-	const pageQuery = Number(params.get("page") ?? NaN);
-	const currentPage = Math.max(1, Number.isNaN(pageQuery) ? 1 : pageQuery);
-	const offset = pageSize * (currentPage - 1);
-
-	const nextPage = new URL(context.url);
-	nextPage.searchParams.set("page", `${currentPage + 1}`);
-
 	const filters = filterList.map(({ props: { name }, getValue }) => ({
 		name,
 		getValue,
@@ -78,25 +73,19 @@ export const search = async <
 		return options.oldest_first ? keys : keys.reverse();
 	})().map((id) => data_map.get(id)!);
 
-	const results = filters
-		.reduce((items, { name, getValue }) => {
-			const predicates = filterMap[name];
+	const filtered = filters.reduce((items, { name, getValue }) => {
+		const predicates = filterMap[name];
 
-			return items.filter((entry) => {
-				const entryValue = getValue(entry);
+		return items.filter((entry) => {
+			const entryValue = getValue(entry);
 
-				return Array.isArray(entryValue)
-					? entryValue.some((value) => !predicates.includes(value))
-					: predicates.every((value) => value !== entryValue);
-			});
-		}, items)
-		.slice(offset, offset + pageSize);
+			return Array.isArray(entryValue)
+				? entryValue.some((value) => !predicates.includes(value))
+				: predicates.every((value) => value !== entryValue);
+		});
+	}, items);
 
+	const { results, page } = paginate({ context, pageSize, items: filtered });
 	context.session!.set(sessionKey, filterMap as never);
-	return {
-		results,
-		filterMap,
-		options,
-		page: { size: pageSize, current: currentPage, next: nextPage },
-	};
+	return { results, filterMap, options, page };
 };

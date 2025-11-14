@@ -41,49 +41,54 @@ const gachaMap = await timed(
 	loader
 		.gacha()
 		.then((entries) =>
-			entries.map((entry) => ({
-				...entry,
-				events: (() => {
-					const get = (region: "en" | "jp") => {
-						const { startAt, endAt } = entry;
-						const gacha = { startAt: startAt[region], endAt: endAt[region] };
-						const events = [...eventMap.values()].map(
-							({ id, startAt, endAt }) => ({
-								id,
-								startAt: startAt[region],
-								endAt: endAt[region],
-							}),
-						);
+			entries
+				.map((entry) => ({
+					...entry,
+					events: (() => {
+						const get = (region: "en" | "jp") => {
+							const { startAt, endAt } = entry;
+							const gacha = { startAt: startAt[region], endAt: endAt[region] };
+							const events = [...eventMap.values()].map(
+								({ id, startAt, endAt }) => ({
+									id,
+									startAt: startAt[region],
+									endAt: endAt[region],
+								}),
+							);
 
-						const results = events.filter(
-							(event) =>
-								event.startAt &&
-								event.endAt &&
-								gacha.startAt &&
-								gacha.endAt &&
-								(gacha.endAt.isAfter(event.endAt) ||
-									gacha.endAt.isBetween(event.startAt, event.endAt)),
-						);
+							const results = events.filter(
+								(event) =>
+									event.startAt &&
+									event.endAt &&
+									gacha.startAt &&
+									gacha.endAt &&
+									(gacha.endAt.isAfter(event.endAt) ||
+										gacha.endAt.isBetween(event.startAt, event.endAt)),
+							);
 
-						if (results.length === 0) return null;
+							if (results.length === 0) return null;
 
-						const activeEventId = results.find(
-							(event) =>
-								gacha.startAt!.isSame(event.startAt) ||
-								gacha.startAt!.isBetween(event.startAt, event.endAt),
-						)?.id;
+							const activeEventId = results.find(
+								(event) =>
+									gacha.startAt!.isSame(event.startAt) ||
+									gacha.startAt!.isBetween(event.startAt, event.endAt),
+							)?.id;
 
-						return {
-							past: results
-								.filter((event) => event.endAt!.isBefore(gacha.startAt))
-								.map(({ id }) => eventMap.get(id)!),
-							active: activeEventId ? eventMap.get(activeEventId)! : null,
+							return {
+								past: results
+									.filter((event) => event.endAt!.isBefore(gacha.startAt))
+									.map(({ id }) => eventMap.get(id)!),
+								active: activeEventId ? eventMap.get(activeEventId)! : null,
+							};
 						};
-					};
 
-					return { jp: get("jp"), en: get("en") };
-				})(),
-			})),
+						return { jp: get("jp"), en: get("en") };
+					})(),
+				}))
+				.filter(({ events }) => {
+					const unwrapped = regionValue.unwrap(events);
+					return (unwrapped?.past.length ?? 0) > 0 || !!unwrapped?.active;
+				}),
 		)
 		.then(regionValue.mapUnwrap("name"))
 		.then(toMap),
@@ -126,11 +131,17 @@ const gacha_map = toMap(
 	})),
 );
 
+const songMap = await timed(
+	"fetch song_map",
+	loader.song().then(regionValue.mapUnwrap("title")).then(toMap),
+);
+
 const data = {
 	band_map: bandMap,
 	character_map: characterMap,
 	event_map: eventMap,
 	card_map: cardMap,
+	song_map: songMap,
 	gacha_map,
 } satisfies Record<string, Map<string, any>>;
 

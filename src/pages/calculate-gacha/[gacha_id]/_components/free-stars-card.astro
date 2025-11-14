@@ -1,0 +1,21 @@
+---
+interface Props {
+	title: string;
+	backdrop: boolean;
+}
+
+const { title, backdrop } = Astro.props;
+---
+
+<div
+	class:list={[
+		"card shadow-sm max-md:order-2 md:order-2",
+		backdrop ? "bg-base-100/67 backdrop-blur-sm" : "bg-base-100",
+	]}
+>
+	<div class="card-body items-center text-center">
+		<h2 class="card-title">{title}</h2>
+
+		<slot />
+	</div>
+</div>

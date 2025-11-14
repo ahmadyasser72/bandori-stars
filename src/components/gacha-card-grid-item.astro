@@ -9,10 +9,11 @@ import CardIcon from "./card-icon.astro";
 export interface Props {
 	gacha: Entry<"gacha_map">;
 	rate?: number;
+	compact?: boolean;
 	class?: string;
 }
 
-const { gacha, rate, class: className } = Astro.props;
+const { gacha, rate, compact, class: className } = Astro.props;
 
 const options = Astro.locals.search_options;
 const rateUpList = regionValue
@@ -55,37 +56,42 @@ const rateUpList = regionValue
 
 		<div class="flex flex-col items-center gap-1.5 *:gap-1">
 			{
-				rate && (
-					<div class="badge badge-primary font-medium">
-						<Icon class="size-4" name="lucide:percent" />
-						{rate}
-					</div>
+				!compact && (
+					<>
+						{rate && (
+							<div class="badge badge-primary font-medium">
+								<Icon class="size-4" name="lucide:percent" />
+								{rate}
+							</div>
+						)}
+
+						<div class="badge badge-secondary font-medium">
+							{gacha.type.toUpperCase()}
+						</div>
+
+						<div class="badge not-dark:badge-soft badge-neutral">
+							<Icon
+								class="size-6 rounded-full border border-current"
+								name="emojione:flag-for-japan"
+							/>
+							{gacha.startAt.jp.format("DD/MM/YYYY")} (
+							{gacha.startAt.jp.fromNow()})
+						</div>
+						{gacha.startAt.en && (
+							<div class="badge not-dark:badge-soft badge-neutral">
+								<Icon
+									class="size-6 rounded-full border border-current"
+									name="emojione:flag-for-united-states"
+								/>
+								{gacha.startAt.en.format("DD/MM/YYYY")} (
+								{gacha.startAt.en.fromNow()})
+							</div>
+						)}
+					</>
 				)
 			}
 
-			<div class="badge badge-secondary font-medium">
-				{gacha.type.toUpperCase()}
-			</div>
-
-			<div class="badge not-dark:badge-soft badge-neutral">
-				<Icon
-					class="size-6 rounded-full border border-current"
-					name="emojione:flag-for-japan"
-				/>
-				{gacha.startAt.jp.format("DD/MM/YYYY")} ({gacha.startAt.jp.fromNow()})
-			</div>
-			{
-				gacha.startAt.en && (
-					<div class="badge not-dark:badge-soft badge-neutral">
-						<Icon
-							class="size-6 rounded-full border border-current"
-							name="emojione:flag-for-united-states"
-						/>
-						{gacha.startAt.en.format("DD/MM/YYYY")} (
-						{gacha.startAt.en.fromNow()})
-					</div>
-				)
-			}
+			<slot name="badge" />
 		</div>
 
 		<ul class="flex gap-1">
