@@ -21,10 +21,11 @@ export interface Achievement {
 }
 
 type Difficulties = "easy" | "normal" | "hard" | "expert" | "special";
+type ScoreRank = "c" | "b" | "a" | "s" | "ss";
 export type AchievementType =
 	| `combo_${Difficulties}`
 	| `full_combo_${Difficulties}`
-	| `score_rank_${"c" | "b" | "a" | "s" | "ss"}`;
+	| `score_rank_${ScoreRank}`;
 
 export type RewardType = "coin" | "star" | "practice_ticket";
 

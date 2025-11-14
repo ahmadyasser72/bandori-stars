@@ -214,10 +214,9 @@ export const song = async () => {
 					title: parser.regionTuple(musicTitle),
 					jacketImage,
 					releasedAt: parser.timestamp(publishedAt),
-					specialReleasedAt:
-						special === undefined
-							? undefined
-							: parser.timestamp(special.publishedAt ?? publishedAt),
+					specialReleasedAt: special
+						? parser.timestamp(special.publishedAt ?? publishedAt)
+						: null,
 					...parser.song.rewards(achievements, difficulty),
 				};
 			}),

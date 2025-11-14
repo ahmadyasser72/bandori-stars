@@ -86,7 +86,7 @@ export const schema = {
 		title: name,
 		releasedAt: timestamp,
 		jacketImage: z.array(id),
-		specialReleasedAt: timestamp.optional(),
+		specialReleasedAt: timestamp.nullable(),
 		fullComboRewards: z.strictObject({
 			hard: z.strictObject({
 				level: z.number().nonnegative(),
