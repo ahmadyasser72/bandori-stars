@@ -4,14 +4,13 @@ import { formatNumber, sum } from "~/lib/math";
 import { pluralize } from "~/lib/utilities";
 import { calculateSongs } from "../_calculate";
 import { STARS_PER_PULL } from "../_constants";
-import { getOptions } from "../_options";
 
 interface Props {
 	until: dayjs.Dayjs;
+	options: App.CalculateOptions;
 }
 
-const { until } = Astro.props;
-const options = await getOptions(Astro);
+const { until, options } = Astro.props;
 
 const results = calculateSongs(until, options);
 const stars = {

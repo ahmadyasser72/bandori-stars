@@ -4,15 +4,14 @@ import { formatNumber } from "~/lib/math";
 import { pluralize } from "~/lib/utilities";
 import { calculateDaily } from "../_calculate";
 import { STARS_PER_PULL } from "../_constants";
-import { getOptions } from "../_options";
 
 interface Props {
 	from: dayjs.Dayjs;
 	to: dayjs.Dayjs;
+	options: App.CalculateOptions;
 }
 
-const { from, to } = Astro.props;
-const options = await getOptions(Astro);
+const { from, to, options } = Astro.props;
 
 const { stars, starGachaTicket } = calculateDaily({ from, to }, options);
 const pulls = {

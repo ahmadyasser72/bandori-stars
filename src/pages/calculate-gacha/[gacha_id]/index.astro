@@ -1,20 +1,21 @@
 ---
 import { Icon } from "astro-icon/components";
 
-import { gacha_map } from "@/contents/data";
+import { gacha_map, song_map } from "@/contents/data";
 import GachaCardGridItem from "~/components/gacha-card-grid-item.astro";
 import BaseLayout from "~/layouts/base-layout.astro";
 import { getEventAsset } from "~/lib/assets";
 import { dayjs, getDateOffset, now } from "~/lib/date";
-import { formatNumber } from "~/lib/math";
-import { regionValue } from "~/lib/utilities";
-import { calculateSongs } from "./_calculate";
+import { formatNumber, sum } from "~/lib/math";
+import { pluralize, regionValue } from "~/lib/utilities";
+import { calculateDaily, calculateEvents, calculateSongs } from "./_calculate";
 import FreeStarsCard from "./_components/free-stars-card.astro";
 import FreeStarsDaily from "./_components/free-stars-daily.astro";
 import FreeStarsEvents from "./_components/free-stars-events.astro";
 import FreeStarsSongs from "./_components/free-stars-songs.astro";
 import InputFieldset from "./_components/input-fieldset.astro";
 import ShowDetailsButton from "./_components/show-details-button.astro";
+import { STARS_PER_PULL } from "./_constants";
 import { getOptions } from "./_options";
 
 const gacha = gacha_map.get(Astro.params.gacha_id!);
@@ -33,6 +34,28 @@ const allEvents = [...events.past, events.active];
 const dateOffset = getDateOffset((events.past.at(0) ?? events.active!).startAt);
 const [from, to] = [now().subtract(dateOffset), gacha.endAt.jp];
 
+const { total, pulls } = (() => {
+	const events = calculateEvents(allEvents, options);
+	const daily = calculateDaily({ from, to }, options);
+	const songs = calculateSongs(to, options);
+
+	const total = {
+		stars: sum(
+			[
+				events.flatMap(({ data, ...stars }) => Object.values(stars)),
+				daily.stars.dailyLogin,
+				songs.flatMap(({ fullCombo, score }) => [
+					...Object.values(fullCombo).map(({ stars }) => stars),
+					...Object.values(score),
+				]),
+			].flat(),
+		),
+		starGachaTicket: daily.starGachaTicket.dailyLives,
+	};
+
+	return { total, pulls: Math.floor(total.stars / STARS_PER_PULL) };
+})();
+
 const { pointChoices, rankChoices } = allEvents.reduce(
 	(acc, next) => {
 		if (!next) return acc;
@@ -44,11 +67,11 @@ const { pointChoices, rankChoices } = allEvents.reduce(
 	},
 	{ pointChoices: new Set<number>(), rankChoices: new Set<number>() },
 );
-
-const songs = calculateSongs(to, options);
 const songLevelChoices = new Set(
-	songs.flatMap(({ fullCombo }) =>
-		Object.values(fullCombo).map((it) => it.level),
+	[...song_map.values()].flatMap(({ fullComboRewards }) =>
+		Object.values(fullComboRewards)
+			.map((it) => it?.level)
+			.filter((it) => it !== undefined),
 	),
 );
 ---
@@ -118,7 +141,7 @@ const songLevelChoices = new Set(
 		</GachaCardGridItem>
 
 		<form
-			up-target="#free-stars, #show-details"
+			up-target="#free-stars, #total-free-stars, #show-details"
 			up-autosubmit
 			up-watch-disable
 			up-watch-delay="200"
@@ -262,15 +285,15 @@ const songLevelChoices = new Set(
 
 		<div id="free-stars" class="contents">
 			<FreeStarsCard title="Free stars (songs)" backdrop={!!events.active}>
-				<FreeStarsSongs until={to} />
+				<FreeStarsSongs until={to} {options} />
 			</FreeStarsCard>
 
 			<FreeStarsCard title="Free stars (daily)" backdrop={!!events.active}>
-				<FreeStarsDaily {from} {to} />
+				<FreeStarsDaily {from} {to} {options} />
 			</FreeStarsCard>
 
 			<FreeStarsCard title="Free stars (events)" backdrop={!!events.active}>
-				<FreeStarsEvents events={allEvents} />
+				<FreeStarsEvents events={allEvents} {options} />
 			</FreeStarsCard>
 		</div>
 
@@ -278,7 +301,7 @@ const songLevelChoices = new Set(
 			<ShowDetailsButton
 				size="medium"
 				href={`/calculate-gacha/${Astro.params.gacha_id}/partials/song-list${Astro.url.search}`}
-				class="max-md:hidden md:order-2 md:col-span-2 lg:col-span-1"
+				class="max-md:hidden md:order-3 md:col-span-2 lg:col-span-1"
 				active={options.song_s_score ||
 					options.song_ss_score ||
 					options.song_full_combo_level > 0}
@@ -289,7 +312,7 @@ const songLevelChoices = new Set(
 			<ShowDetailsButton
 				size="large"
 				href={`/calculate-gacha/${Astro.params.gacha_id}/partials/calendar${Astro.url.search}`}
-				class="max-md:hidden md:order-2 md:col-span-2"
+				class="max-md:hidden md:order-3 md:col-span-2"
 				active={options.target_point > 0 ||
 					options.target_rank > 0 ||
 					options.read_event_story ||
@@ -303,7 +326,7 @@ const songLevelChoices = new Set(
 				<div
 					tabindex="0"
 					role="button"
-					class="btn btn-xl btn-circle btn-primary"
+					class="btn btn-xl btn-circle btn-secondary"
 				>
 					<Icon name="lucide:calculator" />
 				</div>
@@ -338,6 +361,23 @@ const songLevelChoices = new Set(
 						Show details (songs)
 					</ShowDetailsButton>
 				</div>
+			</div>
+		</div>
+
+		<div
+			id="total-free-stars"
+			class="flex gap-1 max-sm:flex-col md:order-2 md:col-span-2 lg:col-span-3"
+		>
+			<div class="badge badge-primary badge-lg w-full font-medium">
+				{formatNumber(total.stars)}&starf; ({pulls}&Cross; {
+					pluralize(pulls, "Pull")
+				})
+			</div>
+
+			<div class="badge badge-primary badge-lg w-full font-medium">
+				{total.starGachaTicket}&Cross; {
+					pluralize(total.starGachaTicket, "Star Gacha Ticket")
+				}
 			</div>
 		</div>
 	</div>

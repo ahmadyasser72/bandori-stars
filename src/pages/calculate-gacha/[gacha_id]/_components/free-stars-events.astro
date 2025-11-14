@@ -4,14 +4,13 @@ import { formatNumber, sum } from "~/lib/math";
 import { pluralize } from "~/lib/utilities";
 import { calculateEvents } from "../_calculate";
 import { STARS_PER_PULL } from "../_constants";
-import { getOptions } from "../_options";
 
 interface Props {
 	events: (Entry<"event_map"> | null)[];
+	options: App.CalculateOptions;
 }
 
-const { events } = Astro.props;
-const options = await getOptions(Astro);
+const { events, options } = Astro.props;
 
 const results = calculateEvents(events, options);
 const stars = {
