@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 
 import { character_map, gacha_map } from "@/contents/data";
-import GachaCardGrid from "~/components/gacha-card-grid.astro";
+import GachaCard from "~/components/gacha-card.astro";
 import NextPageButton from "~/components/next-page-button.astro";
 import { search } from "~/lib/search";
 import FilterListForm from "~/lib/search/components/filter-list-form.astro";
@@ -56,7 +56,15 @@ const { results, filterMap, page } = await search({
 	</form>
 
 	<div id="gacha-list" class="contents">
-		<GachaCardGrid gachaList={results.map((gacha) => ({ gacha }))} />
+		<ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+			{
+				results.map((gacha) => (
+					<li class="contents">
+						<GachaCard {gacha} />
+					</li>
+				))
+			}
+		</ul>
 	</div>
 
 	<template id="gacha-list-placeholder">

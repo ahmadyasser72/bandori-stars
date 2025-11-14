@@ -1,6 +1,6 @@
 ---
 import { card_map, gacha_map } from "@/contents/data";
-import GachaCardGrid from "~/components/gacha-card-grid.astro";
+import GachaCard from "~/components/gacha-card.astro";
 import { regionValue } from "~/lib/utilities";
 
 export const partial = true;
@@ -37,7 +37,13 @@ const gachaList = regionValue.unwrap(
 				No rate-up gacha available.
 			</p>
 		) : (
-			<GachaCardGrid {gachaList} />
+			<ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+				{gachaList.map((props) => (
+					<li class="contents">
+						<GachaCard {...props} />
+					</li>
+				))}
+			</ul>
 		)
 	}
 </div>

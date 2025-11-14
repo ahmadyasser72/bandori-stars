@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 
 import { gacha_map, song_map } from "@/contents/data";
-import GachaCardGridItem from "~/components/gacha-card-grid-item.astro";
+import GachaCard from "~/components/gacha-card.astro";
 import BaseLayout from "~/layouts/base-layout.astro";
 import { getEventAsset } from "~/lib/assets";
 import { dayjs, getDateOffset, now } from "~/lib/date";
@@ -92,7 +92,7 @@ const songLevelChoices = new Set(
 	<div
 		class="container mx-auto grid max-w-xs gap-2 py-8 sm:max-w-lg md:max-w-2xl md:grid-cols-2 lg:max-w-4xl lg:grid-cols-3"
 	>
-		<GachaCardGridItem
+		<GachaCard
 			{gacha}
 			compact
 			class:list={[
@@ -138,7 +138,7 @@ const songLevelChoices = new Set(
 					</div>
 				</div>
 			</Fragment>
-		</GachaCardGridItem>
+		</GachaCard>
 
 		<form
 			up-target="#free-stars, #total-free-stars, #show-details"
