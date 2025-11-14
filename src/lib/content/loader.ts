@@ -1,7 +1,7 @@
 import { bestdori } from "~/lib/bestdori";
 import { dayjs, now } from "~/lib/date";
 import * as Bandori from "~/lib/schema";
-import { parser, schema } from ".";
+import { constants, parser, schema } from ".";
 
 export const band = async () => {
 	const bands = await bestdori<Bandori.Bands>("api/bands/main.1.json");
@@ -46,7 +46,10 @@ export const card = async () => {
 	const entries = await Promise.all(
 		Object.entries(cardList)
 			.filter(
-				([, { rarity, type }]) => Number(rarity) >= 4 && gacha.includes(type),
+				([, { rarity, type }]) =>
+					Number(rarity) >= constants.rarity.min &&
+					Number(rarity) <= constants.rarity.max &&
+					gacha.includes(type),
 			)
 			.map(async ([id]) => {
 				const card = await bestdori<Bandori.Card>(`api/cards/${id}.json`);

@@ -5,6 +5,7 @@ import type { GachaType } from "~/lib/schema/gacha";
 
 export default {
 	regions: ["jp", "en"] as const,
+	rarity: { min: 3, max: 5 },
 	attributes: [
 		"pure",
 		"cool",

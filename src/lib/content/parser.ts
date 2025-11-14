@@ -2,6 +2,7 @@ import { dayjs } from "~/lib/date";
 import { sum } from "~/lib/math";
 import type { Card, Event, Gacha, RegionTuple, Song } from "~/lib/schema";
 import { emptyObjectIsNull } from "~/lib/utilities";
+import constants from "./constants";
 
 export const regionTuple = <T>([jp, en]: RegionTuple<T>) => ({ jp, en });
 
@@ -86,7 +87,9 @@ export const gacha = {
 					? Object.entries(details)
 							.filter(
 								([, { pickup, rarityIndex }]) =>
-									pickup && Number(rarityIndex) >= 4,
+									pickup &&
+									Number(rarityIndex) >= constants.rarity.min &&
+									Number(rarityIndex) <= constants.rarity.max,
 							)
 							.map(([card, { rarityIndex: rarity, weight }]) => {
 								const { rate, weightTotal } = ratesTuple[tupleId]![rarity];

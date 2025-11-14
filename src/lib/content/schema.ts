@@ -15,6 +15,10 @@ export const createMultiRegion = <T extends ZodType>(schema: T) =>
 
 export const id = z.string().nonempty();
 export const name = createMultiRegion(z.string().nonempty());
+export const rarity = z
+	.number()
+	.min(constants.rarity.min)
+	.max(constants.rarity.max);
 export const timestamp = createMultiRegion(
 	z.custom<dayjs.Dayjs>((it) => dayjs.isDayjs(it)),
 );
@@ -28,7 +32,7 @@ export const schema = {
 		resourceId: id,
 		name,
 		character: id,
-		rarity: z.number().min(2).max(5),
+		rarity,
 		type: types.card,
 		attribute: types.attribute,
 		releasedAt: timestamp,
@@ -74,7 +78,7 @@ export const schema = {
 			z.array(
 				z.strictObject({
 					card: id,
-					rarity: z.number().nonnegative(),
+					rarity,
 					rate: z.number().nonnegative(),
 				}),
 			),
