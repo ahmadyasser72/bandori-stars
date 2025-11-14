@@ -226,11 +226,10 @@ export const song = async () => {
 	);
 
 	return entries
-		.filter(
-			({ releasedAt }) =>
-				releasedAt.jp !== null &&
-				(!releasedAt.en || releasedAt.en.isAfter(now())),
-		)
+		.filter(({ releasedAt, specialReleasedAt }) => {
+			const date = specialReleasedAt ?? releasedAt;
+			return date.jp !== null && (!date.en || date.en.isAfter(now()));
+		})
 		.sort((a, b) =>
 			(a.specialReleasedAt ?? a.releasedAt).jp.diff(
 				(b.specialReleasedAt ?? b.releasedAt).jp,
