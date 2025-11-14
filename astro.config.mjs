@@ -31,6 +31,7 @@ export default defineConfig({
 				},
 			},
 		},
+		css: { transformer: "lightningcss" },
 	},
 	devToolbar: { enabled: false },
 });
