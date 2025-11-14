@@ -1,7 +1,7 @@
 ---
 import { gacha_map } from "@/contents/data";
 import { getDateOffset, now } from "~/lib/date";
-import { sum } from "~/lib/math";
+import { formatNumber, sum } from "~/lib/math";
 import { useCalendar } from "~/lib/unpoly/compiler/calendar/helper";
 import { regionValue } from "~/lib/utilities";
 import { calculateEvents } from "../_calculate";
@@ -95,12 +95,12 @@ const calendar = useCalendar({
 		<OptionsBadge
 			name="Point"
 			value={options.target_point}
-			formattedValue={`≥${options.target_point}`}
+			formattedValue={`≥${formatNumber(options.target_point)}`}
 		/>
 		<OptionsBadge
 			name="Rank"
 			value={options.target_rank}
-			formattedValue={`≤${options.target_rank}`}
+			formattedValue={`≤${formatNumber(options.target_rank)}`}
 		/>
 		<OptionsBadge name="Story" value={options.read_event_story} />
 		<OptionsBadge

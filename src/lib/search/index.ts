@@ -73,22 +73,19 @@ export const search = async <
 		return options.oldest_first ? keys : keys.reverse();
 	})().map((id) => data_map.get(id)!);
 
-	const { results, page } = paginate({
-		context,
-		pageSize,
-		items: filters.reduce((items, { name, getValue }) => {
-			const predicates = filterMap[name];
+	const filtered = filters.reduce((items, { name, getValue }) => {
+		const predicates = filterMap[name];
 
-			return items.filter((entry) => {
-				const entryValue = getValue(entry);
+		return items.filter((entry) => {
+			const entryValue = getValue(entry);
 
-				return Array.isArray(entryValue)
-					? entryValue.some((value) => !predicates.includes(value))
-					: predicates.every((value) => value !== entryValue);
-			});
-		}, items),
-	});
+			return Array.isArray(entryValue)
+				? entryValue.some((value) => !predicates.includes(value))
+				: predicates.every((value) => value !== entryValue);
+		});
+	}, items);
 
+	const { results, page } = paginate({ context, pageSize, items: filtered });
 	context.session!.set(sessionKey, filterMap as never);
 	return { results, filterMap, options, page };
 };

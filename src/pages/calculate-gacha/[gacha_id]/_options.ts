@@ -4,7 +4,7 @@ export const getOptions = async (context: APIContext) => {
 	const params = context.url.searchParams;
 	const sessionOptions = await context.session!.get("calculate_options");
 
-	type OptionName = keyof Required<App.SessionData["calculate_options"]>;
+	type OptionName = keyof App.CalculateOptions;
 	const getNumber = (name: OptionName) => {
 		const value = params.size > 0 ? params.get(name) : sessionOptions?.[name];
 		const number = Number(value ?? NaN);

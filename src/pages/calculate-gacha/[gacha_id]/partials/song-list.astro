@@ -2,11 +2,11 @@
 import { Icon } from "astro-icon/components";
 
 import { gacha_map } from "@/contents/data";
+import NextPageButton from "~/components/next-page-button.astro";
 import { getSongAlbumCover } from "~/lib/assets";
 import { getDateOffset } from "~/lib/date";
 import { sum } from "~/lib/math";
 import { paginate } from "~/lib/paginate";
-import NextPageButton from "~/lib/search/components/next-page-button.astro";
 import { regionValue } from "~/lib/utilities";
 import { calculateSongs } from "../_calculate";
 import OptionsBadge from "../_components/options-badge.astro";

@@ -15,8 +15,11 @@ export const paginate = <T>({
 	const currentPage = Math.max(1, Number.isNaN(pageQuery) ? 1 : pageQuery);
 	const offset = pageSize * (currentPage - 1);
 
-	const nextPage = new URL(context.url);
-	nextPage.searchParams.set("page", `${currentPage + 1}`);
+	let nextPage: URL | undefined = undefined;
+	if (items.length > currentPage * pageSize) {
+		nextPage = new URL(context.url);
+		nextPage.searchParams.set("page", `${currentPage + 1}`);
+	}
 
 	return {
 		results: items.slice(offset, offset + pageSize),
