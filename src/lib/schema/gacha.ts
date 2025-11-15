@@ -3,7 +3,7 @@ import type { RegionTuple } from "./utilities";
 
 export type GachaList = Record<
 	string,
-	Pick<Gacha, "publishedAt" | "closedAt" | "type">
+	Pick<Gacha, "gachaName" | "publishedAt" | "closedAt" | "type">
 >;
 
 export interface Gacha {

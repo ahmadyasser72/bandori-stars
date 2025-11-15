@@ -1,7 +1,7 @@
 import type { Attribute, CardRarity, RegionTuple } from ".";
 import type { CharacterId } from "./character";
 
-export type CardList = Record<string, Pick<Card, "rarity" | "type">>;
+export type CardList = Record<string, Pick<Card, "rarity" | "type" | "prefix">>;
 
 export interface Card {
 	characterId: CharacterId;

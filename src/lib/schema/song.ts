@@ -1,6 +1,9 @@
 import type { RegionTuple } from "./utilities";
 
-export type SongList = Record<string, Pick<Song, "publishedAt" | "difficulty">>;
+export type SongList = Record<
+	string,
+	Pick<Song, "musicTitle" | "publishedAt" | "difficulty">
+>;
 
 export interface Song {
 	tag: string;

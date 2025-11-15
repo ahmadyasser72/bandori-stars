@@ -51,8 +51,11 @@ export const card = async () => {
 					Number(rarity) <= constants.rarity.max &&
 					gacha.includes(type),
 			)
-			.map(async ([id]) => {
-				const card = await bestdori<Bandori.Card>(`api/cards/${id}.json`);
+			.map(async ([id, entry]) => {
+				const card = await bestdori<Bandori.Card>(
+					`api/cards/${id}.json`,
+					shouldSkipCache(entry.prefix),
+				);
 
 				const {
 					characterId,
@@ -95,10 +98,10 @@ export const event = async () => {
 			.filter(([, { startAt, endAt }]) =>
 				maybeWillBeAvailableOnEn(startAt, endAt),
 			)
-			.map(async ([id], idx) => {
+			.map(async ([id, entry], idx) => {
 				const bandoriEvent = await bestdori<Bandori.Event>(
 					`api/events/${id}.json`,
-					idx < 10,
+					shouldSkipCache(entry.eventName, idx),
 				);
 
 				const {
@@ -150,10 +153,10 @@ export const gacha = async () => {
 				([_, { type, publishedAt, closedAt }]) =>
 					f2p.includes(type) && maybeWillBeAvailableOnEn(publishedAt, closedAt),
 			)
-			.map(async ([id], idx) => {
+			.map(async ([id, entry], idx) => {
 				const gacha = await bestdori<Bandori.Gacha>(
 					`api/gacha/${id}.json`,
-					idx < 10,
+					shouldSkipCache(entry.gachaName, idx),
 				);
 
 				const {
@@ -200,7 +203,8 @@ export const song = async () => {
 			.map(async ([id, entry], idx) => {
 				const song = await bestdori<Bandori.Song>(
 					`api/songs/${id}.json`,
-					idx < 10 || entry.difficulty[4]?.publishedAt !== undefined,
+					shouldSkipCache(entry.musicTitle, idx) ||
+						entry.difficulty[4]?.publishedAt !== undefined,
 				);
 
 				const {
@@ -237,6 +241,11 @@ export const song = async () => {
 		)
 		.map((entry) => schema.song.parse(entry));
 };
+
+// skip cache if EN' name is not yet defined and
+// for the first 10 items (usually to-be-released on EN)
+const shouldSkipCache = (name: Bandori.RegionTuple<string>, idx?: number) =>
+	!name[1] || idx === undefined || idx < 10;
 
 const maybeWillBeAvailableOnEn = (
 	from: Bandori.RegionTuple<string>,
