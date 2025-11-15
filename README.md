@@ -14,27 +14,34 @@ It uses JP server data (since EN is behind), so anything available on JP but not
 ---
 
 ## ✨ Features
+
 This website adds up all the free stars you can get from different sources, which includes:
 
 ### 🗓️ Events
+
 - Story rewards
 - Point milestones
 - Ranking rewards
 
 ### 🎵 Songs
+
 - Score rewards (S / SS)
 - Full combo rewards (Hard / Expert / Special)
 
 ### 🌤️ Daily Rewards
+
 - **150 stars per week** from login bonuses
 - **1 star gacha ticket weekly** from daily live
 
 ### 💳 Monthly Pass
+
 - Toggle between **free/paid** monthly pass
 
 ### 🔧 Effort Adjustment
+
 Customize the estimated rewards based on how much you intend to grind.
 You can adjust things like:
+
 - Which **song difficulties** you plan to full combo
 - Your **target event points**
 - Your **target event ranking**
@@ -43,21 +50,25 @@ You can adjust things like:
 ---
 
 ## 🚀 Live Demo
+
 **https://bandori-stars.notsweet.workers.dev/**
-*(Screenshots and/or gifs coming soon)*
+_(Screenshots and/or gifs coming soon)_
 
 ---
 
 ## 📦 Data Source
+
 Uses publicly available JSON + images from **Bestdori!**.
 
 ---
 
 ## 🤝 Contributing
+
 Found a bug? Want to suggest something?
 Open a GitHub issue or reach me out at discord [@lasciate](https://discordapp.com/users/397878331862810634).
 
 ---
 
 ## 📄 License
+
 Licensed under **GPL-3.0**.
