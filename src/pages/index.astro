@@ -10,7 +10,11 @@ const randomCard = (() => {
 })();
 ---
 
-<BaseLayout>
+<BaseLayout
+	title="Main page"
+	description="Free stars calculator for BanG Dream GBP (EN)"
+	image={(await getCardAsset(Astro, { kind: "full", ...randomCard })).src}
+>
 	<a
 		{...showFullCardModalOnClick(randomCard.card, {
 			auto_scroll: true,

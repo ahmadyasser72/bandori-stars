@@ -4,7 +4,7 @@ import { Icon } from "astro-icon/components";
 import { gacha_map, song_map } from "@/contents/data";
 import GachaCard from "~/components/gacha-card.astro";
 import BaseLayout from "~/layouts/base-layout.astro";
-import { getEventAsset } from "~/lib/assets";
+import { getEventAsset, getGachaBanner } from "~/lib/assets";
 import { dayjs, getDateOffset, now } from "~/lib/date";
 import { formatNumber, sum } from "~/lib/math";
 import { pluralize, regionValue } from "~/lib/utilities";
@@ -93,7 +93,11 @@ const songLevelChoices = new Set(
 );
 ---
 
-<BaseLayout>
+<BaseLayout
+	title={`Free stars until ${gacha.name}`}
+	description={`Calculate how much free stars you can get until ${gacha.name} banner ends`}
+	image={(await getGachaBanner(Astro, { gacha })).src}
+>
 	{
 		events.active && (
 			<img

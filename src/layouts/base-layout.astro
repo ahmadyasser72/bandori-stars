@@ -1,5 +1,14 @@
 ---
 import "~/styles/global.css";
+
+interface Props {
+	title: string;
+	description: string;
+	image: string;
+}
+
+const { title, description, image } = Astro.props;
+const fullTitle = `${title} | bandori-stars`;
 ---
 
 <html lang="en">
@@ -8,7 +17,18 @@ import "~/styles/global.css";
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+
+		<title>{fullTitle}</title>
+		<meta name="description" content={description} />
+
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={fullTitle} />
+		<meta property="og:description" content={description} />
+		<meta
+			property="og:url"
+			content={new URL(Astro.url.pathname, Astro.url.origin).href}
+		/>
+		<meta property="og:image" content={new URL(image, Astro.url.origin).href} />
 	</head>
 	<body>
 		<main up-main class="min-h-screen">
