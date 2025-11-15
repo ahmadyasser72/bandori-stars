@@ -1,4 +1,4 @@
 export const BESTDORI_CACHE_DIR = "./.bestdori-cache";
 export const MAX_IMAGE_WIDTH = 800;
 export const IMAGE_FORMAT = "avif";
-export const BLURHASH_SIZE = 32;
+export const BLURHASH_SIZE = 20;

@@ -10,14 +10,28 @@ export const generateBlurhash = async (name: string, buffer: Buffer) => {
 	if (!existsSync(path)) {
 		const { default: sharp } = await import("sharp");
 
-		const image = await sharp(buffer)
+		const original = sharp(buffer);
+		const metadata = await original.metadata();
+		const [componentX, componentY] =
+			metadata.height === metadata.width
+				? [5, 5]
+				: metadata.height > metadata.width
+					? [4, 6]
+					: [6, 4];
+
+		const resized = await original
 			.resize({ width: BLURHASH_SIZE, height: BLURHASH_SIZE })
 			.raw()
 			.ensureAlpha()
-			.toBuffer({ resolveWithObject: true });
+			.toBuffer();
 
-		const data = new Uint8ClampedArray(image.data);
-		const hash = encode(data, BLURHASH_SIZE, BLURHASH_SIZE, 4, 4);
+		const hash = encode(
+			new Uint8ClampedArray(resized),
+			BLURHASH_SIZE,
+			BLURHASH_SIZE,
+			componentX,
+			componentY,
+		);
 		writeFileSync(path, hash, { encoding: "utf-8" });
 	}
 
