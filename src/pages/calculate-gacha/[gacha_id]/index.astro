@@ -93,6 +93,47 @@ const songLevelChoices = new Set(
 );
 ---
 
+<script>
+	const updateSelectorList = new Set<string>();
+	const DEBOUNCE_DURATION = 1000;
+	let debounceTimer: undefined | ReturnType<typeof setTimeout> = undefined;
+
+	document.addEventListener("up:form:submit", async (event) => {
+		if (!(event.target instanceof HTMLElement)) return;
+		event.preventDefault();
+
+		const fieldset = event.target.closest("fieldset")!;
+		updateSelectorList.add(fieldset.dataset.update!);
+
+		clearTimeout(debounceTimer);
+		debounceTimer = setTimeout(async () => {
+			const selectors = [...updateSelectorList];
+			updateSelectorList.clear();
+
+			selectors.forEach((selector) => {
+				const before = document.querySelector(selector)!;
+				setTimeout(() => before.classList.add("opacity-50"), 150);
+			});
+
+			// @ts-expect-error https://unpoly.com/up:form:submit
+			const { fragment, finished } = await up.render(event.renderOptions);
+			await finished;
+
+			await Promise.all(
+				selectors.map(async (selector) => {
+					const after = fragment.querySelector(selector)!;
+					after.classList.add("flash-overlay", "flash");
+
+					setTimeout(() => after.classList.remove("flash"), 0);
+					after.addEventListener("transitionend", () =>
+						after.classList.remove("flash-overlay"),
+					);
+				}),
+			);
+		}, DEBOUNCE_DURATION);
+	});
+</script>
+
 <BaseLayout>
 	{
 		events.active && (
@@ -160,8 +201,7 @@ const songLevelChoices = new Set(
 		<form
 			up-target="#free-stars, #total-free-stars, #show-details"
 			up-autosubmit
-			up-watch-disable
-			up-watch-delay="200"
+			up-disable
 			class:list={[
 				"bg-base-200 border-base-300 rounded-box grid h-full content-center gap-x-2 border p-4 sm:grid-cols-2 md:row-span-2 md:grid-cols-1 lg:col-span-2 lg:row-span-1 lg:grid-cols-2",
 				events.active && "bg-base-200/67 backdrop-blur-sm",
@@ -170,6 +210,7 @@ const songLevelChoices = new Set(
 			<InputFieldset
 				title="Events"
 				class="sm:col-span-2 sm:grid-cols-2 md:col-span-1 md:grid-cols-1 lg:row-span-2"
+				data-update="#free-stars-event"
 			>
 				<label class="select select-sm w-52">
 					<span class="label">Event points</span>
@@ -227,6 +268,7 @@ const songLevelChoices = new Set(
 			<InputFieldset
 				title="Daily"
 				class="flex justify-evenly sm:col-span-2 md:col-span-1"
+				data-update="#free-stars-passive"
 			>
 				<label class="label">
 					<input
@@ -251,7 +293,7 @@ const songLevelChoices = new Set(
 				</label>
 			</InputFieldset>
 
-			<InputFieldset title="Monthly Pass">
+			<InputFieldset title="Monthly Pass" data-update="#free-stars-passive">
 				<div class="flex w-full justify-evenly">
 					<label class="label">
 						<input
@@ -303,7 +345,11 @@ const songLevelChoices = new Set(
 				</label>
 			</InputFieldset>
 
-			<InputFieldset title="Songs" class="lg:col-span-2 lg:grid-cols-2">
+			<InputFieldset
+				title="Songs"
+				class="lg:col-span-2 lg:grid-cols-2"
+				data-update="#free-stars-song"
+			>
 				<div class="flex w-full justify-evenly">
 					<label class="label">
 						<input
@@ -355,16 +401,28 @@ const songLevelChoices = new Set(
 		</form>
 
 		<div id="free-stars" class="contents">
-			<FreeStarsCard title="Free stars (events)" backdrop={!!events.active}>
+			<FreeStarsCard
+				id="free-stars-event"
+				title="Free stars (events)"
+				backdrop={!!events.active}
+			>
 				<FreeStarsEvents events={allEvents} {options} />
 			</FreeStarsCard>
 
-			<FreeStarsCard title="Free stars (passive)" backdrop={!!events.active}>
+			<FreeStarsCard
+				id="free-stars-passive"
+				title="Free stars (passive)"
+				backdrop={!!events.active}
+			>
 				<FreeStarsDaily {from} {to} {options} />
 				<FreeStarsMonthlyPass {from} {to} {options} />
 			</FreeStarsCard>
 
-			<FreeStarsCard title="Free stars (songs)" backdrop={!!events.active}>
+			<FreeStarsCard
+				id="free-stars-song"
+				title="Free stars (songs)"
+				backdrop={!!events.active}
+			>
 				<FreeStarsSongs until={to} {options} />
 			</FreeStarsCard>
 		</div>

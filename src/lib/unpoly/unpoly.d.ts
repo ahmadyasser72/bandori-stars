@@ -24,7 +24,11 @@ interface Unpoly {
 	render(
 		selector: string,
 		options: { response: unknown; history?: boolean },
-	): Promise<{ layer: UnpolyLayer }>;
+	): Promise<{
+		fragment: HTMLElement;
+		layer: UnpolyLayer;
+		finished: Promise<void>;
+	}>;
 }
 
 declare global {

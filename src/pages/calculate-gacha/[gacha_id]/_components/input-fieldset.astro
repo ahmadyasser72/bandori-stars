@@ -1,10 +1,12 @@
 ---
-interface Props {
+import type { JSX } from "astro/jsx-runtime";
+
+interface Props extends JSX.FieldsetHTMLAttributes {
 	title: string;
 	class?: string;
 }
 
-const { title, class: className } = Astro.props;
+const { title, class: className, ...props } = Astro.props;
 ---
 
 <fieldset
@@ -12,6 +14,7 @@ const { title, class: className } = Astro.props;
 		"fieldset bg-base-100/80 border-base-300 rounded-box content-center justify-items-center gap-2.5 border p-2.5 pt-0.5",
 		className,
 	]}
+	{...props}
 >
 	<legend class="fieldset-legend">{title}</legend>
 

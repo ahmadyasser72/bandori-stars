@@ -25,7 +25,9 @@ const pulls = Math.floor(total / STARS_PER_PULL);
 
 {
 	Object.entries(stars).map(([label, value]) => (
-		<div class:list={["badge", value > 0 ? "badge-accent" : "badge-neutral"]}>
+		<div
+			class:list={["badge w-30", value > 0 ? "badge-accent" : "badge-neutral"]}
+		>
 			{capitalize(label)} : {formatNumber(value)}&starf;
 		</div>
 	))
