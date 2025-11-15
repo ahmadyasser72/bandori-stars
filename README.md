@@ -29,6 +29,9 @@ This website adds up all the free stars you can get from different sources, whic
 - **150 stars per week** from login bonuses
 - **1 star gacha ticket weekly** from daily live
 
+### 💳 Monthly Pass
+- Toggle between **free/paid** monthly pass
+
 ### 🔧 Effort Adjustment
 Customize the estimated rewards based on how much you intend to grind.
 You can adjust things like:
