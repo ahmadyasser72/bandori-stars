@@ -1,6 +1,6 @@
 # bandori-stars ✨
 
-[![deploy](https://github.com/ahmadyasser72/bandori-stars/actions/workflows/deploy.yaml/badge.svg?branch=main&event=push)](https://github.com/ahmadyasser72/bandori-stars/actions/workflows/deploy.yaml)
+![Last updated](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fahmadyasser72%2Fbandori-stars%2Factions%2Fworkflows%2F202440081%2Fruns%3Fstatus%3Dcompleted%26per_page%3D1&query=%24.workflow_runs%5B0%5D.run_started_at&logo=cloudflareworkers&label=Last%20updated)
 ![Astro](https://img.shields.io/badge/astro-%232C2052.svg?logo=astro&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?logo=typescript&logoColor=white)
 ![DaisyUI](https://img.shields.io/badge/daisyui-5A0EF8?logo=daisyui&logoColor=white)
