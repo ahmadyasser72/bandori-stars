@@ -14,33 +14,23 @@ interface Props {
 const { from, to, options } = Astro.props;
 
 const { stars, starGachaTicket } = calculateDaily({ from, to }, options);
-const pulls = {
-	stars: Math.floor(stars.dailyLogin / STARS_PER_PULL),
-	ticket: starGachaTicket.dailyLives,
-};
+const pulls = Math.floor(stars.dailyLogin / STARS_PER_PULL);
 ---
 
-<div class="flex flex-col gap-1">
-	<div
-		class:list={[
-			"badge w-64",
-			stars.dailyLogin > 0 ? "badge-accent" : "badge-neutral",
-		]}
-	>
-		Daily login : {formatNumber(stars.dailyLogin)}&starf;
-	</div>
-	<div
-		class:list={[
-			"badge w-64",
-			starGachaTicket.dailyLives > 0 ? "badge-accent" : "badge-neutral",
-		]}
-	>
-		Daily lives : {starGachaTicket.dailyLives}&Cross; Star Gacha Ticket
-	</div>
-
-	<div class="badge badge-info w-64">
-		{pulls.stars}&Cross;
-		{pluralize(pulls.stars, "Pull")} &plus;
-		{pulls.ticket}&Cross; {pluralize(pulls.ticket, "Pull")}
-	</div>
+<div
+	class:list={[
+		"badge",
+		stars.dailyLogin > 0 ? "badge-accent" : "badge-neutral",
+	]}
+>
+	Daily Login : {formatNumber(stars.dailyLogin)}&starf; /
+	{pulls}&Cross; {pluralize(pulls, "Pull")}
+</div>
+<div
+	class:list={[
+		"badge",
+		starGachaTicket.dailyLives > 0 ? "badge-accent" : "badge-neutral",
+	]}
+>
+	Daily Live : {starGachaTicket.dailyLives}&Cross; Star Gacha Ticket
 </div>

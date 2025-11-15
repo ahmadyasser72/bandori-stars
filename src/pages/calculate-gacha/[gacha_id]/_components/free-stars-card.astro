@@ -13,9 +13,11 @@ const { title, backdrop } = Astro.props;
 		backdrop ? "bg-base-100/67 backdrop-blur-sm" : "bg-base-100",
 	]}
 >
-	<div class="card-body items-center text-center">
+	<div class="card-body items-center justify-center text-center">
 		<h2 class="card-title">{title}</h2>
 
-		<slot />
+		<div class="flex flex-wrap justify-center gap-1">
+			<slot />
+		</div>
 	</div>
 </div>

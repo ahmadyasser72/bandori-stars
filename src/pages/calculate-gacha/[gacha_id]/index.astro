@@ -8,10 +8,16 @@ import { getEventAsset } from "~/lib/assets";
 import { dayjs, getDateOffset, now } from "~/lib/date";
 import { formatNumber, sum } from "~/lib/math";
 import { pluralize, regionValue } from "~/lib/utilities";
-import { calculateDaily, calculateEvents, calculateSongs } from "./_calculate";
+import {
+	calculateDaily,
+	calculateEvents,
+	calculateMonthlyPass,
+	calculateSongs,
+} from "./_calculate";
 import FreeStarsCard from "./_components/free-stars-card.astro";
 import FreeStarsDaily from "./_components/free-stars-daily.astro";
 import FreeStarsEvents from "./_components/free-stars-events.astro";
+import FreeStarsMonthlyPass from "./_components/free-stars-monthly-pass.astro";
 import FreeStarsSongs from "./_components/free-stars-songs.astro";
 import InputFieldset from "./_components/input-fieldset.astro";
 import ShowDetailsButton from "./_components/show-details-button.astro";
@@ -41,6 +47,7 @@ const [from, to] = [now().subtract(dateOffset), gacha.endAt.jp];
 const { total, pulls } = (() => {
 	const events = calculateEvents(allEvents, options);
 	const daily = calculateDaily({ from, to }, options);
+	const monthlyPass = calculateMonthlyPass({ from, to }, options);
 	const songs = calculateSongs(to, options);
 
 	const total = {
@@ -48,6 +55,7 @@ const { total, pulls } = (() => {
 			[
 				events.flatMap(({ data, ...stars }) => Object.values(stars)),
 				daily.stars.dailyLogin,
+				monthlyPass.stars,
 				songs.flatMap(({ fullCombo, score }) => [
 					...Object.values(fullCombo).map(({ stars }) => stars),
 					...Object.values(score),
@@ -347,16 +355,17 @@ const songLevelChoices = new Set(
 		</form>
 
 		<div id="free-stars" class="contents">
-			<FreeStarsCard title="Free stars (songs)" backdrop={!!events.active}>
-				<FreeStarsSongs until={to} {options} />
-			</FreeStarsCard>
-
-			<FreeStarsCard title="Free stars (daily)" backdrop={!!events.active}>
-				<FreeStarsDaily {from} {to} {options} />
-			</FreeStarsCard>
-
 			<FreeStarsCard title="Free stars (events)" backdrop={!!events.active}>
 				<FreeStarsEvents events={allEvents} {options} />
+			</FreeStarsCard>
+
+			<FreeStarsCard title="Free stars (passive)" backdrop={!!events.active}>
+				<FreeStarsDaily {from} {to} {options} />
+				<FreeStarsMonthlyPass {from} {to} {options} />
+			</FreeStarsCard>
+
+			<FreeStarsCard title="Free stars (songs)" backdrop={!!events.active}>
+				<FreeStarsSongs until={to} {options} />
 			</FreeStarsCard>
 		</div>
 
