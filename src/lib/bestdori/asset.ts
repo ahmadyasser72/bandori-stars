@@ -6,24 +6,28 @@ import { compressImage } from "./process/compress";
 export const hasNoPreTrained = ({ name, type }: Entry<"card_map">) =>
 	name === "Graduation" || ["kirafes", "birthday"].includes(type);
 
-interface Blurhashable {
-	blurhash?: boolean;
-}
+type AssetBuffer = Promise<Buffer<ArrayBuffer>>;
+type AssetBlurhash = Promise<string>;
+type Blurhashable<T extends boolean = boolean> = { blurhash?: T };
 
-interface AssetCardParameters extends Blurhashable {
+interface AssetCardParameters {
 	card: Entry<"card_map">;
 	kind: "icon" | "full";
 	trained: boolean;
 }
 
-export const card = async ({
+export async function card(
+	options: AssetCardParameters & Blurhashable<false>,
+): AssetBuffer;
+export async function card(
+	options: AssetCardParameters & Blurhashable<true>,
+): AssetBlurhash;
+export async function card({
 	card,
 	kind,
 	trained,
 	blurhash = false,
-}: AssetCardParameters) => {
-	if (!trained && hasNoPreTrained(card)) return;
-
+}: AssetCardParameters & Blurhashable) {
 	const type = trained ? "after_training" : "normal";
 	const name = ["card", card.id, kind, type].join("_");
 	const postProcess = blurhash ? generateBlurhash : compressImage;
@@ -52,18 +56,24 @@ export const card = async ({
 	}
 
 	return postProcess(name, buffer);
-};
+}
 
-interface AssetEventParameters extends Blurhashable {
+interface AssetEventParameters {
 	event: Entry<"event_map">;
 	kind: "banner" | "background";
 }
 
-export const event = async ({
+export async function event(
+	options: AssetEventParameters & Blurhashable<false>,
+): AssetBuffer;
+export async function event(
+	options: AssetEventParameters & Blurhashable<true>,
+): AssetBlurhash;
+export async function event({
 	event,
 	kind,
 	blurhash = false,
-}: AssetEventParameters) => {
+}: AssetEventParameters & Blurhashable) {
 	const name = ["event", event.id, kind].join("_");
 	const postProcess = blurhash ? generateBlurhash : compressImage;
 	const cached = await postProcess(name);
@@ -87,16 +97,22 @@ export const event = async ({
 	}
 
 	return postProcess(name, buffer);
-};
+}
 
-interface AssetGachaBannerParameters extends Blurhashable {
+interface AssetGachaBannerParameters {
 	gacha: Entry<"gacha_map">;
 }
 
-export const gachaBanner = async ({
+export async function gachaBanner(
+	options: AssetGachaBannerParameters & Blurhashable<false>,
+): AssetBuffer;
+export async function gachaBanner(
+	options: AssetGachaBannerParameters & Blurhashable<true>,
+): AssetBlurhash;
+export async function gachaBanner({
 	gacha,
 	blurhash = false,
-}: AssetGachaBannerParameters) => {
+}: AssetGachaBannerParameters & Blurhashable) {
 	const name = `gacha_${gacha.id}_banner`;
 	const postProcess = blurhash ? generateBlurhash : compressImage;
 	const cached = await postProcess(name);
@@ -107,16 +123,22 @@ export const gachaBanner = async ({
 	);
 
 	return postProcess(name, buffer);
-};
+}
 
-interface AssetSongAlbumCoverParameters extends Blurhashable {
+interface AssetSongAlbumCoverParameters {
 	song: Entry<"song_map">;
 }
 
-export const songAlbumCover = async ({
+export async function songAlbumCover(
+	options: AssetSongAlbumCoverParameters & Blurhashable<false>,
+): AssetBuffer;
+export async function songAlbumCover(
+	options: AssetSongAlbumCoverParameters & Blurhashable<true>,
+): AssetBlurhash;
+export async function songAlbumCover({
 	song,
 	blurhash = false,
-}: AssetSongAlbumCoverParameters) => {
+}: AssetSongAlbumCoverParameters & Blurhashable) {
 	const name = `song_${song.id}_album_cover`;
 	const postProcess = blurhash ? generateBlurhash : compressImage;
 	const cached = await postProcess(name);
@@ -128,7 +150,7 @@ export const songAlbumCover = async ({
 	);
 
 	return postProcess(name, buffer);
-};
+}
 
 const fetchBestdoriWithRegionFallbacks = (jpUrl: string) =>
 	fetchBestdori(jpUrl)

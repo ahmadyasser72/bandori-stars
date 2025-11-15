@@ -9,6 +9,7 @@ import { shuffle } from "fast-shuffle";
 
 import { card_map } from "@/contents/data";
 import { bestdori } from "~/lib/bestdori";
+import { hasNoPreTrained } from "~/lib/bestdori/asset";
 import { IMAGE_FORMAT } from "~/lib/bestdori/constants";
 
 export const prerender = true;
@@ -22,14 +23,16 @@ export const getStaticPaths = (() => {
 
 	const results = allCards.flatMap((card) =>
 		kinds.flatMap((kind) =>
-			[true, false].map((trained) => ({
-				params: {
-					id: card.id,
-					type: trained ? `${kind}_trained` : kind,
-					ext: IMAGE_FORMAT,
-				},
-				props: { card, kind, trained },
-			})),
+			[true, false]
+				.filter((trained) => trained || !hasNoPreTrained(card))
+				.map((trained) => ({
+					params: {
+						id: card.id,
+						type: trained ? `${kind}_trained` : kind,
+						ext: IMAGE_FORMAT,
+					},
+					props: { card, kind, trained },
+				})),
 		),
 	);
 

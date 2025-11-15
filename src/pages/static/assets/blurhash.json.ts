@@ -20,7 +20,7 @@ export const GET: APIRoute = async () => {
 						[
 							`/static/assets/card/${params.id}_${params.type}.${params.ext}`,
 							await bestdori.asset.card({ ...props, blurhash: true }),
-						] as [string, string],
+						] as const,
 				),
 			...event
 				.getStaticPaths()
@@ -29,7 +29,7 @@ export const GET: APIRoute = async () => {
 						[
 							`/static/assets/event/${params.id}_${params.type}.${params.ext}`,
 							await bestdori.asset.event({ ...props, blurhash: true }),
-						] as [string, string],
+						] as const,
 				),
 			...gacha
 				.getStaticPaths()
@@ -38,7 +38,7 @@ export const GET: APIRoute = async () => {
 						[
 							`/static/assets/gacha/${params.id}_banner.${params.ext}`,
 							await bestdori.asset.gachaBanner({ ...props, blurhash: true }),
-						] as [string, string],
+						] as const,
 				),
 			...song
 				.getStaticPaths()
@@ -47,14 +47,20 @@ export const GET: APIRoute = async () => {
 						[
 							`/static/assets/song/${params.id}_album_cover.${params.ext}`,
 							await bestdori.asset.songAlbumCover({ ...props, blurhash: true }),
-						] as [string, string],
+						] as const,
 				),
 		]),
 	);
 
+	const { compare } = new Intl.Collator(undefined, {
+		numeric: true,
+		sensitivity: "base",
+	});
 	return new Response(
 		JSON.stringify(
-			Object.fromEntries(entries.sort(([a], [b]) => a.localeCompare(b))),
+			Object.fromEntries(
+				entries.filter(([, hash]) => !!hash).sort(([a], [b]) => compare(a, b)),
+			),
 		),
 	);
 };
