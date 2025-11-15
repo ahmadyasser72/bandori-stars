@@ -3,7 +3,7 @@ import { fetchBestdori } from "./client";
 
 export const bestdori = <T>(
 	pathname: string,
-	skipCache?: boolean,
+	skipCache?: boolean | ((entry: T) => boolean),
 ): Promise<T> =>
 	fetchBestdori(pathname, skipCache).then((response) => response.json());
 

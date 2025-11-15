@@ -51,10 +51,10 @@ export const card = async () => {
 					Number(rarity) <= constants.rarity.max &&
 					gacha.includes(type),
 			)
-			.map(async ([id, entry]) => {
+			.map(async ([id]) => {
 				const card = await bestdori<Bandori.Card>(
 					`api/cards/${id}.json`,
-					shouldSkipCache(entry.prefix),
+					(entry) => shouldSkipCache(entry.prefix),
 				);
 
 				const {
@@ -98,10 +98,10 @@ export const event = async () => {
 			.filter(([, { startAt, endAt }]) =>
 				maybeWillBeAvailableOnEn(startAt, endAt),
 			)
-			.map(async ([id, entry], idx) => {
+			.map(async ([id], idx) => {
 				const bandoriEvent = await bestdori<Bandori.Event>(
 					`api/events/${id}.json`,
-					shouldSkipCache(entry.eventName, idx),
+					(entry) => shouldSkipCache(entry.eventName, idx),
 				);
 
 				const {
@@ -153,10 +153,10 @@ export const gacha = async () => {
 				([_, { type, publishedAt, closedAt }]) =>
 					f2p.includes(type) && maybeWillBeAvailableOnEn(publishedAt, closedAt),
 			)
-			.map(async ([id, entry], idx) => {
+			.map(async ([id], idx) => {
 				const gacha = await bestdori<Bandori.Gacha>(
 					`api/gacha/${id}.json`,
-					shouldSkipCache(entry.gachaName, idx),
+					(entry) => shouldSkipCache(entry.gachaName, idx),
 				);
 
 				const {
@@ -200,10 +200,11 @@ export const song = async () => {
 					(difficulty[4]?.publishedAt &&
 						maybeWillBeAvailableOnEn(difficulty[4].publishedAt)),
 			)
-			.map(async ([id, entry], idx) => {
+			.map(async ([id], idx) => {
 				const song = await bestdori<Bandori.Song>(
 					`api/songs/${id}.json`,
-					shouldSkipCache(entry.musicTitle, idx) ||
+					(entry) =>
+						shouldSkipCache(entry.musicTitle, idx) ||
 						entry.difficulty[4]?.publishedAt !== undefined,
 				);
 
