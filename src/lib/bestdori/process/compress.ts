@@ -17,7 +17,7 @@ export const compressImage = async (name: string, buffer: Buffer) => {
 				withoutEnlargement: true,
 				kernel: "mks2021",
 			})
-			[IMAGE_FORMAT]({ quality: 67, effort: 2 })
+			[IMAGE_FORMAT]({ quality: 67, effort: 4 })
 			.toFile(path);
 	}
 
