@@ -4,7 +4,7 @@ on:
   push:
   workflow_dispatch:
   schedule:
-    - cron: "30 6 * * *"
+    - cron: "0 * * * *"
 
 concurrency:
   group: deploy-cloudflare-workers-${{ github.ref }}
