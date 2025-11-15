@@ -5,9 +5,19 @@ import { encode } from "blurhash";
 
 import { BESTDORI_CACHE_DIR, BLURHASH_SIZE } from "~/lib/bestdori/constants";
 
-export const generateBlurhash = async (name: string, buffer: Buffer) => {
+export async function generateBlurhash(
+	name: string,
+): Promise<string | undefined>;
+export async function generateBlurhash(
+	name: string,
+	buffer: Buffer,
+): Promise<string>;
+export async function generateBlurhash(
+	name: string,
+	buffer?: Buffer,
+): Promise<string | undefined> {
 	const path = getPath(name);
-	if (!existsSync(path)) {
+	if (buffer && !existsSync(path)) {
 		const { default: sharp } = await import("sharp");
 
 		const original = sharp(buffer);
@@ -35,8 +45,9 @@ export const generateBlurhash = async (name: string, buffer: Buffer) => {
 		writeFileSync(path, hash, { encoding: "utf-8" });
 	}
 
+	if (!buffer) return;
 	return readFileSync(path, "utf-8");
-};
+}
 
 const getPath = (name: string) =>
 	joinPath(BESTDORI_CACHE_DIR, "blurhash", `${name}.blurhash.txt`);

@@ -26,6 +26,9 @@ export const card = async ({
 
 	const type = trained ? "after_training" : "normal";
 	const name = ["card", card.id, kind, type].join("_");
+	const postProcess = blurhash ? generateBlurhash : compressImage;
+	const cached = await postProcess(name);
+	if (cached) return cached;
 
 	let buffer: Buffer;
 	switch (kind) {
@@ -48,7 +51,7 @@ export const card = async ({
 		}
 	}
 
-	return (blurhash ? generateBlurhash : compressImage)(name, buffer);
+	return postProcess(name, buffer);
 };
 
 interface AssetEventParameters extends Blurhashable {
@@ -62,6 +65,9 @@ export const event = async ({
 	blurhash = false,
 }: AssetEventParameters) => {
 	const name = ["event", event.id, kind].join("_");
+	const postProcess = blurhash ? generateBlurhash : compressImage;
+	const cached = await postProcess(name);
+	if (cached) return cached;
 
 	let buffer: Buffer;
 	switch (kind) {
@@ -80,7 +86,7 @@ export const event = async ({
 		}
 	}
 
-	return (blurhash ? generateBlurhash : compressImage)(name, buffer);
+	return postProcess(name, buffer);
 };
 
 interface AssetGachaBannerParameters extends Blurhashable {
@@ -92,11 +98,15 @@ export const gachaBanner = async ({
 	blurhash = false,
 }: AssetGachaBannerParameters) => {
 	const name = `gacha_${gacha.id}_banner`;
+	const postProcess = blurhash ? generateBlurhash : compressImage;
+	const cached = await postProcess(name);
+	if (cached) return cached;
+
 	const buffer = await fetchBestdoriWithRegionFallbacks(
 		`assets/jp/homebanner_rip/${gacha.bannerAssetBundleName}.png`,
 	);
 
-	return (blurhash ? generateBlurhash : compressImage)(name, buffer);
+	return postProcess(name, buffer);
 };
 
 interface AssetSongAlbumCoverParameters extends Blurhashable {
@@ -108,12 +118,16 @@ export const songAlbumCover = async ({
 	blurhash = false,
 }: AssetSongAlbumCoverParameters) => {
 	const name = `song_${song.id}_album_cover`;
+	const postProcess = blurhash ? generateBlurhash : compressImage;
+	const cached = await postProcess(name);
+	if (cached) return cached;
+
 	const chunk = 10 * Math.ceil(Number(song.id) / 10);
 	const buffer = await fetchBestdoriWithRegionFallbacks(
 		`assets/jp/musicjacket/musicjacket${chunk}_rip/assets-star-forassetbundle-startapp-musicjacket-musicjacket${chunk}-${song.jacketImage[0].toLowerCase()}-jacket.png`,
 	);
 
-	return (blurhash ? generateBlurhash : compressImage)(name, buffer);
+	return postProcess(name, buffer);
 };
 
 const fetchBestdoriWithRegionFallbacks = (jpUrl: string) =>

@@ -7,9 +7,17 @@ import {
 	MAX_IMAGE_WIDTH,
 } from "~/lib/bestdori/constants";
 
-export const compressImage = async (name: string, buffer: Buffer) => {
+export async function compressImage(name: string): Promise<Buffer | undefined>;
+export async function compressImage(
+	name: string,
+	buffer: Buffer,
+): Promise<Buffer>;
+export async function compressImage(
+	name: string,
+	buffer?: Buffer,
+): Promise<Buffer | undefined> {
 	const path = getPath(name);
-	if (!existsSync(path)) {
+	if (buffer && !existsSync(path)) {
 		const { default: sharp } = await import("sharp");
 		await sharp(buffer)
 			.resize({
@@ -21,8 +29,9 @@ export const compressImage = async (name: string, buffer: Buffer) => {
 			.toFile(path);
 	}
 
+	if (!buffer) return;
 	return readFileSync(path);
-};
+}
 
 const getPath = (name: string) =>
 	joinPath(BESTDORI_CACHE_DIR, "compressed", `${name}.${IMAGE_FORMAT}`);
