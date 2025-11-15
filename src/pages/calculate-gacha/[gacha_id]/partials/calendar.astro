@@ -2,9 +2,9 @@
 import { gacha_map } from "@/contents/data";
 import { getDateOffset, now } from "~/lib/date";
 import { formatNumber, sum } from "~/lib/math";
-import { useCalendar } from "~/lib/unpoly/compiler/calendar/helper";
 import { regionValue } from "~/lib/utilities";
 import { calculateEvents } from "../_calculate";
+import { useCalendar } from "../_compiler/calendar/helper";
 import OptionsBadge from "../_components/options-badge.astro";
 import { STARS_FROM_DAILY_LOGIN } from "../_constants";
 import { getOptions } from "../_options";

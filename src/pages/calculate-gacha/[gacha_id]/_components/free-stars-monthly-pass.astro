@@ -1,0 +1,28 @@
+---
+import type { dayjs } from "~/lib/date";
+import { formatNumber } from "~/lib/math";
+import { pluralize } from "~/lib/utilities";
+import { calculateMonthlyPass } from "../_calculate";
+import { STARS_PER_PULL } from "../_constants";
+
+interface Props {
+	from: dayjs.Dayjs;
+	to: dayjs.Dayjs;
+	options: App.CalculateOptions;
+}
+
+const { from, to, options } = Astro.props;
+
+const { stars, months } = calculateMonthlyPass({ from, to }, options);
+const pulls = Math.floor(stars / STARS_PER_PULL);
+---
+
+<div
+	class:list={[
+		"badge badge-sm",
+		stars > 0 || months > 0 ? "badge-accent" : "badge-neutral",
+	]}
+>
+	Monthly Pass ({months}&Cross;) : {formatNumber(stars)}&starf; /
+	{pulls}&Cross; {pluralize(pulls, "Pull")}
+</div>

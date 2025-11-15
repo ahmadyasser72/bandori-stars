@@ -1,7 +1,11 @@
 import { song_map, type Entry } from "@/contents/data";
 import { dayjs } from "~/lib/date";
 import { sum } from "~/lib/math";
-import { STARS_FROM_DAILY_LOGIN } from "./_constants";
+import {
+	STARS_FROM_DAILY_LOGIN,
+	STARS_FROM_FREE_MONTHLY_PASS,
+	STARS_FROM_PAID_MONTHLY_PASS,
+} from "./_constants";
 
 export const calculateEvents = (
 	events: (Entry<"event_map"> | null)[],
@@ -49,6 +53,29 @@ export const calculateDaily = (
 		stars: { dailyLogin },
 		starGachaTicket: { dailyLives },
 	};
+};
+
+export const calculateMonthlyPass = (
+	{ from, to }: Record<"from" | "to", dayjs.Dayjs>,
+	options: App.CalculateOptions,
+) => {
+	if (options.monthly_pass_points === 0 || to.isBefore(from))
+		return { stars: 0, months: 0 };
+
+	const start = from.add(1, "months").startOf("months");
+	const months = to.diff(start, "months");
+
+	const type = options.monthly_pass_type;
+	const monthlyPassStars = sum(
+		(type === "free"
+			? STARS_FROM_FREE_MONTHLY_PASS
+			: [...STARS_FROM_PAID_MONTHLY_PASS, ...STARS_FROM_FREE_MONTHLY_PASS]
+		)
+			.filter(({ livePoints }) => livePoints <= options.monthly_pass_points)
+			.map(({ stars }) => stars),
+	);
+
+	return { stars: monthlyPassStars * months, months };
 };
 
 export const calculateSongs = (

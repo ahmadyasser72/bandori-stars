@@ -1,7 +1,7 @@
 ---
 import type { dayjs } from "~/lib/date";
 import { formatNumber, sum } from "~/lib/math";
-import { pluralize } from "~/lib/utilities";
+import { capitalize, pluralize } from "~/lib/utilities";
 import { calculateSongs } from "../_calculate";
 import { STARS_PER_PULL } from "../_constants";
 
@@ -27,30 +27,17 @@ const total = sum(Object.values(stars));
 const pulls = Math.floor(total / STARS_PER_PULL);
 ---
 
-<>
-	<div class="flex w-full items-center justify-center">
-		<div class="flex flex-col gap-1">
-			{
-				Object.entries(stars).map(([label, value]) => (
-					<div
-						class:list={[
-							"badge w-32 capitalize",
-							value > 0 ? "badge-accent" : "badge-neutral",
-						]}
-					>
-						{label} : {formatNumber(value)}&starf;
-					</div>
-				))
-			}
+{
+	Object.entries(stars).map(([label, value]) => (
+		<div
+			class:list={["badge w-24", value > 0 ? "badge-accent" : "badge-neutral"]}
+		>
+			{capitalize(label)} : {formatNumber(value)}&starf;
 		</div>
+	))
+}
 
-		<div class="flex flex-col gap-1">
-			<div class="badge badge-info w-32">
-				Total: {formatNumber(total)}&starf;
-			</div>
-			<div class="badge badge-info w-32">
-				{pulls}&Cross; {pluralize(pulls, "Pull")}
-			</div>
-		</div>
-	</div>
-</>
+<div class="badge badge-info">
+	Total : {formatNumber(total)}&starf; /
+	{pulls}&Cross; {pluralize(pulls, "Pull")}
+</div>

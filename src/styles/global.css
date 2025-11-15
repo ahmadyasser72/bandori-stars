@@ -37,3 +37,18 @@
 @utility absolute-center {
 	@apply absolute-center-x absolute-center-y;
 }
+
+@utility flash-overlay {
+	position: relative;
+
+	&::after {
+		content: "";
+		border-radius: inherit;
+		transition: all 750ms ease-out;
+		@apply bg-primary/0 outline-primary/0 absolute inset-0 outline-4;
+	}
+
+	&.flash::after {
+		@apply bg-primary/80 outline-primary/80;
+	}
+}

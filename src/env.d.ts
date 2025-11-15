@@ -12,8 +12,13 @@ declare namespace App {
 		target_point: number;
 		target_rank: number;
 		read_event_story: boolean;
+
 		daily_login: boolean;
 		daily_live: boolean;
+
+		monthly_pass_type: "free" | "paid";
+		monthly_pass_points: number;
+
 		song_s_score: boolean;
 		song_ss_score: boolean;
 		song_full_combo_level: number;
