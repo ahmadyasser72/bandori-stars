@@ -8,6 +8,7 @@ export const {
 	gacha_map,
 	event_map,
 	song_map,
+	LATEST_EVENT_RELEASE_GAP,
 }: ContentData;
 
 type MapValue<T extends Map<any, any>> =

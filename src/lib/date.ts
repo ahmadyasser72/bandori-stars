@@ -3,6 +3,8 @@ import duration from "dayjs/plugin/duration";
 import isBetween from "dayjs/plugin/isBetween";
 import relativeTime from "dayjs/plugin/relativeTime";
 
+import { LATEST_EVENT_RELEASE_GAP } from "@/contents/data";
+
 dayjs.extend(duration);
 dayjs.extend(isBetween);
 dayjs.extend(relativeTime);
@@ -17,6 +19,6 @@ export const getDateOffset = ({
 	en: dayjs.Dayjs | null;
 	jp: dayjs.Dayjs;
 }) => {
-	if (!en) return 310 * 24 * 60 * 60 * 1000; // default offset 330 days
+	if (!en) return LATEST_EVENT_RELEASE_GAP;
 	return en.diff(jp);
 };

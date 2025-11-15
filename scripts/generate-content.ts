@@ -136,6 +136,15 @@ const songMap = await timed(
 	loader.song().then(regionValue.mapUnwrap("title")).then(toMap),
 );
 
+const LATEST_EVENT_RELEASE_GAP = await timed(
+	"fetch latest event day gap",
+	(async () => {
+		const allEvents = await loader.event(true);
+		const { startAt } = allEvents.filter(({ startAt }) => !!startAt.en).at(-1)!;
+		return startAt.en!.diff(startAt.jp);
+	})(),
+);
+
 const data = {
 	band_map: bandMap,
 	character_map: characterMap,
@@ -143,11 +152,15 @@ const data = {
 	card_map: cardMap,
 	song_map: songMap,
 	gacha_map,
-} satisfies Record<string, Map<string, any>>;
+	LATEST_EVENT_RELEASE_GAP,
+};
 
 await timed(
 	`save data [${Object.entries(data)
-		.map(([key, map]) => `${key} (${[...map.keys()].length})`)
+		.map(
+			([key, value]) =>
+				`${key} (${value instanceof Map ? [...value.keys()].length : 1})`,
+		)
 		.join(", ")}]`,
 	save(data),
 );

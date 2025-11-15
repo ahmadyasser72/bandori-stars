@@ -87,7 +87,7 @@ export const card = async () => {
 		.map((entry) => schema.card.parse(entry));
 };
 
-export const event = async () => {
+export const event = async (all = false) => {
 	const eventList = await bestdori<Bandori.EventList>(
 		"api/events/all.5.json",
 		true,
@@ -95,8 +95,9 @@ export const event = async () => {
 
 	const entries = await Promise.all(
 		Object.entries(eventList)
-			.filter(([, { startAt, endAt }]) =>
-				maybeWillBeAvailableOnEn(startAt, endAt),
+			.filter(
+				([, { startAt, endAt }]) =>
+					all || maybeWillBeAvailableOnEn(startAt, endAt),
 			)
 			.map(async ([id], idx) => {
 				const bandoriEvent = await bestdori<Bandori.Event>(
