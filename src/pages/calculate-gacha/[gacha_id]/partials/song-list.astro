@@ -1,13 +1,11 @@
 ---
 import { Icon } from "astro-icon/components";
 
-import { gacha_map } from "@/contents/data";
+import { gacha_map, LATEST_EVENT_RELEASE_GAP } from "@/contents/data";
 import NextPageButton from "~/components/next-page-button.astro";
 import { getSongAlbumCover } from "~/lib/assets";
-import { getDateOffset } from "~/lib/date";
 import { sum } from "~/lib/math";
 import { paginate } from "~/lib/paginate";
-import { regionValue } from "~/lib/utilities";
 import { calculateSongs } from "../_calculate";
 import OptionsBadge from "../_components/options-badge.astro";
 import { getOptions } from "../_options";
@@ -19,9 +17,6 @@ if (!gacha) {
 	return new Response("Gacha not found.", { status: 404 });
 }
 
-const events = regionValue.unwrap(gacha.events)!;
-const dateOffset = getDateOffset((events.past.at(0) ?? events.active!).startAt);
-
 const options = await getOptions(Astro);
 const { results, page } = paginate({
 	context: Astro,
@@ -29,7 +24,7 @@ const { results, page } = paginate({
 	items: calculateSongs(gacha.endAt.jp, options).map((it) => ({
 		...it,
 		predicted: (it.data.specialReleasedAt ?? it.data.releasedAt).jp.add(
-			dateOffset,
+			LATEST_EVENT_RELEASE_GAP,
 		),
 		total: sum([
 			...Object.values(it.fullCombo).map(({ stars }) => stars),

@@ -1,11 +1,11 @@
 ---
 import { Icon } from "astro-icon/components";
 
-import { gacha_map, song_map } from "@/contents/data";
+import { gacha_map, LATEST_EVENT_RELEASE_GAP, song_map } from "@/contents/data";
 import GachaCard from "~/components/gacha-card.astro";
 import BaseLayout from "~/layouts/base-layout.astro";
 import { getEventAsset, getGachaBanner } from "~/lib/assets";
-import { dayjs, getDateOffset, now } from "~/lib/date";
+import { dayjs, now } from "~/lib/date";
 import { formatNumber, sum } from "~/lib/math";
 import { pluralize, regionValue } from "~/lib/utilities";
 import {
@@ -41,8 +41,7 @@ if (Astro.url.searchParams.size === 0)
 
 const events = regionValue.unwrap(gacha.events)!;
 const allEvents = [...events.past, events.active];
-const dateOffset = getDateOffset((events.past.at(0) ?? events.active!).startAt);
-const [from, to] = [now().subtract(dateOffset), gacha.endAt.jp];
+const [from, to] = [now().subtract(LATEST_EVENT_RELEASE_GAP), gacha.endAt.jp];
 
 const { total, pulls } = (() => {
 	const events = calculateEvents(allEvents, options);
@@ -128,9 +127,13 @@ const songLevelChoices = new Set(
 							class="size-6 rounded-full border border-current"
 							name="emojione:flag-for-united-states"
 						/>
-						{gacha.startAt.jp.add(dateOffset).format("DD-MM-YYYY")}
+						{
+							gacha.startAt.jp
+								.add(LATEST_EVENT_RELEASE_GAP)
+								.format("DD-MM-YYYY")
+						}
 						/
-						{gacha.startAt.jp.add(dateOffset).fromNow()}
+						{gacha.startAt.jp.add(LATEST_EVENT_RELEASE_GAP).fromNow()}
 					</div>
 
 					<div class="dropdown dropdown-end dropdown-top">
@@ -150,7 +153,9 @@ const songLevelChoices = new Set(
 								<h2 class="card-title">Predicted start date</h2>
 								<p>
 									This assumes ~{
-										Math.round(dayjs.duration(dateOffset).asDays())
+										Math.round(
+											dayjs.duration(LATEST_EVENT_RELEASE_GAP).asDays(),
+										)
 									}
 									days difference between JP and EN server.
 								</p>

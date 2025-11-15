@@ -1,6 +1,6 @@
 ---
-import { gacha_map } from "@/contents/data";
-import { getDateOffset, now } from "~/lib/date";
+import { gacha_map, LATEST_EVENT_RELEASE_GAP } from "@/contents/data";
+import { now } from "~/lib/date";
 import { formatNumber, sum } from "~/lib/math";
 import { regionValue } from "~/lib/utilities";
 import { calculateEvents } from "../_calculate";
@@ -23,8 +23,6 @@ const calculatedEvents = calculateEvents(
 	options,
 );
 
-const dateOffset = getDateOffset((events.past.at(0) ?? events.active!).startAt);
-
 const RRULE_DAYS = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
 const getRruleDay = (idx: number) => {
 	const today = now().day();
@@ -36,7 +34,9 @@ const createRecurrenceEvent = (
 	reward: string,
 	days: number[],
 ) => {
-	const maxDate = calculatedEvents.at(-1)!.data.endAt.jp.add(dateOffset);
+	const maxDate = calculatedEvents
+		.at(-1)!
+		.data.endAt.jp.add(LATEST_EVENT_RELEASE_GAP);
 	const startDate = now().add(days[0], "days");
 	if (startDate.isAfter(maxDate, "days")) return;
 
@@ -64,8 +64,12 @@ const calendar = useCalendar({
 		.map(({ event, total }) => ({
 			id: event.id,
 			title: `${event.name} (${total}★)`,
-			start: Temporal.PlainDate.from(event.startAt.jp.add(dateOffset).format()),
-			end: Temporal.PlainDate.from(event.endAt.jp.add(dateOffset).format()),
+			start: Temporal.PlainDate.from(
+				event.startAt.jp.add(LATEST_EVENT_RELEASE_GAP).format(),
+			),
+			end: Temporal.PlainDate.from(
+				event.endAt.jp.add(LATEST_EVENT_RELEASE_GAP).format(),
+			),
 			calendarId: "event-stars",
 		})),
 	recurrenceEvents: [
