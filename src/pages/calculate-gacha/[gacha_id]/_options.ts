@@ -2,7 +2,7 @@ import type { APIContext } from "astro";
 
 export const getOptions = async (context: APIContext) => {
 	const params = context.url.searchParams;
-	const sessionOptions = await context.session!.get("calculate_options");
+	const sessionOptions = await context.session?.get("calculate_options");
 
 	type OptionName = keyof App.CalculateOptions;
 	const getNumber = (name: OptionName) => {
@@ -22,7 +22,10 @@ export const getOptions = async (context: APIContext) => {
 		daily_live: getBoolean("daily_live"),
 
 		monthly_pass_type: (() => {
-			const value = params.get("monthly_pass_type");
+			const value =
+				params.size > 0
+					? params.get("monthly_pass_type")
+					: sessionOptions?.monthly_pass_type;
 			return value === "free" || value === "paid" ? value : "free";
 		})(),
 		monthly_pass_points: getNumber("monthly_pass_points"),
@@ -32,6 +35,6 @@ export const getOptions = async (context: APIContext) => {
 		song_full_combo_level: getNumber("song_full_combo_level"),
 	} satisfies App.CalculateOptions;
 
-	context.session!.set("calculate_options", options);
+	context.session?.set("calculate_options", options);
 	return options;
 };

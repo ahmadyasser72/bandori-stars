@@ -59,7 +59,8 @@ export const calculateMonthlyPass = (
 	{ from, to }: Record<"from" | "to", dayjs.Dayjs>,
 	options: App.CalculateOptions,
 ) => {
-	if (options.monthly_pass_points === 0) return { stars: 0, months: 0 };
+	if (options.monthly_pass_points === 0 || to.isBefore(from))
+		return { stars: 0, months: 0 };
 
 	const start = from.add(1, "months").startOf("months");
 	const months = to.diff(start, "months");
