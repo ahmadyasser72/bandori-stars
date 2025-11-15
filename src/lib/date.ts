@@ -17,6 +17,6 @@ export const getDateOffset = ({
 	en: dayjs.Dayjs | null;
 	jp: dayjs.Dayjs;
 }) => {
-	if (!en) return 330 * 24 * 60 * 60 * 1000; // default offset 330 days
+	if (!en) return 310 * 24 * 60 * 60 * 1000; // default offset 330 days
 	return en.diff(jp);
 };
