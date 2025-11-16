@@ -247,7 +247,7 @@ export const song = async () => {
 // skip cache if EN' name is not yet defined and
 // for the first 10 items (usually to-be-released on EN)
 const shouldSkipCache = (name: Bandori.RegionTuple<string>, idx?: number) =>
-	!name[1] || idx === undefined || idx < 10;
+	(name[0] && !name[1]) || (idx !== undefined && idx < 10);
 
 const maybeWillBeAvailableOnEn = (
 	from: Bandori.RegionTuple<string>,
