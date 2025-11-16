@@ -102,7 +102,7 @@ export const event = async (all = false) => {
 			.map(async ([id], idx) => {
 				const bandoriEvent = await bestdori<Bandori.Event>(
 					`api/events/${id}.json`,
-					(entry) => shouldSkipCache(entry.eventName, idx),
+					!all && ((entry) => shouldSkipCache(entry.eventName, idx)),
 				);
 
 				const {
