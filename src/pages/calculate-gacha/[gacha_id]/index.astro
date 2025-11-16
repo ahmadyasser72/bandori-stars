@@ -112,11 +112,15 @@ const songLevelChoices = new Set(
 	<div
 		class="container mx-auto grid max-w-xs gap-2 py-8 sm:max-w-lg md:max-w-2xl md:grid-cols-2 lg:max-w-4xl lg:grid-cols-3"
 	>
+		<a href="/" class="btn btn-secondary btn-sm link md:col-span-2"
+			>Go to Main page</a
+		>
+
 		<GachaCard
 			{gacha}
 			compact
 			class:list={[
-				"md:order-2",
+				"md:order-2 lg:col-start-3 lg:row-span-2 lg:row-start-1",
 				events.active && "bg-base-100/80 backdrop-blur-sm",
 			]}
 		>
