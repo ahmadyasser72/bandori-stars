@@ -5,7 +5,7 @@ import { gacha_map, LATEST_EVENT_RELEASE_GAP, song_map } from "@/contents/data";
 import GachaCard from "~/components/gacha-card.astro";
 import BaseLayout from "~/layouts/base-layout.astro";
 import { getEventAsset, getGachaBanner } from "~/lib/assets";
-import { dayjs, now } from "~/lib/date";
+import { now } from "~/lib/date";
 import { formatNumber, sum } from "~/lib/math";
 import { pluralize, regionValue } from "~/lib/utilities";
 import {
@@ -123,52 +123,7 @@ const songLevelChoices = new Set(
 				"md:order-2 lg:col-start-3 lg:row-span-2 lg:row-start-1",
 				events.active && "bg-base-100/80 backdrop-blur-sm",
 			]}
-		>
-			<Fragment slot="badge">
-				<div>
-					<div class="badge badge-neutral border-0 pl-0">
-						<Icon
-							class="size-6 rounded-full border border-current"
-							name="emojione:flag-for-united-states"
-						/>
-						{
-							gacha.startAt.jp
-								.add(LATEST_EVENT_RELEASE_GAP)
-								.format("DD-MM-YYYY")
-						}
-						/
-						{gacha.startAt.jp.add(LATEST_EVENT_RELEASE_GAP).fromNow()}
-					</div>
-
-					<div class="dropdown dropdown-end dropdown-top">
-						<div
-							tabindex="0"
-							role="button"
-							class="btn btn-circle btn-ghost btn-xs text-info"
-						>
-							<Icon tabindex="0" name="lucide:info" class="size-6" />
-						</div>
-
-						<div
-							tabindex="0"
-							class="card card-sm dropdown-content bg-base-100 rounded-box z-1 mb-2 w-64 shadow-sm"
-						>
-							<div tabindex="0" class="card-body">
-								<h2 class="card-title">Predicted start date</h2>
-								<p>
-									This assumes ~{
-										Math.round(
-											dayjs.duration(LATEST_EVENT_RELEASE_GAP).asDays(),
-										)
-									}
-									days difference between JP and EN server.
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</Fragment>
-		</GachaCard>
+		/>
 
 		<form
 			id="calculate-gacha"

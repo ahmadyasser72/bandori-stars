@@ -1,8 +1,9 @@
 ---
 import { Icon } from "astro-icon/components";
 
-import type { Entry } from "@/contents/data";
+import { LATEST_EVENT_RELEASE_GAP, type Entry } from "@/contents/data";
 import { getGachaBanner } from "~/lib/assets";
+import { dayjs } from "~/lib/date";
 import { regionValue } from "~/lib/utilities";
 import CardIcon from "./card-icon.astro";
 
@@ -30,6 +31,10 @@ const rateUpList = regionValue
 		({ card: a }, { card: b }) =>
 			Number(b.type === "birthday") - Number(a.type === "birthday"),
 	);
+
+const link = `/calculate-gacha/${gacha.id}`;
+const isCurrentPage = Astro.url.pathname.startsWith(link);
+const linkProps = isCurrentPage ? {} : { "up-follow": true, href: link };
 ---
 
 <div
@@ -39,7 +44,7 @@ const rateUpList = regionValue
 		className,
 	]}
 >
-	<a up-follow href={`/calculate-gacha/${gacha.id}`} class="contents">
+	<a {...linkProps} class="contents">
 		<figure>
 			<img
 				{...await getGachaBanner(Astro, { gacha })}
@@ -48,11 +53,17 @@ const rateUpList = regionValue
 		</figure>
 	</a>
 	<div class="card-body items-center justify-between gap-4 text-center">
-		<a
-			up-follow
-			href={`/calculate-gacha/${gacha.id}`}
-			class="card-title group-hover:link line-clamp-2">{gacha.name}</a
-		>
+		<div class="tooltip" data-tip={gacha.name}>
+			<a
+				{...linkProps}
+				class:list={[
+					"card-title line-clamp-1",
+					!isCurrentPage && "group-hover:link",
+				]}
+			>
+				{gacha.name}
+			</a>
+		</div>
 
 		<div
 			class:list={[
@@ -61,42 +72,74 @@ const rateUpList = regionValue
 			]}
 		>
 			{
-				!compact && (
-					<>
-						{rate && (
-							<div class="badge badge-primary font-medium">
-								<Icon class="size-4" name="lucide:percent" />
-								{rate}
-							</div>
-						)}
-
-						<div class="badge badge-secondary font-medium">
-							{gacha.type.toUpperCase()}
-						</div>
-
-						<div class="badge not-dark:badge-soft badge-neutral">
-							<Icon
-								class="size-6 rounded-full border border-current"
-								name="emojione:flag-for-japan"
-							/>
-							{gacha.startAt.jp.format("DD/MM/YYYY")} (
-							{gacha.startAt.jp.fromNow()})
-						</div>
-						{gacha.startAt.en && (
-							<div class="badge not-dark:badge-soft badge-neutral">
-								<Icon
-									class="size-6 rounded-full border border-current"
-									name="emojione:flag-for-united-states"
-								/>
-								{gacha.startAt.en.format("DD/MM/YYYY")} (
-								{gacha.startAt.en.fromNow()})
-							</div>
-						)}
-					</>
+				rate && (
+					<div class="badge badge-primary font-medium">
+						<Icon class="size-4" name="lucide:percent" />
+						{rate}
+					</div>
 				)
 			}
 
-			<slot name="badge" />
+			{
+				!compact && (
+					<div class="badge badge-secondary font-medium">
+						{gacha.type.toUpperCase()}
+					</div>
+				)
+			}
+
+			<div class="badge not-dark:badge-soft badge-neutral">
+				JP :
+				{gacha.startAt.jp.format("DD-MM-YYYY")}
+				({gacha.startAt.jp.fromNow()})
+			</div>
+
+			<div class="badge badge-neutral">
+				EN :
+				{
+					gacha.startAt.en ? (
+						`${gacha.startAt.en.format("DD/MM/YYYY")} (${gacha.startAt.en.fromNow()})`
+					) : (
+						<>
+							{gacha.startAt.jp
+								.add(LATEST_EVENT_RELEASE_GAP)
+								.format("DD-MM-YYYY")}
+
+							<div class="dropdown dropdown-end dropdown-top">
+								<div
+									tabindex="0"
+									role="button"
+									class="btn btn-circle btn-ghost btn-xs text-info"
+								>
+									<Icon tabindex="0" name="lucide:info" class="size-6" />
+								</div>
+
+								<div
+									tabindex="0"
+									class="card card-sm dropdown-content bg-base-100 rounded-box z-1 mb-2 w-64 shadow-sm"
+								>
+									<div
+										tabindex="0"
+										class="card-body text-base-content items-center"
+									>
+										<h2 class="card-title">Predicted start date</h2>
+										<p class="font-medium underline">
+											{gacha.startAt.jp.add(LATEST_EVENT_RELEASE_GAP).fromNow()}
+										</p>
+										<p>
+											This assumes ~
+											{Math.round(
+												dayjs.duration(LATEST_EVENT_RELEASE_GAP).asDays(),
+											)}
+											days difference between JP and EN server.
+										</p>
+									</div>
+								</div>
+							</div>
+						</>
+					)
+				}
+			</div>
 		</div>
 
 		<ul class="flex gap-1">
