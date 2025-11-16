@@ -18,16 +18,8 @@ const { id, title, backdrop } = Astro.props;
 	<div class="card-body items-center justify-center text-center">
 		<h2 class="card-title">{title}</h2>
 
-		<div class="badge-list flex flex-wrap justify-center gap-1">
+		<div class="flex flex-wrap justify-center gap-1 *:w-max *:min-w-30">
 			<slot />
 		</div>
 	</div>
 </div>
-
-<style>
-	@reference "~/styles/global.css";
-
-	.badge-list > :global(.badge) {
-		@apply w-max min-w-30;
-	}
-</style>
