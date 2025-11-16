@@ -54,7 +54,12 @@ const rateUpList = regionValue
 			class="card-title group-hover:link line-clamp-2">{gacha.name}</a
 		>
 
-		<div class="flex flex-col items-center gap-1.5 *:gap-1">
+		<div
+			class:list={[
+				"flex items-center justify-center gap-1.5 *:gap-1",
+				rate !== undefined ? "flex-wrap" : "flex-col",
+			]}
+		>
 			{
 				!compact && (
 					<>
