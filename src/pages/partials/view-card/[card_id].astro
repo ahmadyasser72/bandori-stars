@@ -2,7 +2,7 @@
 import { card_map } from "@/contents/data";
 import { getCardAsset } from "~/lib/assets";
 import { hasNoPreTrained } from "~/lib/bestdori/asset";
-import { randomInt } from "~/lib/utilities";
+import { randomInt, regionValue } from "~/lib/utilities";
 
 export const partial = true;
 
@@ -68,7 +68,7 @@ const showGachaList = params.get("show_gacha_list") === "true";
 			</div>
 
 			{
-				showGachaList && (
+				showGachaList && regionValue.unwrap(card.rateUpGacha) && (
 					<div id="select-gacha">
 						<a
 							up-target="#select-gacha"
