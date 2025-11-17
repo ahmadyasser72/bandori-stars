@@ -30,7 +30,7 @@ import { BLURHASH_SIZE } from "~/lib/bestdori/constants";
 				!isBlurhashValid(element.dataset.blurhash!).result ||
 				element.complete
 			)
-				return;
+				continue;
 
 			const hash = element.dataset.blurhash!;
 			element.dataset.original = element.src;
