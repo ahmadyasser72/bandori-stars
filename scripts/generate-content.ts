@@ -1,5 +1,5 @@
-import { loader } from "~/lib/content";
 import { regionValue } from "~/lib/utilities";
+import { loader } from "./content";
 import { save, timed, toMap } from "./helpers";
 
 console.time("everything");

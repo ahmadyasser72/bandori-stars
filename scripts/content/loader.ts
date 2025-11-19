@@ -1,7 +1,7 @@
 import { bestdori } from "~/lib/bestdori";
 import { dayjs, now } from "~/lib/date";
-import * as Bandori from "~/lib/schema";
 import { constants, parser, schema } from ".";
+import * as Bandori from "./raw";
 
 export const band = async () => {
 	const bands = await bestdori<Bandori.Bands>("api/bands/main.1.json");

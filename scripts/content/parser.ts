@@ -1,8 +1,8 @@
 import { dayjs } from "~/lib/date";
 import { sum } from "~/lib/math";
-import type { Card, Event, Gacha, RegionTuple, Song } from "~/lib/schema";
 import { emptyObjectIsNull } from "~/lib/utilities";
 import constants from "./constants";
+import type { Card, Event, Gacha, RegionTuple, Song } from "./raw";
 
 export const regionTuple = <T>([jp, en]: RegionTuple<T>) => ({ jp, en });
 

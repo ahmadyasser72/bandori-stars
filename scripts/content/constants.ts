@@ -1,7 +1,7 @@
-import type { Attribute } from "~/lib/schema";
-import type { CardType } from "~/lib/schema/card";
-import type { EventType } from "~/lib/schema/event";
-import type { GachaType } from "~/lib/schema/gacha";
+import type { Attribute } from "./raw";
+import type { CardType } from "./raw/card";
+import type { EventType } from "./raw/event";
+import type { GachaType } from "./raw/gacha";
 
 export default {
 	regions: ["jp", "en"] as const,

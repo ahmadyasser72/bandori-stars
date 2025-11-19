@@ -1,4 +1,4 @@
-/src/lib/schema/*.json
+/scripts/content/raw/*.json
 /bestdori/
 /.contents/data.js
 /worker-configuration.d.ts

@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { Document } from "flexsearch";
 
 import { character_map, gacha_map, type Entry } from "@/contents/data";
-import { constants } from "~/lib/content";
+import { constants } from "@/scripts/content";
 import { documentOptions, doSearch, type Filter } from ".";
 import { regionValue } from "../utilities";
 
