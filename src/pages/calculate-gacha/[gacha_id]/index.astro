@@ -7,7 +7,7 @@ import BaseLayout from "~/layouts/base-layout.astro";
 import { getEventAsset, getGachaBanner } from "~/lib/assets";
 import { now } from "~/lib/date";
 import { formatNumber, sum } from "~/lib/math";
-import { pluralize, regionValue } from "~/lib/utilities";
+import { pluralize } from "~/lib/utilities";
 import {
 	calculateDaily,
 	calculateEvents,
@@ -39,7 +39,7 @@ if (Astro.url.searchParams.size === 0)
 		Object.entries(options).map(([k, v]) => [k, v.toString()]),
 	).toString();
 
-const events = regionValue.unwrap(gacha.events)!;
+const { events } = gacha;
 const allEvents = [...events.past, events.active];
 const [from, to] = [now().subtract(LATEST_EVENT_RELEASE_GAP), gacha.endAt.jp];
 
@@ -358,7 +358,7 @@ const songLevelChoices = new Set(
 		<div id="show-details" class="contents">
 			<ShowDetailsButton
 				size="medium"
-				href={`/calculate-gacha/${Astro.params.gacha_id}/partials/song-list${Astro.url.search}`}
+				href={`/calculate-gacha/${Astro.params.gacha_id}/song-list${Astro.url.search}`}
 				class="max-md:hidden md:order-3 md:col-span-2 lg:col-span-1"
 				active={options.song_s_score ||
 					options.song_ss_score ||
@@ -369,15 +369,13 @@ const songLevelChoices = new Set(
 
 			<ShowDetailsButton
 				size="large"
-				href={`/calculate-gacha/${Astro.params.gacha_id}/partials/calendar${Astro.url.search}`}
+				href={`/calculate-gacha/${Astro.params.gacha_id}/event-list${Astro.url.search}`}
 				class="max-md:hidden md:order-3 md:col-span-2"
 				active={options.target_point > 0 ||
 					options.target_rank > 0 ||
-					options.read_event_story ||
-					options.daily_login ||
-					options.daily_live}
+					options.read_event_story}
 			>
-				Show details (daily &amp; events)
+				Show details (events)
 			</ShowDetailsButton>
 
 			<div class="fab md:hidden">
@@ -398,20 +396,18 @@ const songLevelChoices = new Set(
 				<div>
 					<ShowDetailsButton
 						size="large"
-						href={`/calculate-gacha/${Astro.params.gacha_id}/partials/calendar${Astro.url.search}`}
+						href={`/calculate-gacha/${Astro.params.gacha_id}/event-list${Astro.url.search}`}
 						active={options.target_point > 0 ||
 							options.target_rank > 0 ||
-							options.read_event_story ||
-							options.daily_login ||
-							options.daily_live}
+							options.read_event_story}
 					>
-						Show details (daily &amp; events)
+						Show details (events)
 					</ShowDetailsButton>
 				</div>
 				<div>
 					<ShowDetailsButton
 						size="medium"
-						href={`/calculate-gacha/${Astro.params.gacha_id}/partials/song-list${Astro.url.search}`}
+						href={`/calculate-gacha/${Astro.params.gacha_id}/song-list${Astro.url.search}`}
 						active={options.song_s_score ||
 							options.song_ss_score ||
 							options.song_full_combo_level > 0}

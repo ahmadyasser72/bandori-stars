@@ -67,7 +67,7 @@ const linkProps = isCurrentPage ? {} : { "up-follow": true, href: link };
 
 		<div
 			class:list={[
-				"flex items-center justify-center gap-1.5 *:gap-1",
+				"flex items-center justify-center gap-1.5",
 				rate !== undefined ? "flex-wrap" : "flex-col",
 			]}
 		>
@@ -88,17 +88,22 @@ const linkProps = isCurrentPage ? {} : { "up-follow": true, href: link };
 				)
 			}
 
-			<div class="badge not-dark:badge-soft badge-neutral">
+			<div class="badge badge-accent">
 				JP :
 				{gacha.startAt.jp.format("DD-MM-YYYY")}
 				({gacha.startAt.jp.fromNow()})
 			</div>
 
-			<div class="badge badge-neutral">
+			<div
+				class:list={[
+					"badge",
+					gacha.startAt.en ? "badge-primary" : "badge-neutral gap-1",
+				]}
+			>
 				EN :
 				{
 					gacha.startAt.en ? (
-						`${gacha.startAt.en.format("DD/MM/YYYY")} (${gacha.startAt.en.fromNow()})`
+						`${gacha.startAt.en.format("DD-MM-YYYY")} (${gacha.startAt.en.fromNow()})`
 					) : (
 						<>
 							{gacha.startAt.jp
@@ -115,22 +120,20 @@ const linkProps = isCurrentPage ? {} : { "up-follow": true, href: link };
 								</div>
 
 								<div
-									tabindex="0"
+									tabindex="-1"
 									class="card card-sm dropdown-content bg-base-100 rounded-box z-1 mb-2 w-64 shadow-sm"
 								>
-									<div
-										tabindex="0"
-										class="card-body text-base-content items-center"
-									>
+									<div class="card-body text-base-content items-center">
 										<h2 class="card-title">Predicted start date</h2>
 										<p class="font-medium underline">
 											{gacha.startAt.jp.add(LATEST_EVENT_RELEASE_GAP).fromNow()}
 										</p>
 										<p>
-											This assumes ~
-											{Math.round(
-												dayjs.duration(LATEST_EVENT_RELEASE_GAP).asDays(),
-											)}
+											This assumes
+											{"~" +
+												Math.round(
+													dayjs.duration(LATEST_EVENT_RELEASE_GAP).asDays(),
+												)}
 											days difference between JP and EN server.
 										</p>
 									</div>

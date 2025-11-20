@@ -1,14 +1,12 @@
 ---
-import { Icon } from "astro-icon/components";
-
 import { gacha_map, LATEST_EVENT_RELEASE_GAP } from "@/contents/data";
 import NextPageButton from "~/components/next-page-button.astro";
 import { getSongAlbumCover } from "~/lib/assets";
 import { sum } from "~/lib/math";
 import { paginate } from "~/lib/paginate";
-import { calculateSongs } from "../_calculate";
-import OptionsBadge from "../_components/options-badge.astro";
-import { getOptions } from "../_options";
+import { calculateSongs } from "./_calculate";
+import OptionsBadge from "./_components/options-badge.astro";
+import { getOptions } from "./_options";
 
 export const partial = true;
 
@@ -63,12 +61,8 @@ const { results, page } = paginate({
 						<div class="flex flex-col items-start gap-1.5">
 							<span class="text-start text-sm font-semibold">{data.title}</span>
 
-							<span class="badge badge-soft border-0 pl-0 text-xs">
-								<Icon
-									class="size-5 rounded-full border border-current"
-									name="emojione:flag-for-united-states"
-								/>
-								{predicted.format("DD-MM-YYYY")} / {predicted.fromNow()}
+							<span class="badge badge-soft text-xs">
+								EN : {predicted.format("DD-MM-YYYY")} / {predicted.fromNow()}
 							</span>
 
 							<div class="inline-flex flex-wrap gap-1">

@@ -1,5 +1,3 @@
-import "./calendar";
-
 up.compiler("form#calculate-gacha", (form) => {
 	const updateSelectorList = new Set<string>();
 	const DEBOUNCE_DURATION = 200;

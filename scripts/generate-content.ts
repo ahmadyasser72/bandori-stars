@@ -82,7 +82,7 @@ const gachaMap = await timed(
 							};
 						};
 
-						return { jp: get("jp"), en: get("en") };
+						return { jp: get("jp")!, en: get("en") };
 					})(),
 				}))
 				.filter(({ events }) => {
@@ -90,7 +90,7 @@ const gachaMap = await timed(
 					return (unwrapped?.past.length ?? 0) > 0 || !!unwrapped?.active;
 				}),
 		)
-		.then(regionValue.mapUnwrap("name"))
+		.then(regionValue.mapUnwrap("name", "events"))
 		.then(toMap),
 );
 

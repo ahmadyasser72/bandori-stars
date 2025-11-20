@@ -1,0 +1,134 @@
+---
+import { gacha_map, LATEST_EVENT_RELEASE_GAP } from "@/contents/data";
+import NextPageButton from "~/components/next-page-button.astro";
+import { getEventAsset } from "~/lib/assets";
+import { dayjs } from "~/lib/date";
+import { formatNumber, sum } from "~/lib/math";
+import { paginate } from "~/lib/paginate";
+import { capitalize } from "~/lib/utilities";
+import { calculateEvents } from "./_calculate";
+import OptionsBadge from "./_components/options-badge.astro";
+import { getOptions } from "./_options";
+
+export const partial = true;
+
+const gacha = gacha_map.get(Astro.params.gacha_id!);
+if (!gacha) {
+	return new Response("Gacha not found.", { status: 404 });
+}
+
+const options = await getOptions(Astro);
+const { results, page } = paginate({
+	context: Astro,
+	pageSize: 12,
+	items: calculateEvents([...gacha.events.past, gacha.events.active], options),
+});
+---
+
+<main>
+	<div
+		class="my-4 inline-flex w-full flex-wrap justify-center gap-1 text-center font-medium"
+	>
+		<OptionsBadge
+			name="Point"
+			value={options.target_point}
+			formattedValue={`≥${formatNumber(options.target_point)}`}
+		/>
+		<OptionsBadge
+			name="Rank"
+			value={options.target_rank}
+			formattedValue={`≤${formatNumber(options.target_rank)}`}
+		/>
+		<OptionsBadge name="Event story" value={options.read_event_story} />
+	</div>
+
+	<div id="event-list">
+		<ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+			{
+				results.map(async ({ data: event, ...stars }) => (
+					<li class="card bg-base-100 shadow-sm">
+						<figure>
+							<img
+								{...await getEventAsset(Astro, { event, kind: "banner" })}
+								class="aspect-3/1 w-full"
+							/>
+						</figure>
+						<div class="card-body text-center">
+							<div class="dropdown dropdown-end dropdown-top">
+								<div
+									tabindex="0"
+									role="button"
+									class="link card-title line-clamp-1"
+								>
+									{event.name}
+								</div>
+
+								<div
+									tabindex="0"
+									class="card card-sm dropdown-content bg-base-100 rounded-box z-1 mb-2 w-64 shadow-sm"
+								>
+									<div
+										tabindex="0"
+										class="card-body text-base-content items-center"
+									>
+										<h2 class="card-title">{event.name}</h2>
+										<p class="badge badge-accent">
+											JP : {event.startAt.jp.format("DD-MM-YYYY")}
+											&mdash;
+											{event.endAt.jp.format("DD-MM-YYYY")}
+										</p>
+
+										{event.startAt.en && event.endAt.en ? (
+											<p class="badge badge-primary">
+												EN : {event.startAt.en.format("DD-MM-YYYY")}
+												&mdash;
+												{event.endAt.en.format("DD-MM-YYYY")}
+											</p>
+										) : (
+											<>
+												<p class="badge badge-neutral">
+													EN :
+													{event.startAt.jp
+														.add(LATEST_EVENT_RELEASE_GAP)
+														.format("DD-MM-YYYY")}
+													&mdash;
+													{event.endAt.jp
+														.add(LATEST_EVENT_RELEASE_GAP)
+														.format("DD-MM-YYYY")}
+												</p>
+												<p>
+													EN (predicted) date assumes
+													{"~" +
+														Math.round(
+															dayjs.duration(LATEST_EVENT_RELEASE_GAP).asDays(),
+														)}
+													days difference between JP and EN server.
+												</p>
+											</>
+										)}
+									</div>
+								</div>
+							</div>
+
+							<div class="flex flex-wrap items-center justify-center gap-1.5">
+								{Object.entries(stars)
+									.filter(([, value]) => value > 0)
+									.map(([label, value]) => (
+										<div class="badge badge-accent">
+											{capitalize(label)} &bullet; {value}&starf;
+										</div>
+									))}
+
+								<div class="badge badge-info">
+									Total : {sum(Object.values(stars))}&starf;
+								</div>
+							</div>
+						</div>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+
+	<NextPageButton {page} item={{ length: results.length, name: "event" }} />
+</main>
