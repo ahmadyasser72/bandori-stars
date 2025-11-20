@@ -23,9 +23,7 @@ const { page, item } = Astro.props;
 			id="next-page"
 			class="text-base-content/50 text-center text-sm font-semibold"
 		>
-			{item.length === 0 && page.current === 1
-				? `No ${item.name} found.`
-				: page.current > 1 && `No more ${item.name}.`}
+			{item.length === 0 && page.current === 1 && `No ${item.name} found.`}
 		</div>
 	)
 }
