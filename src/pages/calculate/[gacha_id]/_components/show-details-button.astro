@@ -12,6 +12,7 @@ const { active, href, class: className } = Astro.props;
 	{href}
 	up-layer="new"
 	up-size="large"
+	up-history="false"
 	aria-disabled={!active}
 	tabindex={active ? 0 : -1}
 	class:list={[

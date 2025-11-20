@@ -12,6 +12,7 @@ export const showFullCardModalOnClick = (
 	"up-layer": "new",
 	"up-size": "large",
 	"up-scroll": "false",
+	"up-history": "false",
 	"up-params": JSON.stringify(options),
 	"up-accept-location": "/calculate/$id",
 	"up-on-accepted":
