@@ -2,18 +2,16 @@
 interface Props {
 	href: string;
 	active: boolean;
-	size?: "small" | "medium" | "large";
 	class?: string;
 }
 
-const { active, href, size, class: className } = Astro.props;
+const { active, href, class: className } = Astro.props;
 ---
 
 <a
 	{href}
 	up-layer="new"
-	up-size={size}
-	up-history="false"
+	up-size="large"
 	aria-disabled={!active}
 	tabindex={active ? 0 : -1}
 	class:list={[

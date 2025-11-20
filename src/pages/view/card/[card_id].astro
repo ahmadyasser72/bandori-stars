@@ -1,10 +1,9 @@
 ---
 import { card_map } from "@/contents/data";
+import BaseLayout from "~/layouts/base-layout.astro";
 import { getCardAsset } from "~/lib/assets";
 import { hasNoPreTrained } from "~/lib/bestdori/asset";
 import { randomInt, regionValue } from "~/lib/utilities";
-
-export const partial = true;
 
 const card = card_map.get(Astro.params.card_id!);
 if (!card) {
@@ -21,7 +20,17 @@ const autoScroll = params.get("auto_scroll") === "true";
 const showGachaList = params.get("show_gacha_list") === "true";
 ---
 
-<main>
+<BaseLayout
+	title={name}
+	description={`Card for ${name}`}
+	image={(
+		await getCardAsset(Astro, {
+			card,
+			kind: "full",
+			trained: showTrained,
+		})
+	).src}
+>
 	<div data-band-id={card.band.id} class="grid gap-4">
 		<h1 class="text-xl font-semibold">{name}</h1>
 
@@ -72,7 +81,7 @@ const showGachaList = params.get("show_gacha_list") === "true";
 					<div id="select-gacha">
 						<a
 							up-target="#select-gacha"
-							href={`/partials/select-gacha/${card.id}`}
+							href={`/select/gacha/${card.id}`}
 							up-follow
 							up-scroll="false"
 							class="scroll-here btn bg-bandori-band hover:bg-bandori-band-alt text-bandori-band-content sm:absolute-center-x sm:btn-wide scroll-mb-8 max-sm:w-full sm:absolute sm:bottom-20"
@@ -84,4 +93,4 @@ const showGachaList = params.get("show_gacha_list") === "true";
 			}
 		</div>
 	</div>
-</main>
+</BaseLayout>

@@ -1,15 +1,14 @@
 ---
 import { gacha_map, LATEST_EVENT_RELEASE_GAP } from "@/contents/data";
 import NextPageButton from "~/components/next-page-button.astro";
-import { getSongAlbumCover } from "~/lib/assets";
+import BaseLayout from "~/layouts/base-layout.astro";
+import { getGachaBanner, getSongAlbumCover } from "~/lib/assets";
 import { dayjs } from "~/lib/date";
 import { sum } from "~/lib/math";
 import { paginate } from "~/lib/paginate";
 import { calculateSongs, isOnlySpecialRelease } from "./_calculate";
 import OptionsBadge from "./_components/options-badge.astro";
 import { getOptions } from "./_options";
-
-export const partial = true;
 
 const gacha = gacha_map.get(Astro.params.gacha_id!);
 if (!gacha) {
@@ -33,7 +32,12 @@ const { results, page } = paginate({
 });
 ---
 
-<main class="flex flex-col items-center gap-y-4">
+<BaseLayout
+	title={`Free stars until ${gacha.name} (upcoming songs)`}
+	description={`Calculate how much free stars you can get from upcoming songs until ${gacha.name} banner ends`}
+	image={(await getGachaBanner(Astro, { gacha })).src}
+	class="container mx-auto my-4 flex flex-col items-center gap-y-4 lg:max-w-4xl"
+>
 	<div
 		class="inline-flex w-full flex-wrap justify-center gap-1 text-center font-medium"
 	>
@@ -150,4 +154,4 @@ const { results, page } = paginate({
 	</div>
 
 	<NextPageButton {page} item={{ length: results.length, name: "song" }} />
-</main>
+</BaseLayout>

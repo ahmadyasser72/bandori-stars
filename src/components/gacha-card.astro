@@ -32,7 +32,7 @@ const rateUpList = regionValue
 			Number(b.type === "birthday") - Number(a.type === "birthday"),
 	);
 
-const link = `/calculate-gacha/${gacha.id}`;
+const link = `/calculate/${gacha.id}`;
 const isCurrentPage = Astro.url.pathname.startsWith(link);
 const linkProps = isCurrentPage ? {} : { "up-follow": true, href: link };
 ---

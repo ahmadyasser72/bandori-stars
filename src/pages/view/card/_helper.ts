@@ -8,15 +8,14 @@ export const showFullCardModalOnClick = (
 	card: Pick<Entry<"card_map">, "id">,
 	options: FullCardModalOptions,
 ) => ({
-	href: `/partials/view-card/${card.id}`,
+	href: `/view/card/${card.id}`,
 	"up-layer": "new",
 	"up-size": "large",
 	"up-scroll": "false",
-	"up-history": "false",
 	"up-params": JSON.stringify(options),
-	"up-accept-location": "/calculate-gacha/$id",
+	"up-accept-location": "/calculate/$id",
 	"up-on-accepted":
-		"up.layer.dismissOverlays(); __unpoly_animateSelectGacha(event)",
+		"__unpoly_animateSelectGacha(event); up.layer.dismissOverlays()",
 	"up-on-opened": "__unpoly_animateShowFullCard(this, layer.element)",
 	"up-on-dismissed": "__unpoly_animateShowFullCard(this, layer.element, true)",
 });

@@ -4,6 +4,7 @@ import { Icon } from "astro-icon/components";
 import { card_map, character_map } from "@/contents/data";
 import CardIcon from "~/components/card-icon.astro";
 import NextPageButton from "~/components/next-page-button.astro";
+import BaseLayout from "~/layouts/base-layout.astro";
 import { search } from "~/lib/search";
 import { filterList, searchCard } from "~/lib/search/card";
 import FilterListForm from "~/lib/search/components/filter-list-form.astro";
@@ -12,9 +13,7 @@ import { randomInt } from "~/lib/utilities";
 import {
 	showFullCardModalOnClick,
 	type FullCardModalOptions,
-} from "./view-card/_helper";
-
-export const partial = true;
+} from "~/pages/view/card/_helper";
 
 const { results, filterMap, options, page } = await search({
 	context: Astro,
@@ -31,7 +30,11 @@ const fullCardModalOptions = {
 } satisfies FullCardModalOptions;
 ---
 
-<main class="flex flex-col items-center gap-y-4">
+<BaseLayout
+	title="Select card"
+	description="Select a card to calculate free stars to"
+	class="container mx-auto flex flex-col items-center gap-y-4 md:max-w-2xl"
+>
 	<form
 		up-target="#card-list, #next-page, #suggestions, #filter-list"
 		up-autosubmit
@@ -141,4 +144,4 @@ const fullCardModalOptions = {
 	</template>
 
 	<NextPageButton {page} item={{ length: results.length, name: "card" }} />
-</main>
+</BaseLayout>

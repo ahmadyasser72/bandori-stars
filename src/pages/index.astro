@@ -2,7 +2,7 @@
 import { card_map } from "@/contents/data";
 import BaseLayout from "~/layouts/base-layout.astro";
 import { getCardAsset } from "~/lib/assets";
-import { showFullCardModalOnClick } from "./partials/view-card/_helper";
+import { showFullCardModalOnClick } from "./view/card/_helper";
 
 const randomCard = (() => {
 	const id = [...card_map.keys()][Math.floor(Math.random() * card_map.size)];
@@ -34,22 +34,20 @@ const randomCard = (() => {
 		class="absolute-center bg-bandori-band/20 rounded-box border-bandori-band absolute flex w-xs flex-col gap-2 border px-12 py-6 backdrop-blur-sm"
 	>
 		<a
-			href="/partials/select-card"
+			href="/select/card"
 			up-layer="new"
-			up-history="false"
-			up-evict-cache="/partials/select-card"
+			up-evict-cache="/select/card"
 			class="btn btn-primary border-primary-content"
 		>
 			Select card
 		</a>
 
 		<a
-			href="/partials/select-gacha"
+			href="/select/gacha"
 			up-layer="new"
 			up-size="large"
-			up-history="false"
-			up-evict-cache="/partials/select-gacha"
-			up-accept-location="/calculate-gacha/$id"
+			up-evict-cache="/select/gacha"
+			up-accept-location="/calculate/$id"
 			up-on-accepted="__unpoly_animateSelectGacha(event)"
 			class="btn btn-primary border-primary-content"
 		>

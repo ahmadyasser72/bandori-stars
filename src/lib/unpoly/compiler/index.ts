@@ -1,5 +1,5 @@
 import "./blurhash";
-import "~/pages/calculate-gacha/[gacha_id]/_compiler";
+import "~/pages/calculate/[gacha_id]/_compiler";
 
 up.compiler(".radio-group", (fieldset) => {
 	const isToggleAll = (el: HTMLInputElement) => el.ariaLabel === "All";

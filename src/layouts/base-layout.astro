@@ -4,10 +4,11 @@ import "~/styles/global.css";
 interface Props {
 	title: string;
 	description: string;
-	image: string;
+	image?: string;
+	class?: string;
 }
 
-const { title, description, image } = Astro.props;
+const { title, description, image, class: className } = Astro.props;
 const fullTitle = `${title} | bandori-stars`;
 ---
 
@@ -31,10 +32,18 @@ const fullTitle = `${title} | bandori-stars`;
 			property="og:url"
 			content={new URL(Astro.url.pathname, Astro.url.origin).href}
 		/>
-		<meta property="og:image" content={new URL(image, Astro.url.origin).href} />
+
+		{
+			image && (
+				<meta
+					property="og:image"
+					content={new URL(image, Astro.url.origin).href}
+				/>
+			)
+		}
 	</head>
 	<body>
-		<main up-main class="min-h-screen">
+		<main up-main class:list={[className]}>
 			<slot />
 		</main>
 	</body>

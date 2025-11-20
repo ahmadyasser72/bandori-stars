@@ -1,0 +1,54 @@
+---
+import { card_map, gacha_map } from "@/contents/data";
+import GachaCard from "~/components/gacha-card.astro";
+import BaseLayout from "~/layouts/base-layout.astro";
+import { regionValue } from "~/lib/utilities";
+
+const card = card_map.get(Astro.params.card_id!);
+if (!card) {
+	return new Response("Card not found.", { status: 404 });
+}
+
+const gachaList = regionValue.unwrap(
+	regionValue.map(card.rateUpGacha, (items) =>
+		items
+			.map(({ id }) => gacha_map.get(id)!)
+			.map(({ rateUp, ...entry }) => ({
+				gacha: { ...entry, rateUp },
+				rate: regionValue.unwrap(rateUp)?.find((it) => it.card.id === card.id)!
+					.rate,
+			})),
+	),
+);
+---
+
+<BaseLayout
+	title={`Select gacha for ${card.character.name} - ${card.name}`}
+	description="Select a gacha to calculate free stars to"
+	class="contents"
+>
+	<div id="select-gacha">
+		<h1
+			data-scroll-here="start"
+			class="scroll-here mb-4 scroll-mt-4 text-center text-2xl font-semibold"
+		>
+			Gacha List
+		</h1>
+
+		{
+			!gachaList || (gachaList?.length ?? 0) === 0 ? (
+				<p class="text-base-content/50 text-center">
+					No rate-up gacha available.
+				</p>
+			) : (
+				<ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+					{gachaList.map((props) => (
+						<li class="contents">
+							<GachaCard {...props} />
+						</li>
+					))}
+				</ul>
+			)
+		}
+	</div>
+</BaseLayout>
