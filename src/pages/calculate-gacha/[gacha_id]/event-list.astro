@@ -53,7 +53,7 @@ const { results, page } = paginate({
 								class="aspect-3/1 w-full"
 							/>
 						</figure>
-						<div class="card-body text-center">
+						<div class="card-body items-center text-center">
 							<div class="dropdown dropdown-end dropdown-top">
 								<div
 									tabindex="0"
@@ -109,6 +109,8 @@ const { results, page } = paginate({
 									</div>
 								</div>
 							</div>
+
+							<div class="badge badge-primary">{event.type}</div>
 
 							<div class="flex flex-wrap items-center justify-center gap-1.5">
 								{Object.entries(stars)

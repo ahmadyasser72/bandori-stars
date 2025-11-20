@@ -1,7 +1,7 @@
 import { dayjs } from "~/lib/date";
 import { sum } from "~/lib/math";
 import { emptyObjectIsNull } from "~/lib/utilities";
-import constants from "./constants";
+import constants, { EVENT_TYPE_MAP } from "./constants";
 import type { Card, Event, Gacha, RegionTuple, Song } from "./raw";
 
 export const regionTuple = <T>([jp, en]: RegionTuple<T>) => ({ jp, en });
@@ -26,6 +26,7 @@ export const card = {
 };
 
 export const event = {
+	type: (eventType: Event["eventType"]) => EVENT_TYPE_MAP[eventType],
 	pointRewards: (tuple: Event["pointRewards"]) =>
 		regionTuple(
 			tuple.map((rewards) =>

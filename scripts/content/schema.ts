@@ -1,13 +1,13 @@
 import { z, ZodType } from "zod";
 
 import { dayjs } from "~/lib/date";
-import constants from "./constants";
+import constants, { EVENT_TYPE_MAP } from "./constants";
 
 export const types = {
 	attribute: z.enum(constants.attributes),
 	card: z.enum(constants.cardTypes),
 	gacha: z.enum(constants.gachaTypes),
-	event: z.enum(constants.eventTypes),
+	event: z.enum(Object.values(EVENT_TYPE_MAP)),
 };
 
 export const createMultiRegion = <T extends ZodType>(schema: T) =>

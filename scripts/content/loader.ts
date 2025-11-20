@@ -121,7 +121,7 @@ export const event = async (all = false) => {
 				return {
 					id: id,
 					name: parser.regionTuple(eventName),
-					type: eventType,
+					type: parser.event.type(eventType),
 					attribute: attributes[0].attribute,
 					characters: characters.map(({ characterId }) =>
 						characterId.toString(),
