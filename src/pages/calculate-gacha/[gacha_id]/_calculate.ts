@@ -78,14 +78,14 @@ export const calculateMonthlyPass = (
 	return { stars: monthlyPassStars * months, months };
 };
 
+export const isOnlySpecialRelease = (entry: Entry<"song_map">) =>
+	entry.specialReleasedAt &&
+	!entry.specialReleasedAt.jp.isSame(entry.releasedAt.jp);
+
 export const calculateSongs = (
 	until: dayjs.Dayjs,
 	options: App.CalculateOptions,
 ) => {
-	const isOnlySpecialRelease = (entry: Entry<"song_map">) =>
-		entry.specialReleasedAt &&
-		!entry.specialReleasedAt.jp.isSame(entry.releasedAt.jp);
-
 	return [...song_map.values()]
 		.filter(
 			({ releasedAt, specialReleasedAt }) =>

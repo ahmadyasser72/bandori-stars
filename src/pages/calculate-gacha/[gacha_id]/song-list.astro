@@ -2,9 +2,10 @@
 import { gacha_map, LATEST_EVENT_RELEASE_GAP } from "@/contents/data";
 import NextPageButton from "~/components/next-page-button.astro";
 import { getSongAlbumCover } from "~/lib/assets";
+import { dayjs } from "~/lib/date";
 import { sum } from "~/lib/math";
 import { paginate } from "~/lib/paginate";
-import { calculateSongs } from "./_calculate";
+import { calculateSongs, isOnlySpecialRelease } from "./_calculate";
 import OptionsBadge from "./_components/options-badge.astro";
 import { getOptions } from "./_options";
 
@@ -18,16 +19,16 @@ if (!gacha) {
 const options = await getOptions(Astro);
 const { results, page } = paginate({
 	context: Astro,
-	pageSize: 10,
+	pageSize: 12,
 	items: calculateSongs(gacha.endAt.jp, options).map((it) => ({
 		...it,
-		predicted: (it.data.specialReleasedAt ?? it.data.releasedAt).jp.add(
-			LATEST_EVENT_RELEASE_GAP,
-		),
 		total: sum([
 			...Object.values(it.fullCombo).map(({ stars }) => stars),
 			...Object.values(it.score),
 		]),
+		releasedAt: isOnlySpecialRelease(it.data)
+			? it.data.specialReleasedAt!
+			: it.data.releasedAt,
 	})),
 });
 ---
@@ -47,52 +48,103 @@ const { results, page } = paginate({
 	</div>
 
 	<div id="song-list">
-		<ul class="list w-full">
+		<ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 			{
-				results.map(async ({ data, fullCombo, score, predicted, total }) => (
-					<li class="group list-row select-none">
-						<div>
-							<img
-								{...await getSongAlbumCover(Astro, { song: data })}
-								class="rounded-box size-12 md:size-16"
-							/>
-						</div>
+				results.map(
+					async ({ data: song, fullCombo, score, total, releasedAt }) => (
+						<li class="group card image-full bg-base-100 shadow-sm">
+							<figure>
+								<img
+									{...await getSongAlbumCover(Astro, { song })}
+									class="aspect-square w-full"
+								/>
+							</figure>
 
-						<div class="flex flex-col items-start gap-1.5">
-							<span class="text-start text-sm font-semibold">{data.title}</span>
+							<div class="card-body items-center justify-end text-center">
+								<div class="dropdown dropdown-center dropdown-top">
+									<div
+										tabindex="0"
+										role="button"
+										class="link card-title line-clamp-1"
+									>
+										{isOnlySpecialRelease(song) && "(SP)"}
+										{song.title}
+									</div>
 
-							<span class="badge badge-soft text-xs">
-								EN : {predicted.format("DD-MM-YYYY")} / {predicted.fromNow()}
-							</span>
-
-							<div class="inline-flex flex-wrap gap-1">
-								{Object.entries(score)
-									.filter(([, stars]) => stars > 0)
-									.map(([label, stars]) => (
-										<span class="badge badge-sm badge-primary">
-											{label.toUpperCase()} &bullet; {stars}&starf;
-										</span>
-									))}
-
-								{Object.entries(fullCombo).map(
-									([difficulty, { level, stars }]) => (
-										<span
-											data-difficulty={difficulty}
-											class="badge badge-sm badge-primary bg-bandori-difficulty text-bandori-difficulty-content group-hover:bg-bandori-difficulty-alt border-bandori-difficulty"
+									<div
+										tabindex="0"
+										class="card card-sm dropdown-content bg-base-100 rounded-box z-1 mb-2 w-72 shadow-sm"
+									>
+										<div
+											tabindex="0"
+											class="card-body text-base-content items-center"
 										>
-											{difficulty.toUpperCase()}
-											{level} &bullet; {stars}&starf;
-										</span>
-									),
-								)}
+											<h2 class="card-title">{song.title}</h2>
+											<p class="badge badge-accent">
+												JP : {releasedAt.jp.format("DD-MM-YYYY")} /
+												{releasedAt.jp.fromNow()}
+											</p>
 
-								<span class="badge badge-sm badge-info">
-									Total : {total}&starf;
-								</span>
+											{releasedAt.en ? (
+												<p class="badge badge-primary">
+													EN : {releasedAt.en.format("DD-MM-YYYY")} /
+													{releasedAt.en.fromNow()}
+												</p>
+											) : (
+												<>
+													<p class="badge badge-neutral">
+														EN :
+														{releasedAt.jp
+															.add(LATEST_EVENT_RELEASE_GAP)
+															.format("DD-MM-YYYY")}
+														/
+														{releasedAt.jp
+															.add(LATEST_EVENT_RELEASE_GAP)
+															.fromNow()}
+													</p>
+													<p>
+														EN (predicted) date assumes
+														{"~" +
+															Math.round(
+																dayjs
+																	.duration(LATEST_EVENT_RELEASE_GAP)
+																	.asDays(),
+															)}
+														days difference between JP and EN server.
+													</p>
+												</>
+											)}
+										</div>
+									</div>
+								</div>
+
+								<div class="inline-flex flex-wrap justify-center gap-1">
+									{Object.entries(score)
+										.filter(([, stars]) => stars > 0)
+										.map(([label, stars]) => (
+											<span class="badge badge-primary">
+												{label.toUpperCase()} &bullet; {stars}&starf;
+											</span>
+										))}
+
+									{Object.entries(fullCombo).map(
+										([difficulty, { level, stars }]) => (
+											<span
+												data-difficulty={difficulty}
+												class="badge badge-primary bg-bandori-difficulty text-bandori-difficulty-content group-hover:bg-bandori-difficulty-alt border-bandori-difficulty"
+											>
+												{difficulty.toUpperCase()}
+												{level} &bullet; {stars}&starf;
+											</span>
+										),
+									)}
+
+									<span class="badge badge-info">Total : {total}&starf;</span>
+								</div>
 							</div>
-						</div>
-					</li>
-				))
+						</li>
+					),
+				)
 			}
 		</ul>
 	</div>
