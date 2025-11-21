@@ -39,10 +39,7 @@ const linkProps = isCurrentPage ? {} : { "up-follow": true, href: link };
 
 <div
 	id={`gacha-card-${gacha.id}`}
-	class:list={[
-		"group card bg-base-100 hover:shadow-bandori-band shadow-sm",
-		className,
-	]}
+	class:list={["group card bg-base-100 shadow-sm", className]}
 >
 	<a {...linkProps} class="contents">
 		<figure>
@@ -149,13 +146,7 @@ const linkProps = isCurrentPage ? {} : { "up-follow": true, href: link };
 			{
 				rateUpList.slice(0, rateUpList.length > 5 ? 4 : 5).map(({ card }) => (
 					<li>
-						<CardIcon
-							{card}
-							options={{
-								show_trained: options.show_trained,
-								auto_scroll: true,
-							}}
-						/>
+						<CardIcon {card} options={{ show_trained: options.show_trained }} />
 					</li>
 				))
 			}
@@ -174,10 +165,7 @@ const linkProps = isCurrentPage ? {} : { "up-follow": true, href: link };
 											<li>
 												<CardIcon
 													{card}
-													options={{
-														show_trained: options.show_trained,
-														auto_scroll: true,
-													}}
+													options={{ show_trained: options.show_trained }}
 												/>
 											</li>
 										))}

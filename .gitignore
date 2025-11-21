@@ -29,7 +29,9 @@ pnpm-debug.log*
 !/.bestdori-cache/**/
 /.bestdori-cache/blurhash/*
 !/.bestdori-cache/blurhash/.gitkeep
-/.bestdori-cache/compressed/*
-!/.bestdori-cache/compressed/.gitkeep
+/.bestdori-cache/compressed-image/*
+!/.bestdori-cache/compressed-image/.gitkeep
+/.bestdori-cache/compressed-audio/*
+!/.bestdori-cache/compressed-audio/.gitkeep
 
 /.contents/data.js

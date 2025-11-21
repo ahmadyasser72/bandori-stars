@@ -23,13 +23,35 @@ up.compiler(".radio-group", (fieldset) => {
 	});
 });
 
-up.compiler(".scroll-here", (el) => {
+up.compiler("[data-autoscroll]", (element) => {
 	setTimeout(
 		() =>
-			el.scrollIntoView({
+			element.scrollIntoView({
 				behavior: "smooth",
-				block: (el.dataset.scrollHere ?? "nearest") as ScrollLogicalPosition,
+				block: (element.dataset.autoscroll ||
+					"nearest") as ScrollLogicalPosition,
 			}),
 		150,
 	);
+});
+
+up.compiler("button[data-play-audio]", (element) => {
+	if (!(element instanceof HTMLButtonElement)) return;
+	const audio = new Audio(element.dataset.playAudio);
+
+	const enableButtonOnPlayEnd = () => {
+		element.disabled = false;
+	};
+	const playAudio = () => {
+		element.disabled = true;
+		audio.play();
+	};
+
+	audio.addEventListener("ended", enableButtonOnPlayEnd);
+	element.addEventListener("click", playAudio);
+	return () => {
+		element.removeEventListener("click", playAudio);
+		audio.removeEventListener("ended", enableButtonOnPlayEnd);
+		audio.remove();
+	};
 });

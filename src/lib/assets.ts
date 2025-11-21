@@ -1,7 +1,7 @@
 import type { APIContext } from "astro";
 import type { JSX } from "astro/jsx-runtime";
 
-import { IMAGE_FORMAT } from "~/lib/bestdori/constants";
+import { AUDIO_FORMAT, IMAGE_FORMAT } from "~/lib/bestdori/constants";
 import type { bestdori } from "./bestdori";
 import { hasNoPreTrained } from "./bestdori/asset";
 import { capitalize } from "./utilities";
@@ -34,7 +34,10 @@ type BestdoriAsset = typeof bestdori.asset;
 type GetAssetFunction<K extends keyof BestdoriAsset> = (
 	context: APIContext,
 	params: Omit<Parameters<BestdoriAsset[K]>[0], "blurhash">,
-) => Promise<Record<"src" | "alt", string> & JSX.ImgHTMLAttributes>;
+) => Promise<
+	| (Record<"src" | "alt", string> & JSX.ImgHTMLAttributes)
+	| JSX.AudioHTMLAttributes
+>;
 
 export const getCardAsset = (async (context, { card, kind, trained }) => {
 	trained ||= hasNoPreTrained(card);
@@ -43,7 +46,10 @@ export const getCardAsset = (async (context, { card, kind, trained }) => {
 	if (trained) parts.push("trained");
 
 	const filename = parts.join("_");
-	const src = `/static/assets/card/${filename}.${IMAGE_FORMAT}`;
+	const isAudio = kind === "voiceline";
+	const format = isAudio ? AUDIO_FORMAT : IMAGE_FORMAT;
+	const src = `/static/assets/card/${filename}.${format}`;
+	if (isAudio) return { src, controls: false };
 
 	return {
 		...imageAttributes,

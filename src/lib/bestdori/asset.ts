@@ -1,7 +1,8 @@
 import type { Entry } from "@/contents/data";
 import { fetchBestdori } from "./client";
 import { generateBlurhash } from "./process/blurhash";
-import { compressImage } from "./process/compress";
+import { compressAudio } from "./process/compress-audio";
+import { compressImage } from "./process/compress-image";
 
 export const hasNoPreTrained = ({ name, type }: Entry<"card_map">) =>
 	name === "Graduation" || ["kirafes", "birthday"].includes(type);
@@ -12,7 +13,7 @@ type Blurhashable<T extends boolean = boolean> = { blurhash?: T };
 
 interface AssetCardParameters {
 	card: Entry<"card_map">;
-	kind: "icon" | "full";
+	kind: "icon" | "full" | "voiceline";
 	trained: boolean;
 }
 
@@ -29,8 +30,19 @@ export async function card({
 	blurhash = false,
 }: AssetCardParameters & Blurhashable) {
 	const type = trained ? "after_training" : "normal";
-	const name = ["card", card.id, kind, type].join("_");
-	const postProcess = blurhash ? generateBlurhash : compressImage;
+	const name = (
+		kind === "voiceline"
+			? ["card", card.id, kind]
+			: ["card", card.id, kind, type]
+	).join("_");
+
+	const postProcess =
+		kind === "voiceline"
+			? compressAudio
+			: blurhash
+				? generateBlurhash
+				: compressImage;
+
 	const cached = await postProcess(name);
 	if (cached) return cached;
 
@@ -50,6 +62,27 @@ export async function card({
 		case "full": {
 			buffer = await fetchBestdoriWithRegionFallbacks(
 				`assets/jp/characters/resourceset/${card.resourceId}_rip/card_${type}.png`,
+			);
+			break;
+		}
+
+		case "voiceline": {
+			const resourceName = (() => {
+				const id = Number(card.id);
+				if (id < 1353 || id >= 5000) return "spin";
+
+				switch (card.type) {
+					case "permanent":
+						return "operationspin";
+					case "birthday":
+						return "birthdayspin";
+					default:
+						return "limitedspin";
+				}
+			})();
+
+			buffer = await fetchBestdoriWithRegionFallbacks(
+				`https://bestdori.com/assets/jp/sound/voice/gacha/${resourceName}_rip/${card.resourceId}.mp3`,
 			);
 			break;
 		}
