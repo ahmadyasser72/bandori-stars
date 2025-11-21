@@ -83,7 +83,12 @@ export async function card({
 
 			buffer = await fetchBestdoriWithRegionFallbacks(
 				`https://bestdori.com/assets/jp/sound/voice/gacha/${resourceName}_rip/${card.resourceId}.mp3`,
-			);
+			).catch((error) => {
+				if (resourceName === "limitedspin") throw error;
+				return fetchBestdoriWithRegionFallbacks(
+					`https://bestdori.com/assets/jp/sound/voice/gacha/limitedspin_rip/${card.resourceId}.mp3`,
+				);
+			});
 			break;
 		}
 	}
