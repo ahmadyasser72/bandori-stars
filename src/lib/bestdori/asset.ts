@@ -1,4 +1,5 @@
 import type { Entry } from "@/contents/data";
+import { bestdori } from ".";
 import { fetchBestdori } from "./client";
 import { generateBlurhash } from "./process/blurhash";
 import { compressAudio } from "./process/compress-audio";
@@ -67,28 +68,33 @@ export async function card({
 		}
 
 		case "voiceline": {
-			const resourceName = (() => {
-				const id = Number(card.id);
-				if (id < 1353 || id >= 5000) return "spin";
+			const resourceNameList = await Promise.all(
+				["birthdayspin", "limitedspin", "operationspin", "spin"].map(
+					(resourceName) =>
+						bestdori<string[]>(
+							`api/explorer/jp/assets/sound/voice/gacha/${resourceName}.json`,
+						).then((values): [string, string[]] => [
+							resourceName,
+							values
+								.filter((it) => it.endsWith("mp3"))
+								.map((it) => it.replace(".mp3", "")),
+						]),
+				),
+			);
 
-				switch (card.type) {
-					case "permanent":
-						return "operationspin";
-					case "birthday":
-						return "birthdayspin";
-					default:
-						return "limitedspin";
-				}
-			})();
+			const [resourceName] =
+				resourceNameList.find(([, values]) =>
+					values.includes(card.resourceId),
+				) ?? [];
+
+			if (!resourceName)
+				throw new Error(
+					`Unable to find resourceName for ${card.id}/${card.resourceId}`,
+				);
 
 			buffer = await fetchBestdoriWithRegionFallbacks(
 				`https://bestdori.com/assets/jp/sound/voice/gacha/${resourceName}_rip/${card.resourceId}.mp3`,
-			).catch((error) => {
-				if (resourceName === "limitedspin") throw error;
-				return fetchBestdoriWithRegionFallbacks(
-					`https://bestdori.com/assets/jp/sound/voice/gacha/limitedspin_rip/${card.resourceId}.mp3`,
-				);
-			});
+			);
 			break;
 		}
 	}
