@@ -15,6 +15,7 @@ export const GET: APIRoute = async () => {
 		shuffle([
 			...card
 				.getStaticPaths()
+				.filter(({ params }) => params.type !== "voiceline")
 				.map(
 					async ({ params, props }) =>
 						[

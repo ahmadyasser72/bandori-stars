@@ -21,7 +21,7 @@ export const getStaticPaths = (() => {
 	const allCards = [...card_map.values()];
 	const kinds = ["icon", "full", "voiceline"] as const;
 
-	const images = allCards.flatMap((card) =>
+	const assets = allCards.flatMap((card) =>
 		kinds.flatMap((kind) =>
 			[true, false]
 				// filter out pre-trained for card without it
@@ -39,7 +39,7 @@ export const getStaticPaths = (() => {
 		),
 	);
 
-	return shuffle(images);
+	return shuffle(assets);
 }) satisfies GetStaticPaths;
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
