@@ -19,13 +19,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
 
+      - name: Get Date
+        id: get-date
+        run: |
+          echo "date=$(/bin/date -u "+%Y%m%d")" >> $GITHUB_OUTPUT
+        shell: bash
+
       - name: Cache bestdori responses
         uses: actions/cache@v4
         with:
           path: |
             ${{ env.BESTDORI_CACHE }}/*.json
             ${{ env.BESTDORI_CACHE }}/*.png
-          key: bestdori-response-${{ github.run_id }}
+          key: bestdori-response-${{ steps.get-date.outputs.date }}
           restore-keys: bestdori-response-
       - name: Cache processed assets
         uses: actions/cache@v4
@@ -33,7 +39,7 @@ jobs:
           path: |
             ${{ env.BESTDORI_CACHE }}/blurhash/
             ${{ env.BESTDORI_CACHE }}/compressed/
-          key: bestdori-asset-${{ hashFiles('src/lib/bestdori/process/*.ts') }}-${{ github.run_id }}
+          key: bestdori-asset-${{ hashFiles('src/lib/bestdori/process/*.ts') }}-${{ steps.get-date.outputs.date }}
           restore-keys: bestdori-asset-${{ hashFiles('src/lib/bestdori/process/*.ts') }}-
 
       - name: Build site
@@ -48,7 +54,7 @@ jobs:
       - name: Upload processed assets
         uses: actions/upload-artifact@v4
         with:
-          name: assets-${{ hashFiles('src/lib/bestdori/process/*.ts') }}-${{ github.run_id }}
+          name: assets-${{ steps.get-date.outputs.date }}
           include-hidden-files: true
           path: |
             ${{ env.BESTDORI_CACHE }}/blurhash/
