@@ -42,11 +42,11 @@ up.compiler("button[data-play-audio]", (element) => {
 	const dropdown = element.closest<HTMLElement>(".dropdown");
 	const enableButtonOnPlayEnd = () => {
 		element.disabled = false;
-		dropdown?.classList.remove("dropdown-open");
+		setTimeout(() => dropdown?.classList.toggle("dropdown-open", false), 500);
 	};
 	const playAudio = () => {
 		element.disabled = true;
-		dropdown?.classList.add("dropdown-open");
+		dropdown?.classList.toggle("dropdown-open", true);
 		audio.play();
 	};
 
