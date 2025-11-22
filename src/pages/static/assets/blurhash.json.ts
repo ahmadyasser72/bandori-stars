@@ -3,6 +3,7 @@ import type { APIRoute } from "astro";
 import { shuffle } from "fast-shuffle";
 
 import { bestdori } from "~/lib/bestdori";
+import { IMAGE_FORMAT } from "~/lib/bestdori/constants";
 import * as card from "./card/[id]_[type].[ext]";
 import * as event from "./event/[id]_[type].[ext]";
 import * as gacha from "./gacha/[id]_banner.[ext]";
@@ -15,7 +16,7 @@ export const GET: APIRoute = async () => {
 		shuffle([
 			...card
 				.getStaticPaths()
-				.filter(({ params }) => params.type !== "voiceline")
+				.filter(({ params }) => params.ext === IMAGE_FORMAT)
 				.map(
 					async ({ params, props }) =>
 						[
