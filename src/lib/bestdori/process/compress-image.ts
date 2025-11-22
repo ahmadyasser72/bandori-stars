@@ -34,4 +34,4 @@ export async function compressImage(
 }
 
 const getPath = (name: string) =>
-	joinPath(BESTDORI_CACHE_DIR, "compressed", `${name}.${IMAGE_FORMAT}`);
+	joinPath(BESTDORI_CACHE_DIR, "compressed-image", `${name}.${IMAGE_FORMAT}`);

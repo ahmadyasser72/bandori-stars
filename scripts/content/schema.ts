@@ -31,6 +31,7 @@ export const schema = {
 		id,
 		resourceId: id,
 		name,
+		voiceline: name.nullable(),
 		character: id,
 		rarity,
 		type: types.card,

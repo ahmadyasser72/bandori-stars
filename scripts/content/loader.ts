@@ -64,6 +64,7 @@ export const card = async () => {
 					resourceSetName,
 					type,
 					prefix,
+					gachaText,
 					releasedAt,
 					source,
 				} = card;
@@ -74,6 +75,7 @@ export const card = async () => {
 					character: characterId.toString(),
 					rarity,
 					name: parser.regionTuple(prefix),
+					voiceline: type === "kirafes" ? null : parser.regionTuple(gachaText),
 					type,
 					attribute,
 					releasedAt: parser.timestamp(releasedAt),

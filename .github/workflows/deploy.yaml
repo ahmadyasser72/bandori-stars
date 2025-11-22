@@ -28,17 +28,13 @@ jobs:
       - name: Cache bestdori responses
         uses: actions/cache@v4
         with:
-          path: |
-            ${{ env.BESTDORI_CACHE }}/*.json
-            ${{ env.BESTDORI_CACHE }}/*.png
+          path: ${{ env.BESTDORI_CACHE }}/*.*
           key: bestdori-response-${{ steps.get-date.outputs.date }}
           restore-keys: bestdori-response-
       - name: Cache processed assets
         uses: actions/cache@v4
         with:
-          path: |
-            ${{ env.BESTDORI_CACHE }}/blurhash/
-            ${{ env.BESTDORI_CACHE }}/compressed/
+          path: ${{ env.BESTDORI_CACHE }}/**/*.*
           key: bestdori-asset-${{ hashFiles('src/lib/bestdori/process/*.ts') }}-${{ steps.get-date.outputs.date }}
           restore-keys: bestdori-asset-${{ hashFiles('src/lib/bestdori/process/*.ts') }}-
 
@@ -50,15 +46,6 @@ jobs:
           name: site
           include-hidden-files: true
           path: dist/
-
-      - name: Upload processed assets
-        uses: actions/upload-artifact@v4
-        with:
-          name: assets-${{ steps.get-date.outputs.date }}
-          include-hidden-files: true
-          path: |
-            ${{ env.BESTDORI_CACHE }}/blurhash/
-            ${{ env.BESTDORI_CACHE }}/compressed/
 
   deploy:
     needs: build
