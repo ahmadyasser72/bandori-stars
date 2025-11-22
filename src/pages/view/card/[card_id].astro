@@ -47,16 +47,16 @@ const showGachaList = params.get("show_gacha_list") === "true";
 									})
 								).src
 							}
-							class="btn btn-circle not-disabled:bg-bandori-band not-disabled:text-bandori-band-content"
+							class="btn btn-circle not-disabled:bg-bandori-band not-disabled:text-bandori-band-content not-disabled:hover:bg-bandori-band-alt"
 						>
-							<Icon name="lucide:volume-2" class="size-6" />
+							<Icon name="lucide:volume-2" class="size-5" />
 						</button>
 
 						<div
 							tabindex="0"
 							class="dropdown-content card card-sm bg-base-100 shadow-bandori-band z-1 mt-2 w-64 shadow-md"
 						>
-							<div class="card-body italic">
+							<div class="card-body font-normal">
 								{regionValue.unwrap(card.voiceline)}
 							</div>
 						</div>
