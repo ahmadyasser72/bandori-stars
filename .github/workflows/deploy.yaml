@@ -34,7 +34,7 @@ jobs:
       - name: Cache processed assets
         uses: actions/cache@v4
         with:
-          path: ${{ env.BESTDORI_CACHE }}/**/*.*
+          path: ${{ env.BESTDORI_CACHE }}/*/*.*
           key: bestdori-asset-${{ hashFiles('src/lib/bestdori/process/*.ts') }}-${{ steps.get-date.outputs.date }}
           restore-keys: bestdori-asset-${{ hashFiles('src/lib/bestdori/process/*.ts') }}-
 
