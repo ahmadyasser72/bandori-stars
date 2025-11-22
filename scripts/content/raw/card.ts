@@ -9,6 +9,7 @@ export interface Card {
 	attribute: Attribute;
 	resourceSetName: string;
 	prefix: RegionTuple<string>;
+	gachaText: RegionTuple<string>;
 	releasedAt: RegionTuple<string>;
 	source: RegionTuple<CardSource, {}>;
 	type: CardType;

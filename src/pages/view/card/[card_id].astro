@@ -34,18 +34,33 @@ const showGachaList = params.get("show_gacha_list") === "true";
 >
 	<div data-band-id={card.band.id} class="grid gap-4 md:w-xl">
 		<div class="inline-flex items-center gap-2 font-medium sm:gap-4">
-			<button
-				data-play-audio={(
-					await getCardAsset(Astro, {
-						card,
-						kind: "voiceline",
-						trained: false,
-					})
-				).src}
-				class="btn btn-circle btn-accent"
-			>
-				<Icon name="lucide:volume-2" class="size-6" />
-			</button>
+			<div class="dropdown dropdown-hover">
+				<button
+					data-play-audio={(
+						await getCardAsset(Astro, {
+							card,
+							kind: "voiceline",
+							trained: false,
+						})
+					).src}
+					class="btn btn-circle bg-bandori-band text-bandori-band-content"
+				>
+					<Icon name="lucide:volume-2" class="size-6" />
+				</button>
+
+				{
+					card.voiceline && (
+						<div
+							tabindex="0"
+							class="dropdown-content card card-sm bg-base-100 shadow-bandori-band z-1 mt-2 w-64 shadow-md"
+						>
+							<div class="card-body italic">
+								{regionValue.unwrap(card.voiceline)}
+							</div>
+						</div>
+					)
+				}
+			</div>
 
 			<div>
 				<p class="text-xl">{card.character.name}</p>
