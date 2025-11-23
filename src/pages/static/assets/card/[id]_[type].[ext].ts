@@ -24,10 +24,12 @@ export const getStaticPaths = (() => {
 	const assets = allCards.flatMap((card) =>
 		kinds.flatMap((kind) =>
 			[true, false]
+				.filter(
+					// filter out trained voiceline and card without it
+					(trained) => kind !== "voiceline" || (!trained && !!card.voiceline),
+				)
 				// filter out pre-trained for card without it
 				.filter((trained) => trained || !hasNoPreTrained(card))
-				// filter out voiceline (trained) since there's only 1 voiceline anyway
-				.filter((trained) => kind !== "voiceline" || !trained)
 				.map((trained) => ({
 					params: {
 						id: card.id,

@@ -35,26 +35,25 @@ up.compiler("[data-autoscroll]", (element) => {
 	);
 });
 
-up.compiler("button[data-play-audio]", (element) => {
-	if (!(element instanceof HTMLButtonElement)) return;
-	const audio = new Audio(element.dataset.playAudio);
+up.compiler<HTMLButtonElement>("button[data-play-audio]", (button) => {
+	const audio = new Audio(button.dataset.playAudio);
 
-	const dropdown = element.closest<HTMLElement>(".dropdown");
-	const enableButtonOnPlayEnd = () => {
-		element.disabled = false;
+	const dropdown = button.closest<HTMLElement>(".dropdown");
+	const afterPlay = () => {
+		button.disabled = false;
 		setTimeout(() => dropdown?.classList.toggle("dropdown-open", false), 500);
 	};
-	const playAudio = () => {
-		element.disabled = true;
+	const play = () => {
+		button.disabled = true;
 		dropdown?.classList.toggle("dropdown-open", true);
 		audio.play();
 	};
 
-	audio.addEventListener("ended", enableButtonOnPlayEnd);
-	element.addEventListener("click", playAudio);
+	audio.addEventListener("ended", afterPlay);
+	button.addEventListener("click", play);
 	return () => {
-		element.removeEventListener("click", playAudio);
-		audio.removeEventListener("ended", enableButtonOnPlayEnd);
+		button.removeEventListener("click", play);
+		audio.removeEventListener("ended", afterPlay);
 		audio.remove();
 	};
 });

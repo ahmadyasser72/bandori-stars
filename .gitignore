@@ -24,14 +24,8 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-/.bestdori-cache/*
-!/.bestdori-cache/.gitkeep
+/.bestdori-cache/**
 !/.bestdori-cache/**/
-/.bestdori-cache/blurhash/*
-!/.bestdori-cache/blurhash/.gitkeep
-/.bestdori-cache/compressed-image/*
-!/.bestdori-cache/compressed-image/.gitkeep
-/.bestdori-cache/compressed-audio/*
-!/.bestdori-cache/compressed-audio/.gitkeep
+!/.bestdori-cache/**/*.gitkeep
 
 /.contents/data.js
