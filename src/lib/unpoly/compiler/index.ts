@@ -36,7 +36,7 @@ up.compiler("[data-autoscroll]", (element) => {
 });
 
 up.compiler<HTMLButtonElement>("button[data-play-audio]", (button) => {
-	const audio = new Audio(button.dataset.playAudio);
+	const audio = new Audio();
 
 	const dropdown = button.closest<HTMLElement>(".dropdown");
 	const afterPlay = () => {
@@ -46,6 +46,8 @@ up.compiler<HTMLButtonElement>("button[data-play-audio]", (button) => {
 	const play = () => {
 		button.disabled = true;
 		dropdown?.classList.toggle("dropdown-open", true);
+
+		if (!audio.src) audio.src = button.dataset.playAudio!;
 		audio.play();
 	};
 
