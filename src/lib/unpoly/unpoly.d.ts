@@ -5,14 +5,14 @@ interface UnpolyLayer {
 }
 
 interface Unpoly {
-	compiler(
+	compiler<T extends HTMLElement = HTMLElement>(
 		selector: string,
-		handler: (element: HTMLElement) => MaybePromise<void | (() => void)>,
+		handler: (element: T) => MaybePromise<void | (() => void)>,
 	): void;
-	compiler(
+	compiler<T extends HTMLElement = HTMLElement>(
 		selector: string,
 		options: { batch: boolean },
-		handler: (elements: HTMLElement[]) => MaybePromise<void | (() => void)>,
+		handler: (elements: T[]) => MaybePromise<void | (() => void)>,
 	): void;
 
 	destructor(element: HTMLElement, callback: () => void): void;

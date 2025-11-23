@@ -10,7 +10,7 @@ import { shuffle } from "fast-shuffle";
 import { card_map } from "@/contents/data";
 import { bestdori } from "~/lib/bestdori";
 import { hasNoPreTrained } from "~/lib/bestdori/asset";
-import { IMAGE_FORMAT } from "~/lib/bestdori/constants";
+import { AUDIO_FORMAT, IMAGE_FORMAT } from "~/lib/bestdori/constants";
 
 export const prerender = true;
 
@@ -19,24 +19,29 @@ export const GET: APIRoute<Props, Params> = ({ props }) =>
 
 export const getStaticPaths = (() => {
 	const allCards = [...card_map.values()];
-	const kinds = ["icon", "full"] as const;
+	const kinds = ["icon", "full", "voiceline"] as const;
 
-	const results = allCards.flatMap((card) =>
+	const assets = allCards.flatMap((card) =>
 		kinds.flatMap((kind) =>
 			[true, false]
+				.filter(
+					// filter out trained voiceline and card without it
+					(trained) => kind !== "voiceline" || (!trained && !!card.voiceline),
+				)
+				// filter out pre-trained for card without it
 				.filter((trained) => trained || !hasNoPreTrained(card))
 				.map((trained) => ({
 					params: {
 						id: card.id,
 						type: trained ? `${kind}_trained` : kind,
-						ext: IMAGE_FORMAT,
+						ext: kind === "voiceline" ? AUDIO_FORMAT : IMAGE_FORMAT,
 					},
 					props: { card, kind, trained },
 				})),
 		),
 	);
 
-	return shuffle(results);
+	return shuffle(assets);
 }) satisfies GetStaticPaths;
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;

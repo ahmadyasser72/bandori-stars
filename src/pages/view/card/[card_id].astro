@@ -1,4 +1,6 @@
 ---
+import { Icon } from "astro-icon/components";
+
 import { card_map } from "@/contents/data";
 import BaseLayout from "~/layouts/base-layout.astro";
 import { getCardAsset } from "~/lib/assets";
@@ -16,7 +18,6 @@ const noPreTrained = hasNoPreTrained(card);
 
 const params = Astro.url.searchParams;
 const showTrained = params.get("show_trained") === "true";
-const autoScroll = params.get("auto_scroll") === "true";
 const showGachaList = params.get("show_gacha_list") === "true";
 ---
 
@@ -31,11 +32,49 @@ const showGachaList = params.get("show_gacha_list") === "true";
 		})
 	).src}
 >
-	<div data-band-id={card.band.id} class="grid gap-4">
-		<h1 class="text-xl font-semibold">{name}</h1>
+	<div data-band-id={card.band.id} class="grid gap-4 md:w-xl">
+		<div class="inline-flex items-center gap-2 font-medium sm:gap-4">
+			{
+				card.voiceline && (
+					<div class="dropdown dropdown-hover">
+						<button
+							data-play-audio={
+								(
+									await getCardAsset(Astro, {
+										card,
+										kind: "voiceline",
+										trained: false,
+									})
+								).src
+							}
+							class="btn btn-circle not-disabled:bg-bandori-band not-disabled:text-bandori-band-content not-disabled:hover:bg-bandori-band-alt"
+							aria-label="Play voiceline"
+						>
+							<Icon name="lucide:volume-2" class="size-5" />
+						</button>
 
-		<div class="flex flex-col gap-4 sm:flex-col-reverse">
-			<div class="tabs tabs-box max-sm:tabs-bottom max-sm:pb-4">
+						<div
+							tabindex="0"
+							class="dropdown-content card card-sm bg-base-100 shadow-bandori-band z-1 mt-2 w-64 shadow-md"
+						>
+							<div class="card-body font-normal">
+								{regionValue.unwrap(card.voiceline)}
+							</div>
+						</div>
+					</div>
+				)
+			}
+
+			<div>
+				<p class="text-xl">{card.character.name}</p>
+				<p class="text-sm">{card.name}</p>
+			</div>
+		</div>
+
+		<div class="flex flex-col gap-4">
+			<div
+				class="tabs tabs-box tabs-bottom mx-auto w-72 pb-4 sm:w-96 md:w-full"
+			>
 				{
 					(noPreTrained ? [true] : [false, true]).map(async (trained) => {
 						const active = showTrained ? trained : !trained;
@@ -46,7 +85,7 @@ const showGachaList = params.get("show_gacha_list") === "true";
 									<input
 										type="radio"
 										name={tabName}
-										class="tab checked:text-bandori-band-content flex-1 font-medium [--tab-bg:var(--band-color)] hover:[--tab-bg:var(--band-color-alt)] max-sm:mt-2"
+										class="tab checked:text-bandori-band-content mt-2 flex-1 font-medium [--tab-bg:var(--band-color)] hover:[--tab-bg:var(--band-color-alt)]"
 										aria-label={trained ? "Trained" : "Normal"}
 										checked={active}
 									/>
@@ -63,11 +102,7 @@ const showGachaList = params.get("show_gacha_list") === "true";
 											kind: "full",
 											trained,
 										})}
-										class:list={[
-											active && autoScroll && "scroll-here",
-											"rounded-box border-base-300 aspect-4/3 w-full border",
-										]}
-										data-scroll-here="center"
+										class="rounded-box border-base-300 aspect-4/3 w-full border"
 									/>
 								</div>
 							</>
@@ -84,7 +119,7 @@ const showGachaList = params.get("show_gacha_list") === "true";
 							href={`/select/gacha/${card.id}`}
 							up-follow
 							up-scroll="false"
-							class="scroll-here btn bg-bandori-band hover:bg-bandori-band-alt text-bandori-band-content sm:absolute-center-x sm:btn-wide scroll-mb-8 max-sm:w-full sm:absolute sm:bottom-20"
+							class="btn bg-bandori-band-alt hover:bg-bandori-band text-bandori-band-content w-full"
 						>
 							Show Gacha List
 						</a>

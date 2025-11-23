@@ -1,7 +1,9 @@
 import type { Entry } from "@/contents/data";
+import { bestdori } from ".";
 import { fetchBestdori } from "./client";
 import { generateBlurhash } from "./process/blurhash";
-import { compressImage } from "./process/compress";
+import { compressAudio } from "./process/compress-audio";
+import { compressImage } from "./process/compress-image";
 
 export const hasNoPreTrained = ({ name, type }: Entry<"card_map">) =>
 	name === "Graduation" || ["kirafes", "birthday"].includes(type);
@@ -12,7 +14,7 @@ type Blurhashable<T extends boolean = boolean> = { blurhash?: T };
 
 interface AssetCardParameters {
 	card: Entry<"card_map">;
-	kind: "icon" | "full";
+	kind: "icon" | "full" | "voiceline";
 	trained: boolean;
 }
 
@@ -29,8 +31,19 @@ export async function card({
 	blurhash = false,
 }: AssetCardParameters & Blurhashable) {
 	const type = trained ? "after_training" : "normal";
-	const name = ["card", card.id, kind, type].join("_");
-	const postProcess = blurhash ? generateBlurhash : compressImage;
+	const name = (
+		kind === "voiceline"
+			? ["card", card.id, kind]
+			: ["card", card.id, kind, type]
+	).join("_");
+
+	const postProcess =
+		kind === "voiceline"
+			? compressAudio
+			: blurhash
+				? generateBlurhash
+				: compressImage;
+
 	const cached = await postProcess(name);
 	if (cached) return cached;
 
@@ -50,6 +63,37 @@ export async function card({
 		case "full": {
 			buffer = await fetchBestdoriWithRegionFallbacks(
 				`assets/jp/characters/resourceset/${card.resourceId}_rip/card_${type}.png`,
+			);
+			break;
+		}
+
+		case "voiceline": {
+			const resourceNameList = await Promise.all(
+				["birthdayspin", "limitedspin", "operationspin", "spin"].map(
+					(resourceName) =>
+						bestdori<string[]>(
+							`api/explorer/jp/assets/sound/voice/gacha/${resourceName}.json`,
+						).then((values): [string, string[]] => [
+							resourceName,
+							values
+								.filter((it) => it.endsWith("mp3"))
+								.map((it) => it.replace(".mp3", "")),
+						]),
+				),
+			);
+
+			const [resourceName] =
+				resourceNameList.find(([, values]) =>
+					values.includes(card.resourceId),
+				) ?? [];
+
+			if (!resourceName)
+				throw new Error(
+					`Unable to find resourceName for ${card.id}/${card.resourceId}`,
+				);
+
+			buffer = await fetchBestdoriWithRegionFallbacks(
+				`https://bestdori.com/assets/jp/sound/voice/gacha/${resourceName}_rip/${card.resourceId}.mp3`,
 			);
 			break;
 		}

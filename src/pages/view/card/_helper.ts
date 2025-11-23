@@ -1,7 +1,7 @@
 import type { Entry } from "@/contents/data";
 
 export type FullCardModalOptions = Partial<
-	Record<"auto_scroll" | "show_trained" | "show_gacha_list", boolean>
+	Record<"show_trained" | "show_gacha_list", boolean>
 >;
 
 export const showFullCardModalOnClick = (
@@ -10,7 +10,7 @@ export const showFullCardModalOnClick = (
 ) => ({
 	href: `/view/card/${card.id}`,
 	"up-layer": "new",
-	"up-size": "large",
+	"up-size": "grow",
 	"up-scroll": "false",
 	"up-history": "false",
 	"up-params": JSON.stringify(options),
