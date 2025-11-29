@@ -1,3 +1,5 @@
+import PLazy from "p-lazy";
+
 import type { Entry } from "@/contents/data";
 import { bestdori } from ".";
 import { fetchBestdori } from "./client";
@@ -7,6 +9,32 @@ import { compressImage } from "./process/compress-image";
 
 export const hasNoPreTrained = ({ name, type }: Entry<"card_map">) =>
 	name === "Graduation" || ["kirafes", "birthday"].includes(type);
+
+const resourceNameList = new PLazy<
+	{
+		resourceName: string;
+		values: Set<string>;
+	}[]
+>((resolve) =>
+	resolve(
+		Promise.all(
+			["birthdayspin", "limitedspin", "operationspin", "spin"].map(
+				(resourceName) =>
+					bestdori<string[]>(
+						`api/explorer/jp/assets/sound/voice/gacha/${resourceName}.json`,
+						true,
+					).then((values) => ({
+						resourceName,
+						values: new Set(
+							values
+								.filter((it) => it.endsWith("mp3"))
+								.map((it) => it.replace(".mp3", "")),
+						),
+					})),
+			),
+		),
+	),
+);
 
 type AssetBuffer = Promise<Buffer<ArrayBuffer>>;
 type AssetBlurhash = Promise<string>;
@@ -68,24 +96,10 @@ export async function card({
 		}
 
 		case "voiceline": {
-			const resourceNameList = await Promise.all(
-				["birthdayspin", "limitedspin", "operationspin", "spin"].map(
-					(resourceName) =>
-						bestdori<string[]>(
-							`api/explorer/jp/assets/sound/voice/gacha/${resourceName}.json`,
-						).then((values): [string, string[]] => [
-							resourceName,
-							values
-								.filter((it) => it.endsWith("mp3"))
-								.map((it) => it.replace(".mp3", "")),
-						]),
-				),
-			);
-
-			const [resourceName] =
-				resourceNameList.find(([, values]) =>
-					values.includes(card.resourceId),
-				) ?? [];
+			const { resourceName } =
+				(await resourceNameList).find(({ values }) =>
+					values.has(card.resourceId),
+				) ?? {};
 
 			if (!resourceName)
 				throw new Error(
