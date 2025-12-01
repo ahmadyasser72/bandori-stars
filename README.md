@@ -6,7 +6,7 @@
 ![DaisyUI](https://img.shields.io/badge/daisyui-5A0EF8?logo=daisyui&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?logo=tailwind-css&logoColor=white)
 ![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020?logo=Cloudflare&logoColor=white)
-[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](./LICENSE)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](./LICENSE)
 
 A simple website to estimate how many free stars you can collect before a specific card or banner.
 It uses JP server data (since EN is behind), so anything available on JP but not yet released on EN is included in the estimate.
@@ -71,4 +71,4 @@ Open a GitHub issue or reach me out at discord [@lasciate](https://discordapp.co
 
 ## 📄 License
 
-Licensed under **GPL-3.0**.
+Licensed under **AGPL-3.0**.
