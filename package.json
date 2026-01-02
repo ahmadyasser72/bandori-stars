@@ -33,7 +33,7 @@
 		"@ianvs/prettier-plugin-sort-imports": "4.7.0",
 		"@iconify-json/emojione": "1.2.3",
 		"@iconify-json/lucide": "1.2.82",
-		"@types/node": "24.10.4",
+		"@types/node": "25.0.3",
 		"favicons": "7.2.0",
 		"lightningcss": "1.30.2",
 		"prettier": "3.7.4",
